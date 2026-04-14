@@ -1,0 +1,429 @@
+{
+  "component-definition": {
+    "uuid": "c1a7b2e0-0001-4f00-8000-tts000000001",
+    "metadata": {
+      "title": "TTS Cloud Sandbox — Multi-Cloud Service Broker Component Definitions",
+      "published": "2026-04-14T00:00:00Z",
+      "last-modified": "2026-04-14T00:00:00Z",
+      "version": "0.1.0",
+      "oscal-version": "1.1.2",
+      "remarks": "Component definitions for the TTS Cloud Sandbox Supplementary Service Broker (SSB), covering the Cloud Service Broker platform, AWS/GCP/Azure brokerpaks, Prowler continuous assessment, and cloud.gov inherited controls. Based on NIST SP 800-53 Rev 5 / FedRAMP Moderate baseline. System Owner: TTS Infrastructure, IAE. ISSO: TBD. Inherits FedRAMP Moderate P-ATO from cloud.gov (FR1920000001).",
+      "parties": [
+        {
+          "uuid": "aa000001-0000-0000-0000-gsa000000001",
+          "type": "organization",
+          "name": "U.S. General Services Administration — Technology Transformation Services",
+          "short-name": "GSA TTS",
+          "links": [{ "href": "https://tts.gsa.gov", "rel": "homepage" }],
+          "email-addresses": ["tts-tech-operations@gsa.gov"],
+          "addresses": [{
+            "type": "work",
+            "addr-lines": ["1800 F St. NW"],
+            "city": "Washington",
+            "state": "DC",
+            "postal-code": "20405",
+            "country": "US"
+          }]
+        },
+        {
+          "uuid": "aa000002-0000-0000-0000-cg000000001",
+          "type": "organization",
+          "name": "cloud.gov — GSA Technology Transformation Services",
+          "short-name": "cloud.gov",
+          "links": [{ "href": "https://cloud.gov", "rel": "homepage" }],
+          "remarks": "cloud.gov holds FedRAMP Moderate P-ATO FR1920000001. All controls in its authorization boundary are inherited by the TTS Cloud Sandbox SSB."
+        }
+      ],
+      "roles": [
+        { "id": "system-owner", "title": "Information System Owner", "description": "TTS IAE Infrastructure team, responsible for the Cloud Sandbox SSB platform." },
+        { "id": "provider", "title": "Component Provider / Maintainer" },
+        { "id": "assessor", "title": "Security Assessor", "description": "Prowler automated assessment or 3PAO for formal assessments." }
+      ]
+    },
+    "components": [
+      {
+        "uuid": "comp0001-csb-0000-0000-platform000001",
+        "type": "software",
+        "title": "Cloud Service Broker (CSB) — cloud-service-broker v2.6.10",
+        "description": "The Cloud Service Broker is an Open Service Broker API (OSBAPI)-compliant Go binary deployed as a CF application on cloud.gov. It manages the full lifecycle (provision, bind, unbind, deprovision) of multi-cloud sandbox service instances by delegating to OpenTofu (Terraform fork) brokerpak modules. Three broker instances are deployed — one per CSP (AWS, GCP, Azure) — each as a space-scoped CF service broker in the gsa-tts-iae-lava-beds org, dev space.",
+        "props": [
+          { "name": "version", "value": "2.6.10" },
+          { "name": "source-uri", "value": "https://github.com/cloudfoundry/cloud-service-broker" },
+          { "name": "cf-org", "value": "gsa-tts-iae-lava-beds" },
+          { "name": "cf-space", "value": "dev" },
+          { "name": "memory", "value": "1G" },
+          { "name": "instances", "value": "1" }
+        ],
+        "links": [
+          { "href": "https://github.com/cloudfoundry/cloud-service-broker", "rel": "reference" },
+          { "href": "https://cloud.gov", "rel": "inherited-from" }
+        ],
+        "responsible-roles": [
+          { "role-id": "system-owner", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] },
+          { "role-id": "provider", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0001-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Control implementations for the CSB platform (OSBAPI broker runtime, CF integration, credential management).",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0001-ac02-0000-0000-000000000001",
+                "control-id": "ac-2",
+                "description": "Account management is enforced via Cloud Foundry RBAC. Only users with the SpaceDeveloper role in gsa-tts-iae-lava-beds/dev may register service brokers or invoke the OSBAPI. Service broker registration requires CF org admin or SpaceDeveloper privileges. Space-scoped brokers restrict visibility to the dev space only. Inactive accounts are managed per GSA SecureAuth policy."
+              },
+              {
+                "uuid": "ir0001-ac03-0000-0000-000000000001",
+                "control-id": "ac-3",
+                "description": "Access to the broker API is enforced via HTTP Basic Authentication using SECURITY_USER_NAME and SECURITY_USER_PASSWORD injected at deploy time. CF platform mediates all inbound requests; the broker is not exposed to the public internet (space-scoped registry). Credentials are stored in CF environment and targeted for CredHub migration."
+              },
+              {
+                "uuid": "ir0001-ac06-0000-0000-000000000001",
+                "control-id": "ac-6",
+                "description": "Each CSP broker instance uses a dedicated IAM service account / service principal with least-privilege scoping limited to the services exposed in its brokerpak. AWS IAM permissions match exactly the set of resources brokereable (RDS, ElastiCache, S3, SQS). GCP service account bindings are limited to cloudsql.admin, storage.admin, redis.admin, pubsub.admin for the sandbox project only. Azure service principal has Contributor scoped to the sandbox resource group."
+              },
+              {
+                "uuid": "ir0001-au02-0000-0000-000000000001",
+                "control-id": "au-2",
+                "description": "The following events are audited: CF service instance create/delete/update (via CF audit events API), OSBAPI provision/deprovision/bind/unbind requests (logged by the CSB broker process to CF Loggregator), OpenTofu plan/apply/destroy execution logs (written to CF app stdout and captured by logs.fr.cloud.gov)."
+              },
+              {
+                "uuid": "ir0001-au12-0000-0000-000000000001",
+                "control-id": "au-12",
+                "description": "Audit records are generated automatically: CF platform captures all API events (actor, timestamp, action, outcome) to the cloud.gov audit log store. CSB broker logs are streamed to logs.fr.cloud.gov (Loggregator + ELK). OpenTofu state files in the csb-sql backing database record resource creation history per service instance."
+              },
+              {
+                "uuid": "ir0001-cm07-0000-0000-000000000001",
+                "control-id": "cm-7",
+                "description": "The broker exposes only approved sandbox-tier service plans. Non-sandbox plans are suppressed via GSB_SERVICE_*_PLANS environment variables. Services with no approved sandbox plan are represented with a stub 'not-available' plan that cannot be used to provision resources. Plan constraints enforce: no multi-AZ, no read replicas, no zone redundancy, micro/small instance classes only. TTL is enforced at plan level (default 1 hour, max 8 hours, one 4-hour renewal)."
+              },
+              {
+                "uuid": "ir0001-ia02-0000-0000-000000000001",
+                "control-id": "ia-2",
+                "description": "Platform-level authentication to CF (cloud.gov) requires GSA SecureAuth SAML 2FA (ENT Domain ID + second factor via email/phone + password). PIV/CAC authentication is accepted via IA-2(12). CF CLI sessions use UAA OAuth2 tokens issued after SecureAuth authentication."
+              },
+              {
+                "uuid": "ir0001-ia05-0000-0000-000000000001",
+                "control-id": "ia-5",
+                "description": "Service binding credentials (database passwords, connection strings, access keys for provisioned resources) are returned via VCAP_SERVICES on the bound CF application at bind time. Credentials are generated by the CSB using secure random generation. Migration to CredHub variable bindings is planned to ensure credentials are encrypted at rest and not exposed in CF env vars."
+              },
+              {
+                "uuid": "ir0001-sc28-0000-0000-000000000001",
+                "control-id": "sc-28",
+                "description": "All CSP resources provisioned by sandbox plans enforce encryption at rest. RDS instances: storage_encrypted=true, AES-256. ElastiCache: at_rest_encryption_enabled=true, transit_encryption_enabled=true. S3 buckets: server-side encryption enforced by bucket policy. GCS buckets: Google-managed AES-256 default. Azure PostgreSQL: storage auto-encrypted. These controls are embedded in the OpenTofu module properties and cannot be overridden by provisioning parameters."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "comp0002-aws-0000-0000-brokerpak00001",
+        "type": "software",
+        "title": "csb-brokerpak-aws v0.1.0 — AWS Cloud Service Brokerpak",
+        "description": "OpenTofu (Terraform fork) brokerpak providing lifecycle management for AWS services in the TTS sandbox. Bundled with terraform-provider-aws 6.40.0 and OpenTofu v1.11.6 (linux/amd64). Approvedservices: S3 (sandbox-8h), RDS PostgreSQL (sandbox-8h), RDS MySQL (sandbox-8h), ElastiCache Redis (sandbox-8h), SQS (sandbox-8h). Non-approved services (Aurora, MSSQL, DynamoDB Namespace) are exposed with stub 'not-available' plans only.",
+        "props": [
+          { "name": "version", "value": "0.1.0" },
+          { "name": "opentofu-version", "value": "1.11.6" },
+          { "name": "provider-aws-version", "value": "6.40.0" },
+          { "name": "source-uri", "value": "https://github.com/cloudfoundry/csb-brokerpak-aws" },
+          { "name": "cf-broker-app", "value": "csb-aws" },
+          { "name": "cf-broker-name", "value": "csb-aws-sandbox" }
+        ],
+        "responsible-roles": [
+          { "role-id": "system-owner", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0002-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Control implementations for the AWS brokerpak (OpenTofu modules, IAM policy, VPC placement, encryption).",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0002-sa09-0000-0000-000000000001",
+                "control-id": "sa-9",
+                "description": "AWS is used as an external cloud service provider. The CSB broker authenticates to AWS using a dedicated IAM access key with a policy scoped to the exact set of actions required for provisioning: RDS (CreateDBInstance, DeleteDBInstance, DescribeDBInstances, etc.), ElastiCache (CreateReplicationGroup, DeleteReplicationGroup, etc.), S3 (CreateBucket, DeleteBucket, PutBucketPolicy, etc.), SQS (CreateQueue, DeleteQueue, GetQueueAttributes, etc.). IAM permissions are documented in submodules/csb-brokerpak-aws/docs/installation.md. Migration to IAM Identity Center short-lived credentials is planned (Q3 2026)."
+              },
+              {
+                "uuid": "ir0002-sc07-0000-0000-000000000001",
+                "control-id": "sc-7",
+                "description": "All AWS resources are deployed into the dedicated sandbox VPC (vpc-61e8f005). RDS instances and ElastiCache clusters are placed in private subnets with no direct internet access. Security groups restrict inbound connections to CF app egress ranges only. S3 buckets enforce private ACL (no public access block configured at account level). Boundary enforcement prevents provisioning in non-US regions; AWS_DEFAULT_REGION defaults to us-east-1."
+              },
+              {
+                "uuid": "ir0002-sc13-0000-0000-000000000001",
+                "control-id": "sc-13",
+                "description": "TLS 1.2 or higher is enforced for all data in transit. ElastiCache Redis: transit_encryption_enabled=true enforced in sandbox-8h plan. RDS: SSL/TLS enforced via parameter group. S3: HTTPS-only bucket policy applied. All CSB-to-AWS API calls use TLS via the AWS SDK. FIPS 140-2 validated cryptographic modules are used by the AWS infrastructure (FIPS endpoints available in us-east-1 GovCloud if required)."
+              },
+              {
+                "uuid": "ir0002-si02-0000-0000-000000000001",
+                "control-id": "si-2",
+                "description": "Flaw remediation for the AWS brokerpak is managed via Git submodule updates from the upstream cloudfoundry/csb-brokerpak-aws repository. Security patches in the terraform-provider-aws or OpenTofu binaries are incorporated by updating the provider version in brokerpak.yml and re-running make build. GitHub Dependabot (or Renovate) is planned for automated notification of upstream security releases. All updates go through PR review with security impact analysis before deployment."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "comp0003-gcp-0000-0000-brokerpak00002",
+        "type": "software",
+        "title": "csb-brokerpak-gcp — GCP Cloud Service Brokerpak",
+        "description": "OpenTofu brokerpak providing lifecycle management for GCP services in the TTS sandbox. Approved services: Cloud Storage (sandbox-8h), Cloud SQL PostgreSQL (sandbox-8h), Pub/Sub (sandbox-8h), Memorystore Redis (sandbox-8h), BigQuery (sandbox-8h). Deployment: pending (requires scripts/envs/gcp.env with GOOGLE_CREDENTIALS and GOOGLE_PROJECT).",
+        "props": [
+          { "name": "source-uri", "value": "https://github.com/cloudfoundry/csb-brokerpak-gcp" },
+          { "name": "cf-broker-app", "value": "csb-gcp" },
+          { "name": "cf-broker-name", "value": "csb-gcp-sandbox" },
+          { "name": "status", "value": "pending-deployment" }
+        ],
+        "responsible-roles": [
+          { "role-id": "system-owner", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0003-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Control implementations for the GCP brokerpak (OpenTofu modules, IAM policy, project isolation, encryption).",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0003-sa09-0000-0000-000000000001",
+                "control-id": "sa-9",
+                "description": "GCP is used as an external cloud service provider. Authentication uses a dedicated GCP service account (SA) with IAM roles scoped to the sandbox project: roles/cloudsql.admin (Cloud SQL), roles/storage.admin (scoped to sandbox bucket prefix), roles/redis.admin (Memorystore), roles/pubsub.admin, roles/bigquery.dataOwner. The SA JSON key credential (GOOGLE_CREDENTIALS) is injected at CF app deploy time. Migration to Workload Identity Federation is planned. GOOGLE_PROJECT is the dedicated sandbox project; cross-project access is not granted."
+              },
+              {
+                "uuid": "ir0003-sc07-0000-0000-000000000001",
+                "control-id": "sc-7",
+                "description": "All GCP resources are provisioned within a dedicated sandbox GCP project. Cloud SQL instances use Private IP with no public IP configured. GCS buckets use uniform bucket-level access (no object ACLs) and a 10-day lifecycle auto-delete rule to prevent orphan data accumulation. Firewall rules restrict Cloud SQL and Memorystore access to the CF egress IP range."
+              },
+              {
+                "uuid": "ir0003-sc28-0000-0000-000000000001",
+                "control-id": "sc-28",
+                "description": "Cloud SQL instances use Google-managed disk encryption (AES-256) by default. GCS buckets use Google-managed encryption (CMEK not required for sandbox tier). Pub/Sub messages are encrypted in transit (TLS) and at rest by Google. BigQuery datasets use Google-managed encryption; CMEK is available but not required for sandbox-8h plan."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "comp0004-azr-0000-0000-brokerpak00003",
+        "type": "software",
+        "title": "csb-brokerpak-azure — Azure Cloud Service Brokerpak",
+        "description": "OpenTofu brokerpak providing lifecycle management for Azure services in the TTS sandbox. Approved services: Azure PostgreSQL Flexible Server (sandbox-8h), Azure SQL (sandbox-8h), Azure Cache for Redis (sandbox-8h), Azure Storage Account (sandbox-8h), Azure Event Hubs (sandbox-8h). Deployment: pending (requires scripts/envs/azure.env with ARM_* service principal credentials).",
+        "props": [
+          { "name": "source-uri", "value": "https://github.com/cloudfoundry/csb-brokerpak-azure" },
+          { "name": "cf-broker-app", "value": "csb-azure" },
+          { "name": "cf-broker-name", "value": "csb-azure-sandbox" },
+          { "name": "status", "value": "pending-deployment" }
+        ],
+        "responsible-roles": [
+          { "role-id": "system-owner", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0004-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Control implementations for the Azure brokerpak (OpenTofu modules, service principal RBAC, resource group isolation, encryption).",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0004-sa09-0000-0000-000000000001",
+                "control-id": "sa-9",
+                "description": "Azure is used as an external cloud service provider. Authentication uses a dedicated Azure service principal (ARM_CLIENT_ID / ARM_CLIENT_SECRET) with Contributor role scoped to the sandbox resource group only. ARM_TENANT_ID and ARM_SUBSCRIPTION_ID identify the GSA sandbox Azure subscription. Zone redundancy, geo-replication, and RA-GRS storage replication are disabled in all sandbox-8h plans. Migration to federated Managed Identity is planned."
+              },
+              {
+                "uuid": "ir0004-sc07-0000-0000-000000000001",
+                "control-id": "sc-7",
+                "description": "Azure resources are isolated within a dedicated sandbox resource group per CF space. Network Security Groups restrict inbound access to the CF IP egress range. Azure PostgreSQL Flexible Server uses Private Access (VNet integration) — no public endpoint in sandbox-8h plan. Azure Cache for Redis: TLS-only access (non-SSL port disabled)."
+              },
+              {
+                "uuid": "ir0004-sc28-0000-0000-000000000001",
+                "control-id": "sc-28",
+                "description": "Azure PostgreSQL Flexible Server: server-level encryption using Azure-managed keys (AES-256). Azure Storage Account: LRS with Azure-managed encryption enabled by default; public blob access disabled. Azure SQL: Transparent Data Encryption (TDE) enabled using Azure-managed key. Azure Cache for Redis: AOF persistence disabled for sandbox tier; TLS enforced in transit."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "comp0005-prl-0000-0000-prowler000001",
+        "type": "software",
+        "title": "Prowler v3.x — Multi-Cloud Security Assessment Tool",
+        "description": "Prowler is a third-party open-source security assessment tool (submodule: submodules/prowler) that performs CIS Benchmark and FedRAMP Moderate compliance checks against AWS, GCP, and Azure accounts. Findings are exported to OSCAL assessment-results (content/oscal_assessment-results_schema.json) and HIGH/CRITICAL findings automatically create POA&M items in content/oscal_poam_schema.json. Scope: FedRAMP Moderate Rev 4/5 checks across all three sandbox CSP accounts.",
+        "props": [
+          { "name": "version", "value": "3.x" },
+          { "name": "source-uri", "value": "https://github.com/prowler-cloud/prowler" },
+          { "name": "scan-schedule", "value": "on-demand (GitHub Actions cron planned)" },
+          { "name": "compliance-frameworks", "value": "fedramp_moderate_revision_4, cis_aws_2.0, cis_gcp_1.3, cis_azure_2.0" }
+        ],
+        "responsible-roles": [
+          { "role-id": "assessor", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0005-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Control implementations using Prowler for continuous monitoring and vulnerability assessment across all three CSPs.",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0005-ca02-0000-0000-000000000001",
+                "control-id": "ca-2",
+                "description": "Security assessments are conducted using Prowler against all three CSP accounts. Prowler checks map to NIST SP 800-53 Rev 5 and FedRAMP Moderate controls. Assessment scope covers IAM configuration, network security, encryption at rest/in transit, logging, and service-specific hardening. Formal 3PAO assessments leverage Prowler output as supporting evidence."
+              },
+              {
+                "uuid": "ir0005-ca07-0000-0000-000000000001",
+                "control-id": "ca-7",
+                "description": "Continuous monitoring is implemented via scheduled Prowler scans (GitHub Actions cron, target: weekly for sandbox accounts). Scan results are exported to content/oscal_assessment-results_schema.json, enabling trend analysis and control effectiveness tracking over time. OSCAL assessment-results revisions track the assessment history."
+              },
+              {
+                "uuid": "ir0005-ra05-0000-0000-000000000001",
+                "control-id": "ra-5",
+                "description": "Vulnerabilities are identified via Prowler checks against CIS Benchmark levels 1 and 2 and FedRAMP Moderate profile. Commands: 'prowler aws --compliance fedramp_moderate_revision_4', 'prowler gcp --compliance fedramp_moderate_revision_4', 'prowler azure --compliance fedramp_moderate_revision_4'. Results include machine-readable PASS/FAIL per control. HIGH and CRITICAL findings trigger POA&M creation within 30 days per FedRAMP SLA."
+              },
+              {
+                "uuid": "ir0005-si04-0000-0000-000000000001",
+                "control-id": "si-4",
+                "description": "Prowler provides system monitoring of CSP configurations for misconfigurations and security regressions. Findings at HIGH or CRITICAL severity generate automated alerts (planned: GitHub issue + Slack webhook). Prowler findings are correlated with CF audit events for a unified observability posture. Real-time alerting via CSP-native services (AWS Security Hub, GCP Security Command Center, Azure Defender) is planned."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "comp0006-cg-00000-0000-cloudgov00001",
+        "type": "service",
+        "title": "cloud.gov — GSA Platform-as-a-Service (Leveraged FedRAMP Moderate P-ATO)",
+        "description": "cloud.gov is the Cloud Foundry-based PaaS operated by GSA TTS with a FedRAMP Moderate P-ATO (FR1920000001). The TTS Cloud Sandbox SSB deploys all three broker applications onto cloud.gov and leverages its inherited FedRAMP controls, including physical and environmental protection, network boundary protection, incident response, personnel security, and platform-level authentication via GSA SecureAuth / UAA. Cloud.gov hosts the CSB broker apps, provides the CSF RBAC model (orgs/spaces/roles), and runs the backing MySQL service (csb-sql, aws-rds micro-mysql plan).",
+        "props": [
+          { "name": "fedramp-ato-identifier", "value": "FR1920000001" },
+          { "name": "authorization-type", "value": "fedramp-jab-p-ato" },
+          { "name": "impact-level", "value": "moderate" },
+          { "name": "cf-api", "value": "https://api.fr.cloud.gov" },
+          { "name": "cf-org", "value": "gsa-tts-iae-lava-beds" },
+          { "name": "cf-space", "value": "dev" }
+        ],
+        "links": [
+          { "href": "https://cloud.gov", "rel": "homepage" },
+          { "href": "https://marketplace.fedramp.gov/products/FR1920000001", "rel": "fedramp-ato" }
+        ],
+        "responsible-roles": [
+          { "role-id": "provider", "party-uuids": ["aa000002-0000-0000-0000-cg000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0006-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Controls inherited from cloud.gov FedRAMP Moderate P-ATO (FR1920000001). The following control families are fully inherited: PE (Physical and Environmental Protection), CP (Contingency Planning - data center), MA (Maintenance - platform infrastructure). The following controls are hybrid (partially inherited): AC, AU, CM, IA, SC, SI.",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0006-ac02-0000-0000-000000000001",
+                "control-id": "ac-2",
+                "description": "HYBRID — cloud.gov provides CF org/space/role account management infrastructure (UAA). TTS is responsible for managing SpaceDeveloper and SpaceManager role assignments within the gsa-tts-iae-lava-beds org. cloud.gov manages platform-level admin accounts per its P-ATO. SpaceDeveloper provisioning permissions are documented in the Cloud Sandbox access management procedures."
+              },
+              {
+                "uuid": "ir0006-au08-0000-0000-000000000001",
+                "control-id": "au-8",
+                "description": "INHERITED — cloud.gov provides time-stamped audit records synchronized to authoritative NTP time sources. All CF API events, CF app log records, and platform events carry UTC timestamps from cloud.gov's time infrastructure."
+              },
+              {
+                "uuid": "ir0006-ia02-0000-0000-000000000001",
+                "control-id": "ia-2",
+                "description": "HYBRID — cloud.gov UAA proxies authentication to GSA SecureAuth (ENT Domain ID, 2FA: email/phone/TOTP, password). PIV credentials are accepted via IA-2(12). TTS is responsible for ensuring only authorized users are granted CF roles in the sandbox org. Privileged CF commands (broker registration, org admin) require cloud.gov admin or specific CF roles."
+              },
+              {
+                "uuid": "ir0006-sc07-0000-0000-000000000001",
+                "control-id": "sc-7",
+                "description": "HYBRID — cloud.gov provides FedRAMP-compliant network boundary protection: CF router/GoRouter provides ingress control, CF security groups govern egress from app containers to external services. TTS is responsible for verifying that CF security group bindings allow the CSB broker apps to reach AWS/GCP/Azure control plane APIs. cloud.gov's Diego cell network isolation prevents cross-app communication within containers."
+              },
+              {
+                "uuid": "ir0006-sc08-0000-0000-000000000001",
+                "control-id": "sc-8",
+                "description": "INHERITED — cloud.gov enforces TLS 1.2+ for all traffic between CF components (GoRouter, Diego, UAA, NATS). The CSB broker API endpoint (https://csb-aws-*.app.cloud.gov) is only accessible over HTTPS; HTTP is redirected. cloud.gov manages TLS certificate lifecycle via Let's Encrypt."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "comp0007-ttl-0000-0000-controller001",
+        "type": "software",
+        "title": "TTL Controller — Sandbox Lifecycle Enforcement (Planned)",
+        "description": "The TTL Controller is a planned component responsible for enforcing the 8-hour sandbox TTL policy. It monitors CSB service instance metadata for TTLExpiry tags, sends T-1h notifications via Slack/email/SMS, and calls 'cf delete-service' to trigger OpenTofu destroy on expired instances. It also enforces the one 4-hour renewal policy and detects orphaned resources. Implementation target TBD (alternatives: CF cron task, standalone CF app, GitHub Actions scheduled workflow). Renewal state tracking options under analysis.",
+        "props": [
+          { "name": "status", "value": "planned" },
+          { "name": "ttl-default", "value": "3600" },
+          { "name": "ttl-max", "value": "28800" },
+          { "name": "renewal-max", "value": "1" },
+          { "name": "renewal-duration", "value": "14400" }
+        ],
+        "responsible-roles": [
+          { "role-id": "system-owner", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "ci0007-0000-0000-0000-000000000001",
+            "source": "#fedramp-moderate-rev5",
+            "description": "Planned control implementations for the TTL Controller lifecycle enforcement component.",
+            "implemented-requirements": [
+              {
+                "uuid": "ir0007-cp10-0000-0000-000000000001",
+                "control-id": "cp-10",
+                "description": "PLANNED — The TTL controller implements automatic deprovisioning as the primary resource recovery mechanism. On TTL expiry, cf delete-service triggers OpenTofu destroy to remove all CSP resources. Orphan resource detection runs as a reconciliation loop comparing CSB database records against live CSP resource inventories. Ephemeral state is not persisted across sandbox sessions by default; state persistence to S3/GCS for exceptional cases is documented in the runbook."
+              },
+              {
+                "uuid": "ir0007-cm08-0000-0000-000000000001",
+                "control-id": "cm-8",
+                "description": "PLANNED — The TTL controller maintains a live inventory of all active sandbox service instances via the CSB database (csb-sql) and CF service instance API. Every instance record carries: Owner, Project, TTLExpiry, Cloud, Environment, CostCenter, Brokerpak tags, provisioned resource ARN/ID. The inventory is queryable for audit and budget analysis."
+              },
+              {
+                "uuid": "ir0007-si07-0000-0000-000000000001",
+                "control-id": "si-7",
+                "description": "PLANNED — The TTL controller validates OpenTofu state integrity against live CSP resource state as part of the reconciliation loop. Drift detection (resources existing in CSP but not tracked in CSB DB, or tracked in DB but not in CSP) triggers alerting and corrective action. State export to durable storage (S3) before TTL expiry is available for exceptional cases."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "fedramp-moderate-rev5",
+          "description": "FedRAMP Moderate Baseline — NIST SP 800-53 Rev 5",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/GSA/fedramp-automation/master/dist/content/rev5/baselines/json/FedRAMP_rev5_MODERATE-baseline-resolved-profile_catalog.json",
+              "media-type": "application/oscal.catalog+json"
+            }
+          ]
+        },
+        {
+          "uuid": "nist-sp800-53-rev5",
+          "description": "NIST Special Publication 800-53 Revision 5: Security and Privacy Controls for Information Systems and Organizations",
+          "rlinks": [
+            {
+              "href": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+              "media-type": "application/oscal.catalog+json"
+            }
+          ]
+        },
+        {
+          "uuid": "ssb-ssp-reference",
+          "description": "GSA Supplementary Service Broker (SSB) System Security Plan — Reference basis for this component definition. Dated 8 Apr 2021. Authors: Hyon Kim (System Owner), Lynnette Jackson (ISSO), Ryan Palmer (ISSM).",
+          "rlinks": [
+            {
+              "href": "docs/Supplementary Service Broker (SSB) SSP.txt",
+              "media-type": "text/plain"
+            }
+          ]
+        },
+        {
+          "uuid": "cloud-gov-fedramp-p-ato",
+          "description": "cloud.gov FedRAMP Moderate P-ATO (FR1920000001) — GSA TTS PaaS. Authorization boundary inherited by TTS Cloud Sandbox SSB.",
+          "rlinks": [
+            {
+              "href": "https://marketplace.fedramp.gov/products/FR1920000001",
+              "media-type": "text/html"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

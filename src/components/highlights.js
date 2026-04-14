@@ -1,8 +1,8 @@
 import React from 'react';
-import circle from 'uswds/img/circle-124.png';
+import circle from '../../node_modules/uswds/dist/img/circle-124.png';
 
 /*
-  Use this section to highlight key elements of your site. Some sites will only have two while others may have six to eight. 
+  Four key outcomes from the CSB sandbox lifecycle proposal.
 */
 
 const Highlights = () => (
@@ -10,56 +10,48 @@ const Highlights = () => (
     <div className="grid-container">
       <div className="usa-graphic-list__row grid-row grid-gap">
         <div className="usa-media-block tablet:grid-col">
-          <img className="usa-media-block__img" src={circle} alt="Alt text" />
+          <img className="usa-media-block__img" src={circle} alt="" />
           <div className="usa-media-block__body">
-            <h3 className="usa-graphic-list__heading">
-              Graphic headings can vary.
-            </h3>
+            <h3 className="usa-graphic-list__heading">Zero idle cloud spend.</h3>
             <p>
-              Graphic headings can be used a few different ways, depending on
-              what your landing page is for. Highlight your values, specific
-              program areas, or results.
+              Every sandbox instance carries an 8-hour TTL. The TTL controller
+              auto-deprovisions on expiry with a single 4-hour renewal allowed.
+              No manual cleanup, no forgotten resources.
             </p>
           </div>
         </div>
         <div className="usa-media-block tablet:grid-col">
-          <img className="usa-media-block__img" src={circle} alt="Alt text" />
+          <img className="usa-media-block__img" src={circle} alt="" />
           <div className="usa-media-block__body">
-            <h3 className="usa-graphic-list__heading">
-              Stick to 6 or fewer words.
-            </h3>
+            <h3 className="usa-graphic-list__heading">Hard budget guardrails.</h3>
             <p>
-              Keep body text to about 30 words. They can be shorter, but try to
-              be somewhat balanced across all four. It creates a clean
-              appearance with good spacing.
+              A $500/month ceiling is enforced across AWS, GCP, and Azure.
+              Alerts fire at 80%; sandbox provisioning suspends at 100%.
+              Anomaly spikes trigger automatic instance termination.
             </p>
           </div>
         </div>
       </div>
       <div className="usa-graphic-list__row grid-row grid-gap">
         <div className="usa-media-block tablet:grid-col">
-          <img className="usa-media-block__img" src={circle} alt="Alt text" />
+          <img className="usa-media-block__img" src={circle} alt="" />
           <div className="usa-media-block__body">
-            <h3 className="usa-graphic-list__heading">
-              Never highlight anything without a goal.
-            </h3>
+            <h3 className="usa-graphic-list__heading">OSCAL-maintained controls.</h3>
             <p>
-              For anything you want to highlight here, understand what your
-              users know now, and what activity or impression you want from them
-              after they see it.
+              Every service broker and resource type has a machine-readable OSCAL
+              component definition. The SSP, catalog, and POA&amp;M stay current
+              alongside the brokerpak catalog and Prowler scan results.
             </p>
           </div>
         </div>
         <div className="usa-media-block tablet:grid-col">
-          <img className="usa-media-block__img" src={circle} alt="Alt text" />
+          <img className="usa-media-block__img" src={circle} alt="" />
           <div className="usa-media-block__body">
-            <h3 className="usa-graphic-list__heading">
-              Could also have 2 or 6.
-            </h3>
+            <h3 className="usa-graphic-list__heading">Continuous security scanning.</h3>
             <p>
-              In addition to your goal, find out your users’ goals. What do they
-              want to know or do that supports your mission? Use these headings
-              to show those.
+              Prowler runs CIS and FedRAMP Moderate checks across all three CSP
+              accounts. HIGH and CRITICAL findings are promoted automatically to
+              POA&amp;M items in the OSCAL assessment results.
             </p>
           </div>
         </div>

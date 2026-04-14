@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'gatsby';
 
 /*
-  This will be displayed on the homepage. Ideally, you want to highlight key goals of the website
+  Homepage hero — summarises the CSB sandbox lifecycle platform.
 */
 
 const Hero = () => (
@@ -9,16 +10,20 @@ const Hero = () => (
     <div className="grid-container">
       <div className="usa-hero__callout">
         <h2 className="usa-hero__heading">
-          <span className="usa-hero__heading--alt">Hero callout:</span>Bring
-          attention to a project priority
+          <span className="usa-hero__heading--alt">CSB Sandbox</span>
+          Lifecycle &amp; Cost Governance
         </h2>
         <p>
-          Support the callout with some short explanatory text. You don’t need
-          more than a couple of sentences.
+          Self-service multi-cloud provisioning for AWS, GCP, and Azure with automatic
+          8-hour deprovisioning, a $500/mo budget ceiling, OSCAL-maintained security
+          controls, and continuous Prowler scanning — all on cloud.gov.
         </p>
-        <a className="usa-button" href="/">
-          Call to action
-        </a>
+        <Link className="usa-button" to="/oscal_ssp/">
+          View Security Plan
+        </Link>
+        <Link className="usa-button usa-button--outline margin-left-1" to="/oscal_component/">
+          OSCAL Components
+        </Link>
       </div>
     </div>
   </section>

@@ -1,0 +1,12 @@
+# CSB AWS Broker — sandbox manifest override
+# Memory reduced to 1G (submodule default is 4G, exceeds cloud.gov quota)
+# This file is used by scripts/deploy-aws.sh via MANIFEST env var.
+---
+applications:
+- name: ((app))
+  command: ./cloud-service-broker serve
+  memory: 1G
+  disk_quota: 2G
+  buildpacks:
+  - binary_buildpack
+  random-route: true

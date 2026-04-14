@@ -1,0 +1,65 @@
+#!/usr/bin/env sh
+# Scans staged changes for secrets using gitleaks before every commit.
+# Also verifies that GPG commit signing is enabled.
+# Requires: gitleaks >= 8.0  (brew install gitleaks)
+#           gpg               (brew install gnupg)
+
+# ── Check GPG signing is configured ──────────────────────────────────────────
+_sign=$(git config --get commit.gpgsign 2>/dev/null)
+if [ "${_sign}" != "true" ]; then
+  echo ""
+  echo "  ✗ Commit signing is not enabled for this repo."
+  echo "    Run the following to fix it:"
+  echo "      git config --local commit.gpgsign true"
+  echo "      git config --local user.signingkey <your-key-id>"
+  echo "    Or globally:"
+  echo "      git config --global commit.gpgsign true"
+  echo ""
+  exit 1
+fi
+
+_key=$(git config --get user.signingkey 2>/dev/null)
+if [ -z "${_key}" ]; then
+  echo ""
+  echo "  ✗ No GPG signing key configured."
+  echo "    Run:  git config --local user.signingkey <your-key-id>"
+  echo "    List keys:  gpg --list-secret-keys --keyid-format LONG"
+  echo ""
+  exit 1
+fi
+
+echo "  ✓ Commit signing: GPG key ${_key}"
+
+# ── Check gitleaks is available ───────────────────────────────────────────────
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo ""
+  echo "  ✗ gitleaks not found. Install it before committing:"
+  echo "    brew install gitleaks"
+  echo ""
+  exit 1
+fi
+
+# ── Run secret scan on staged files only ─────────────────────────────────────
+echo "  ⚑ Scanning staged changes for secrets (gitleaks)..."
+
+if gitleaks protect \
+    --staged \
+    --redact \
+    --no-banner \
+    --config .gitleaks.toml \
+    --exit-code 1; then
+  echo "  ✓ No secrets detected."
+else
+  echo ""
+  echo "  ✗ Potential secret(s) detected in staged files."
+  echo "    Review the output above, then either:"
+  echo "      • Remove the secret and add the file again"
+  echo "      • Rotate the credential immediately if already exposed"
+  echo "      • Add a repo-scoped allowlist entry to .gitleaks.toml"
+  echo "        (only for confirmed false positives — never for real secrets)"
+  echo ""
+  echo "    To bypass in an emergency (NOT recommended):"
+  echo "      git commit --no-verify"
+  echo ""
+  exit 1
+fi

@@ -5,6 +5,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# CSB broker environment files — contain secrets; NEVER commit these
+scripts/envs/*.env
+# Allow the example/template files
+!scripts/envs/*.env.example
+
 # Runtime data
 pids
 *.pid
@@ -53,6 +58,17 @@ typings/
 
 # dotenv environment variable files
 .env*
+
+# TruffleHog / gitleaks temporary report output
+trufflehog-report*.json
+gitleaks-report*.json
+
+# Temporary GCP service account key files (should never persist to disk)
+*-sa-key.json
+/tmp/*.json
+
+# CF manifest overrides with injected secrets
+scripts/manifests/*-secret*.yml
 
 # gatsby files
 .cache/
