@@ -1,0 +1,12 @@
+[submodule "submodules/csb-brokerpak-gcp"]
+	path = submodules/csb-brokerpak-gcp
+	url = https://github.com/GSA-TTS/csb-brokerpak-gcp
+[submodule "submodules/csb-brokerpak-azure"]
+	path = submodules/csb-brokerpak-azure
+	url = https://github.com/GSA-TTS/csb-brokerpak-azure
+[submodule "submodules/csb-brokerpak-aws"]
+	path = submodules/csb-brokerpak-aws
+	url = https://github.com/GSA-TTS/csb-brokerpak-aws
+[submodule "submodules/prowler"]
+	path = submodules/prowler
+	url = https://github.com/GSA-TTS/prowler
