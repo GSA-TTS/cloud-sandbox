@@ -1,7 +1,7 @@
 type Attachments {
   value: String
   filename: String
-  media-type: String
+  mediaType: String
 }
 
 type Hashes {
@@ -11,7 +11,7 @@ type Hashes {
 
 type Rlinks {
   href: String
-  media-type: String
+  mediaType: String
   hashes: [Hashes]
 }
 
@@ -41,7 +41,7 @@ type Resources {
   attachments: [Attachments]
   rlinks: [Rlinks]
   citation: Citation
-  document-ids: [DocumentIds]
+  documentIds: [DocumentIds]
   properties: [Properties]
 }
 
@@ -53,7 +53,7 @@ type Links {
   text: String
   href: String
   rel: String
-  media-type: String
+  mediaType: String
 }
 
 type Annotations {
@@ -66,7 +66,7 @@ type Annotations {
 
 type ImplementedRequirements {
   uuid: String
-  control-id: String
+  controlId: String
   remarks: String
   links: [Links]
   annotations: [Annotations]
@@ -85,8 +85,8 @@ type SystemInventory {
 type LeveragedAuthorizations {
   uuid: String
   title: String
-  party-uuid: String
-  date-authorized: String
+  partyUuid: String
+  dateAuthorized: String
   remarks: String
   links: [Links]
   annotations: [Annotations]

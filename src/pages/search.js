@@ -46,14 +46,11 @@ const SearchPage = ({ data, location }) => {
                       <b className="title">
                         <a href={r.url}>{r.title}</a>
                       </b>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: r.snippet
-                            .replace(/class=/g, 'className=')
-                            .replace(/\uE000/g, '<span className="bg-yellow">')
-                            .replace(/\uE001/g, '</span>'),
-                        }}
-                      />
+                      <p className="usa-prose">
+                        {r.snippet
+                          .replace(/\uE000/g, '')
+                          .replace(/\uE001/g, '')}
+                      </p>
                     </li>
                   ))}
                 </ol>

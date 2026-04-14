@@ -14,8 +14,20 @@ const { paginate } = require('gatsby-awesome-pagination');
  * so that partial/draft content can still be previewed.
  */
 exports.onPreInit = ({ reporter }) => {
-  const Ajv = require('ajv');
-  const addFormats = require('ajv-formats');
+  let Ajv;
+  let addFormats;
+
+  try {
+    Ajv = require('ajv');
+    addFormats = require('ajv-formats');
+  } catch (err) {
+    reporter.warn(
+      `[OSCAL validation] Validation dependencies are unavailable (${err.message}). ` +
+        'Skipping structural validation so the build can continue.'
+    );
+    return;
+  }
+
   const ajv = new Ajv({ allErrors: true });
   addFormats(ajv);
 

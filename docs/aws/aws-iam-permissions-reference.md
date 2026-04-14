@@ -1,0 +1,219 @@
+# AWS IAM Permissions Reference
+
+Service-specific IAM actions, resource types, and access levels.
+
+## AWS CodeBuild
+
+**Source:** [AWS CodeBuild.md](AWS CodeBuild.md)
+
+| Action | Resource | Effect |
+|------|--------|------|
+| logs:CreateLogGroup | AWS Logs for CodeBuild | Allow |
+| logs:CreateLogStream | AWS Logs for CodeBuild | Allow |
+| logs:PutLogEvents | AWS Logs for CodeBuild | Allow |
+| s3:PutObject | ssm:GetParameters | Allow |
+| s3:GetObject | ssm:GetParameters | Allow |
+| s3:GetObjectVersion | ssm:GetParameters | Allow |
+
+## AWS ElasticSearch Service
+
+**Source:** [AWS ElasticSearch.md](AWS ElasticSearch.md)
+
+| Action | Resource | Effect |
+|------|--------|------|
+| ec2:CreateNetworkInterface | \* | Allow |
+| ec2:DeleteNetworkInterface | \* | Allow |
+| ec2:DescribeNetworkInterfaces | \* | Allow |
+| ec2:ModifyNetworkInterfaceAttribute | \* | Allow |
+| ec2:DescribeSecurityGroups | \* | Allow |
+| ec2:DescribeSubnets | \* | Allow |
+
+## Resource Access Manager
+
+**Source:** [AWS Service - Resource Access Manager.md](AWS Service - Resource Access Manager.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| **Resource Access Manager** | **Write** | AcceptResourceShareInvitation | resource-share-invitation\* | ram:ShareOwnerAccountId |
+| **Resource Access Manager** | **Write** | [AssociateResourceShare](https://docs.aws.amazon.com/ram/latest/APIReference/API_AssociateResourceShare.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:AllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_AllowsExternalPrincipals) |
+| **Resource Access Manager** | **Write** | [AssociateResourceSharePermission](https://docs.aws.amazon.com/ram/latest/APIReference/API_AssociateResourceSharePermission.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:AllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_AllowsExternalPrincipals) [ram:ResourceShareName](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_ResourceShareName) [ram:RequestedAllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_RequestedAllowsExternalPrincipals) |
+| **Resource Access Manager** | **Write** | [CreateResourceShare](https://docs.aws.amazon.com/ram/latest/APIReference/API_CreateResourceShare.html) | [resource-share](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:RequestedResourceType](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_RequestedResourceType) [ram:ResourceArn](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_ResourceArn) [ram:RequestedAllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_RequestedAllowsExternalPrincipals) [aws:RequestTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-aws_RequestTag___TagKey_) [aws:TagKeys](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-aws_TagKeys) |
+| **Resource Access Manager** | **Write** | [DeleteResourceShare](https://docs.aws.amazon.com/ram/latest/APIReference/API_DeleteResourceShare.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:AllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_AllowsExternalPrincipals) |
+| **Resource Access Manager** | **Write** | [DisassociateResourceShare](https://docs.aws.amazon.com/ram/latest/APIReference/API_DisassociateResourceShare.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:AllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_AllowsExternalPrincipals) |
+| **Resource Access Manager** | **Write** | [DisassociateResourceSharePermission](https://docs.aws.amazon.com/ram/latest/APIReference/API_DisassociateResourceSharePermission.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:AllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_AllowsExternalPrincipals) [ram:ResourceShareName](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_ResourceShareName) [ram:RequestedAllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_RequestedAllowsExternalPrincipals) |
+| **Resource Access Manager** | **Write** | [EnableSharingWithAwsOrganization](https://docs.aws.amazon.com/ram/latest/APIReference/API_EnableSharingWithAwsOrganization.html) |  |  |
+| **Resource Access Manager** | **Write** | [RejectResourceShareInvitation](https://docs.aws.amazon.com/ram/latest/APIReference/API_RejectResourceShareInvitation.html) | [resource-share-invitation\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share-invitation) | [ram:ShareOwnerAccountId](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_ShareOwnerAccountId) |
+| **Resource Access Manager** | **Write** | [TagResource](https://docs.aws.amazon.com/ram/latest/APIReference/API_TagResource.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [aws:RequestTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-aws_RequestTag___TagKey_) [aws:TagKeys](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-aws_TagKeys) |
+
+## Secrets Manager
+
+**Source:** [AWS Service - Secrets Manager.md](AWS Service - Secrets Manager.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| Secrets Manager |  |  |  |  |
+|  | List |  |  |  |
+|  |  | ListSecrets |  |  |
+|  | Write |  |  |  |
+|  |  | CreateSecret |  |  |
+|  |  | DeleteSecret | Secret | SecretId |
+|  | Read |  |  |  |
+|  |  | DescribeSecret | Secret | SecretId |
+|  |  | GetSecretValue | Secret | SecretId |
+
+## AWS Storage Gateway
+
+**Source:** [AWS Service - Storage Gateway.docx.md](AWS Service - Storage Gateway.docx.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| S3 | GetAccelerateConfiguration GetBucketLocation GetBucketVersioning ListBucket ListBucketVersions ListBucketMultipartUploads | Allow | \* |  |
+| S3 | AbortMultipartUpload DeleteObject DeleteObjectVersion GetObject GetObjectAcl GetObjectVersion ListMultipartUploadParts PutObject PutObjectAcl | Allow | \* |  |
+
+## XRAY
+
+**Source:** [AWS Service - XRAY.md](AWS Service - XRAY.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| **XRAY** | **List** | [BatchGetTraces](https://docs.aws.amazon.com/xray/latest/api/API_BatchGetTraces.html) |  |  |
+| **XRAY** | **Write** | [CreateGroup](https://docs.aws.amazon.com/xray/latest/api/API_CreateGroup.html) | [group\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-group) | [aws:RequestTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_RequestTag___TagKey_) [aws:TagKeys](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_TagKeys) |
+| **XRAY** | **Write** | [CreateSamplingRule](https://docs.aws.amazon.com/xray/latest/api/API_CreateSamplingRule.html) | [sampling-rule\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-sampling-rule) | [aws:RequestTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_RequestTag___TagKey_) [aws:TagKeys](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_TagKeys) |
+| **XRAY** | **Write** | [DeleteGrou](https://docs.aws.amazon.com/xray/latest/api/API_DeleteGroup.html)p | [group\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-group) | [aws:ResourceTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_ResourceTag___TagKey_) |
+| **XRAY** | **Write** | [DeleteSamplingRule](https://docs.aws.amazon.com/xray/latest/api/API_DeleteSamplingRule.html) | [sampling-rule\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-sampling-rule) | [aws:ResourceTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_ResourceTag___TagKey_) |
+| **XRAY** | **Write** | [GetEncryptionConfig](https://docs.aws.amazon.com/xray/latest/api/API_GetEncryptionConfig.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [ram:AllowsExternalPrincipals](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-ram_AllowsExternalPrincipals) |
+| **XRAY** | **Read** | [GetGroup](https://docs.aws.amazon.com/xray/latest/api/API_GetGroup.html) | [group\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-group) | [aws:ResourceTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-aws_ResourceTag___TagKey_) |
+| **XRAY** | **Read** | [GetGroups](https://docs.aws.amazon.com/xray/latest/api/API_GetGroups.html) |  |  |
+| **XRAY** | **Read** | [GetInsight](https://docs.aws.amazon.com/xray/latest/api/API_GetInsight.html) | [resource-share\*](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share) | [aws:RequestTag/${TagKey}](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-aws_RequestTag___TagKey_) [aws:TagKeys](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-aws_TagKeys) |
+| **XRAY** | **Read** | [GetInsightEvents](https://docs.aws.amazon.com/xray/latest/api/API_GetInsightEvents.html) |  |  |
+
+## Cloud9
+
+**Source:** [Cloud9.md](Cloud9.md)
+
+| Actions | Description | Access level | Resource types (\*required) | Condition keys |
+|-------|-----------|------------|---------------------------|--------------|
+| CreateEnvironmentEC2 | Grants permission to create an AWS Cloud9 development environment, launches an Amazon Elastic Compute Cloud (Amazon EC2) instance, and then hosts the environment on the instance. | Write |  | [cloud9:EnvironmentName](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_EnvironmentName) |
+|  |  |  |  |  |
+|  |  |  |  | [cloud9:InstanceType](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_InstanceType) |
+|  |  |  |  |  |
+|  |  |  |  | [cloud9:SubnetId](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_SubnetId) |
+|  |  |  |  |  |
+|  |  |  |  | [cloud9:UserArn](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_UserArn) |
+| CreateEnvironmentMembership | Grants permission to add an environment member to an AWS Cloud9 development environment. | Write | [environment\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-environment) |  |
+|  |  |  |  | [cloud9:UserArn](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_UserArn) |
+|  |  |  |  |  |
+
+## AWS GuardDuty**
+
+**Source:** [GuardDuty.md](GuardDuty.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| **EC2** | DescribeImages | List | All Resources | None |
+|  | DescribeInstance | List | All Resources | None |
+
+## AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK)
+
+**Source:** [ISE AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK).md](ISE AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK).md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| **Kafka** | **Describe** |  |  |  |
+|  |  | Describe Kafka cluster | Kafka cluster referenced in the role | \- |
+|  | **Get** |  |  |  |
+|  |  | CreateStack | Kafka cluster referenced in the role |  |
+|  | **List** |  |  |  |
+|  |  | List cluster details and queue information | Kafka cluster referenced in the role |  |
+|  | **Update** |  |  |  |
+|  |  | Update queue parameters to manage the queue | Kafka cluster referenced in the role |  |
+
+## AWS Bedrock
+
+**Source:** [ISE AWS Bedrock.md](ISE AWS Bedrock.md)
+
+| Action | Description | Resource Type | Access Level |
+|------|-----------|-------------|------------|
+| bedrock:ListFoundationModels | Allows listing available foundation models. | N/A | Read |
+| bedrock:GetFoundationModel | Allows retrieving details of a specific foundation model. | N/A | Read |
+| bedrock:InvokeModel | Allows invoking a foundation model for inference. | foundation-model | Write |
+| bedrock:InvokeModelWithResponseStream | Allows invoking a foundation model with response streaming. | foundation-model | Write |
+| bedrock:CreateAgent | Allows creating a new agent. | agent | Write |
+| bedrock:UpdateAgent | Allows updating an existing agent. | agent | Write |
+| bedrock:GetAgent | Allows retrieving details of a specific agent. | agent | Read |
+| bedrock:ListAgents | Allows listing all agents. | N/A | Read |
+| bedrock:DeleteAgent | Allows deleting an agent. | agent | Write |
+| bedrock:CreateAgentAlias | Allows creating a new alias for an agent. | agent-alias | Write |
+
+## AWS Kinesis Data FireHose
+
+**Source:** [ISE AWS Kinesis Data FireHose Review.md](ISE AWS Kinesis Data FireHose Review.md)
+
+| Service Name | Effect | Action | Resource | Request Condition |
+|------------|------|------|--------|-----------------|
+| CloudTrail |  | DescribeTrail |  |  |
+|  |  | LookupEvents |  |  |
+| VPC |  | DescribeFlowLogs |  |  |
+| CloudWatch |  | DescribeLogStreams |  |  |
+|  |  | GetLogEvents |  |  |
+| AWS Kinesis Firehose (Default for S3) | Allow | glue:GetTable             glue:GetTableVersion               glue:GetTableVersions | \* |  |
+|  | Allow | s3:AbortMultipartUpload                s3:GetBucketLocation                s3:GetObject                s3:ListBucket                s3:ListBucketMultipartUploads s3:PutObject | Destination S3 bucket |  |
+|  | Allow | lambda:InvokeFunction                lambda:GetFunctionConfiguration | Default or specified Lambda Transform function |  |
+|  | Allow | kms:GenerateDataKey kms:Decrypt | Specified KMS key for encryption | Destination S3 bucket |
+|  | Allow | logs:PutLogEvents | Log group for firehose stream |  |
+
+## AWS SageMaker
+
+**Source:** [ISE AWS SageMaker.md](ISE AWS SageMaker.md)
+
+| Service Name | Action Item | Effect | Resource |
+|------------|-----------|------|--------|
+| **AmazonSageMaker-ExecutionPolicy** |  |  |  |
+|  | S3:ListBucket | Allow | The S3 bucket specified during configuration |
+|  | S3:GetObject | Allow | The S3 bucket specified during configuration |
+|  | S3:PutObject | Allow | The S3 bucket specified during configuration |
+|  | S3:DeleteObject | Allow | The S3 bucket specified during configuration |
+
+## AWS Certificate Manager (ACM)
+
+**Source:** [ISE AWS Service Review - AWS Certificate Manager.md](ISE AWS Service Review - AWS Certificate Manager.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| AWS Certificate Manager | acm | AddTagsToCertificate DeleteCertificate DescribeCertificate ExportCertificate GetCertificate ImportCertificate ListCertificates ListTagsForCertificate RemoveTagsFromCertificate RenewCertificate RequestCertificate ResendValidationEmail UpdateCertificateOptions |  |  |
+| AWS Certificate Manager Private Certificate Authority | acm-pca | CreateCertificateAuthority CreateCertificateAuthorityAuditReport CreatePermission DeleteCertificateAuthority DeletePermission DescribeCertificateAuthority DescribeCertificateAuthorityAuditReport GetCertificate GetCertificateAuthorityCertificate GetCertificateAuthorityCsr ImportCertificateAuthorityCertificate IssueCertificate ListCertificateAuthorities ListPermissions ListTags RestoreCertificateAuthority RevokeCertificate TagCertificateAuthority UntagCertificateAuthority UpdateCertificateAuthority |  |  |
+
+## ISE AWS Service SSM Incident Manager
+
+**Source:** [ISE AWS Service SSM Incident Manager.md](ISE AWS Service SSM Incident Manager.md)
+
+| Service Name | Action Item | Action | Resource | Request Condition |
+|------------|-----------|------|--------|-----------------|
+| **CloudWatch (logs)** |  |  |  |  |
+|  | **Write** |  |  |  |
+|  |  | CreateLogStream | All Resources |  |
+|  |  | PutLogEvents | All Resources |  |
+| **IncidnetManager (ssm-contacts)** |  |  |  |  |
+|  | **Read** |  |  |  |
+|  |  | List\* | All Resources |  |
+| **SNS** |  |  |  |  |
+|  | **Write** |  |  |  |
+|  |  | Publish | All Resources |  |
+
+## Transfer Family
+
+**Source:** [Transfer Family.md](Transfer Family.md)
+
+| Actions | Description | Access level | Resource types (\*required) | Condition keys | Dependent actions |
+|-------|-----------|------------|---------------------------|--------------|-----------------|
+| [CreateServer](https://docs.aws.amazon.com/transfer/latest/userguide/API_CreateServer.html) | Grants permission to create a server | Write |  | aws:TagKeys aws:RequestTag/${TagKey} | iam:PassRole |
+| [CreateUser](https://docs.aws.amazon.com/transfer/latest/userguide/API_CreateUser.html) | Grants permission to add a user associated with a server | Write | [server\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-server) |  | iam:PassRole |
+|  |  |  |  | aws:TagKeys aws:RequestTag/${TagKey} |  |
+| [DeleteServer](https://docs.aws.amazon.com/transfer/latest/userguide/API_DeleteServer.html) | Grants permission to delete a server | Write | [server\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-server) |  |  |
+| [DeleteSshPublicKey](https://docs.aws.amazon.com/transfer/latest/userguide/API_DeleteSshPublicKey.html) | Grants permission to delete an SSH public key from a user | Write | [user\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-user) |  |  |
+| [DeleteUser](https://docs.aws.amazon.com/transfer/latest/userguide/API_DeleteUser.html) | Grants permission to delete a user associated with a server | Write | [user\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-user) |  |  |
+| [DescribeSecurityPolicy](https://docs.aws.amazon.com/transfer/latest/userguide/API_DescribeSecurityPolicy.html) | Grants permission to describe a security policy | Read |  |  |  |
+| [DescribeServer](https://docs.aws.amazon.com/transfer/latest/userguide/API_DescribeServer.html) | Grants permission to describe a server | Read | [server\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-server) |  |  |
+| [DescribeUser](https://docs.aws.amazon.com/transfer/latest/userguide/API_DescribeUser.html) | Grants permission to describe a user associated with a server | Read | [user\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-user) |  |  |
+| [ImportSshPublicKey](https://docs.aws.amazon.com/transfer/latest/userguide/API_ImportSshPublicKey.html) | Grants permission to add an SSH public key to a user | Write | [user\*](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-user) |  |  |
+

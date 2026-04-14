@@ -15,7 +15,7 @@ collections:
   - name: blog
     label: Blog Posts
     label_singular: Blog Post
-    folder: src/blog-posts
+    folder: src/blog
     create: true
     preview_path: 'blog/{{slug}}'
     editor:
@@ -36,7 +36,7 @@ collections:
   - name: documentation
     label: Documentation Pages
     label_singular: Documentation Page
-    folder: src/documentation-pages
+    folder: src/documentation
     create: true
     preview_path: '{{slug}}'
     editor:

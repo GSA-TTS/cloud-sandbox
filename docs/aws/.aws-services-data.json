@@ -1,0 +1,1882 @@
+{
+  "API Gateway.md": {
+    "filename": "API Gateway.md",
+    "service_name": "AWS API Gateway",
+    "fedramp_status": "FedRAMP Approved East / West Only**",
+    "recommendation": null,
+    "use_caveats": [
+      "The use of this service shall abide to GSA requirements for security of data in transit and at rest ",
+      "The use of this requires enablement of logging associated with this service."
+    ],
+    "risks": [
+      "Interception of data in transit"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "API Gateway Security",
+        "https://aws.amazon.com/api-gateway/faqs/#security"
+      ],
+      [
+        "API Gateway",
+        "https://aws.amazon.com/api-gateway/faqs/"
+      ]
+    ]
+  },
+  "AWS CodeBuild.md": {
+    "filename": "AWS CodeBuild.md",
+    "service_name": "AWS CodeBuild",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Third party integrations shall be limited to only those that are FedRAMP or GSA authorized to operat",
+      "CodeBuild Artifacts must be stored on an encrypted S3 bucket",
+      "CodePipeline must be used in accordance with GSA\u2019s [requirements](https://docs.google.com/document/d"
+    ],
+    "risks": [
+      "Its unknown where AWS keeps Job History"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "requirements",
+        "https://docs.google.com/document/d/13ppp4CaUEImm22TEemvh5ssOg9HrNPNXoXmLQ6Sg7ng/edit"
+      ],
+      [
+        "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html",
+        "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html"
+      ],
+      [
+        "AWS CodeBuild",
+        "https://aws.amazon.com/codebuild/?nc2=h_m1"
+      ]
+    ]
+  },
+  "AWS CodeCommit.md": {
+    "filename": "AWS CodeCommit.md",
+    "service_name": "AWS CodeCommit",
+    "fedramp_status": "Not approved / Not Reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "KMS must be in used in accordance with [KMS Use Caveats.](https://docs.google.com/document/d/1QLTi6E",
+      "CloudTrail must be enabled to capture log information. \n\n**Links to additional information:**    \n[h"
+    ],
+    "risks": [
+      "Any IAM user with the following policies set to \u201cDeny\u201d would experience issues with CodeCommit:  \n  "
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://aws.amazon.com/documentation/codecommit/",
+        "https://aws.amazon.com/documentation/codecommit/"
+      ],
+      [
+        "KMS Use Caveats.",
+        "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
+      ],
+      [
+        "http://docs.aws.amazon.com/codecommit/latest/userguide/codecommit-user.pdf\\#encryption",
+        "http://docs.aws.amazon.com/codecommit/latest/userguide/codecommit-user.pdf#encryption"
+      ],
+      [
+        "AWS CodeCommit",
+        "https://aws.amazon.com/codecommit/"
+      ]
+    ]
+  },
+  "AWS CodePipeline.md": {
+    "filename": "AWS CodePipeline.md",
+    "service_name": "AWS CodePipeline",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Third Party Providers shall be limited to SaaS that either GSA or FedRAMP authorized.",
+      "CodePipeline Sources:  \n   1. S3 (Must encrypt with [KMS](https://docs.google.com/document/d/1QLTi6E",
+      "CodePipeline Build:  \n   1. Jenkins: If using Jenkins, ensure its configure to accept HTTPS/SSL conn",
+      "Deploy\t  \n   1. Cannot use ECS, Elastic Beanstalk, or OpsWork as they are not approved services.  \n "
+    ],
+    "risks": [
+      "CloudPipeline can integrate with several services not approved for GSA use.",
+      "Misconfigurations could negatively impact production.",
+      "Default S3 bucket holding source code is not encrypted by default"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "here",
+        "https://docs.google.com/spreadsheets/d/1D6lXu3pCm4jK8gThAAmeSMm-QoO439DPz3_s8IAsk34/edit#gid=0"
+      ],
+      [
+        "caveats",
+        "https://docs.google.com/document/d/1Yr2lqA8IjUE68hHgsEcVisouklivO4DKXZvicWlmwaU/edit"
+      ],
+      [
+        "caveats",
+        "https://docs.google.com/document/d/1zhNqjREyquUEbEnRCBLlYF9FAPRmK0zNrtgTAGxU2n4/edit"
+      ],
+      [
+        "KMS",
+        "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
+      ],
+      [
+        "configured",
+        "https://aws.amazon.com/blogs/devops/building-a-cross-regioncross-account-code-deployment-solution-on-aws/"
+      ],
+      [
+        "AWS CodePipeline",
+        "https://aws.amazon.com/codepipeline/"
+      ],
+      [
+        "caveats",
+        "https://docs.google.com/document/d/1rY75rQCAAt0NcEhKTvWxnLfALit2DDG84eqo0rJEbHI/edit"
+      ],
+      [
+        "Fed Ramped?",
+        "https://aws.amazon.com/compliance/services-in-scope/"
+      ],
+      [
+        "https://aws.amazon.com/codepipeline/faqs/",
+        "https://aws.amazon.com/codepipeline/faqs/"
+      ],
+      [
+        "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html",
+        "https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html"
+      ]
+    ]
+  },
+  "AWS CodeStar.md": {
+    "filename": "AWS CodeStar.md",
+    "service_name": "AWS CodeStar",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Any related CodeStar Ec2 instance must have encrypted EBS volumes.",
+      "Security Groups: Encrypted data flows must be configured i.e. 443 https and 22 ssh. 0.0.0.0/0 config",
+      "The S3 buckets in use need to be encrypted with KMS.",
+      "The other services used ([CodePipeline](https://docs.google.com/document/d/13ppp4CaUEImm22TEemvh5ssO",
+      "Cannot use with Cloud9 IDE."
+    ],
+    "risks": [
+      "Using the any EC2 template will result in a security group with 0.0.0.0/0 configurations for port 22",
+      "Default S3 buckets created to hold source code and ssh authorized keys are not encrypted by default."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "here",
+        "https://docs.google.com/spreadsheets/d/18gyLfjiFDo3TdU1mbKL6DkA4kq_FKlKs9BNeLJ7n3vc/edit#gid=0"
+      ],
+      [
+        "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html",
+        "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html"
+      ],
+      [
+        "CodeDeploy",
+        "https://docs.google.com/document/d/16gF_WC_dk1FINQJv7Vn8Sx-Ez-KbneGPi26BNar62ZA/edit"
+      ],
+      [
+        "CodeCommit",
+        "https://docs.google.com/document/d/1rY75rQCAAt0NcEhKTvWxnLfALit2DDG84eqo0rJEbHI/edit"
+      ],
+      [
+        "https://aws.amazon.com/codestar/faqs/",
+        "https://aws.amazon.com/codestar/faqs/"
+      ],
+      [
+        "CodePipeline",
+        "https://docs.google.com/document/d/13ppp4CaUEImm22TEemvh5ssOg9HrNPNXoXmLQ6Sg7ng/edit"
+      ],
+      [
+        "CodeBuild",
+        "https://docs.google.com/document/d/1zhNqjREyquUEbEnRCBLlYF9FAPRmK0zNrtgTAGxU2n4/edit"
+      ],
+      [
+        "AWS CodeStar",
+        "https://aws.amazon.com/codestar/"
+      ]
+    ]
+  },
+  "AWS ElasticSearch.md": {
+    "filename": "AWS ElasticSearch.md",
+    "service_name": "AWS ElasticSearch Service",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "EBS encryption is not available to T2, M3, and R3 instances do not support encryption for data at re",
+      "Ensure VPC, IAM, and Security Group access is least privileged when provisioning a domain.",
+      "All streaming data options must have HTTPS enforced\n\n**Links to additional information:**    \nUser G"
+    ],
+    "risks": [
+      "T2, M3, and R3 instance types do not support encryption at rest.",
+      "All EC2 operations are masked behind the service and there is no end user access."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://aws.amazon.com/elasticsearch-service/faqs/",
+        "https://aws.amazon.com/elasticsearch-service/faqs/"
+      ],
+      [
+        "AWS ElasticSearch Service",
+        "https://aws.amazon.com/elasticsearch-service/"
+      ],
+      [
+        "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html",
+        "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html"
+      ]
+    ]
+  },
+  "AWS Import_Export.md": {
+    "filename": "AWS Import_Export.md",
+    "service_name": "AWS Import_Export",
+    "fedramp_status": null,
+    "recommendation": null,
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "conditions placed around the use of KMS.",
+        "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
+      ]
+    ]
+  },
+  "AWS QuickSight.md": {
+    "filename": "AWS QuickSight.md",
+    "service_name": "AWS QuickSight",
+    "fedramp_status": "FedRAMP Approved Commercial East/West (Moderate) and GovCloud (High)**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "AWS QuickSight is approved with Direct Query of databases in AWS only; SPICE (which stores data in Q",
+      "QuickSight is NOT approved for connections to databases containing PII, PCI, or other sensitive info",
+      "All transmission connections must be encrypted.",
+      "Sharing of dashboards and analysis is only permitted to users within your organization utilizing IAM",
+      "When authorizing connections from Amazon QuickSight to Amazon RDS DB Instances, you must create a ne"
+    ],
+    "risks": [
+      "Large amounts of data can be stored within QuickSight SPICE with AWS managed keys; ~~ISE recommends ",
+      "Connectivity to data sources outside AWS can be unencrypted; connections can be forced over TLS.",
+      "Dashboards and analysis can be shared and are web accessible; access is controlled to authorized use"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://docs.aws.amazon.com/quicksight/latest/user/security.html",
+        "https://docs.aws.amazon.com/quicksight/latest/user/security.html"
+      ],
+      [
+        "https://aws.amazon.com/about-aws/whats-new/2022/10/amazon-quicksight-customer-managed-keys-spice-data-encryption/",
+        "https://aws.amazon.com/about-aws/whats-new/2022/10/amazon-quicksight-customer-managed-keys-spice-data-encryption/"
+      ],
+      [
+        "UPDATE",
+        "https://docs.aws.amazon.com/quicksight/latest/user/key-management.html"
+      ],
+      [
+        "AWS QuickSight",
+        "http://docs.aws.amazon.com/quicksight/latest/user/welcome.html"
+      ],
+      [
+        "https://community.amazonquicksight.com/t/new-amazon-quicksight-spice-customer-managed-keys-cmk-feature/7991",
+        "https://community.amazonquicksight.com/t/new-amazon-quicksight-spice-customer-managed-keys-cmk-feature/7991"
+      ],
+      [
+        "https://docs.aws.amazon.com/quicksight/latest/user/best-practices-security.html",
+        "https://docs.aws.amazon.com/quicksight/latest/user/best-practices-security.html"
+      ],
+      [
+        "feature",
+        "https://docs.aws.amazon.com/quicksight/latest/user/key-management.html#customer-managed-keys"
+      ]
+    ]
+  },
+  "AWS Service - AWS SES Service.md": {
+    "filename": "AWS Service - AWS SES Service.md",
+    "service_name": "Simple Email Service (SES)",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [],
+    "risks": [
+      "Email could fall back to plain text."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "SES Resources",
+        "https://aws.amazon.com/ses/developer-resources/"
+      ],
+      [
+        "AWS SDKs",
+        "https://aws.amazon.com/tools/#sdk"
+      ],
+      [
+        "SES Overview",
+        "https://aws.amazon.com/ses/?nc2=h_m1"
+      ],
+      [
+        "Use Caveats",
+        "#n/a"
+      ],
+      [
+        "https://docs.aws.amazon.com/ses/latest/APIReference/API\\_ReceiptRule.html",
+        "https://docs.aws.amazon.com/ses/latest/APIReference/API_ReceiptRule.html"
+      ],
+      [
+        "SMTP interface",
+        "https://aws.amazon.com/ses/what-is-smtp/"
+      ]
+    ]
+  },
+  "AWS Service - Aurora.docx (1).md": {
+    "filename": "AWS Service - Aurora.docx (1).md",
+    "service_name": "AWS Aurora",
+    "fedramp_status": "FedRAMP Approved East / West, OCISO Approved GovCloud with Conditions**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies.",
+      "Existing unencrypted data bases cannot be encrypted. A new encrypted enabled can be created and data",
+      "Encryption must be enabled for data in transit and data at rest. Instructions for configure encrypti"
+    ],
+    "risks": [
+      "The risks associated with the use of this service are as followed:\n\n   1. Misconfiguration of Networ"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [
+      "//aws"
+    ],
+    "links": [
+      [
+        "Use Caveats",
+        "#use-caveats:"
+      ],
+      [
+        "AWS Aurora \u2013 Security Cont.",
+        "https://aws.amazon.com/rds/aurora/faqs/"
+      ],
+      [
+        "AWS Aurora",
+        "https://aws.amazon.com/rds/aurora/?nc2=h_m1"
+      ],
+      [
+        "relational database",
+        "https://aws.amazon.com/relational-database/"
+      ],
+      [
+        "here",
+        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+      ],
+      [
+        "AWS Database Migration Service",
+        "https://aws.amazon.com/dms/"
+      ],
+      [
+        "here",
+        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Overview.html#Aurora.Overview.Security.SSL"
+      ],
+      [
+        "AWS Aurora \\- Security",
+        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.html"
+      ],
+      [
+        "AWS Identity and Access Management",
+        "https://aws.amazon.com/iam/"
+      ]
+    ]
+  },
+  "AWS Service - Aurora.docx.md": {
+    "filename": "AWS Service - Aurora.docx.md",
+    "service_name": "AWS Aurora",
+    "fedramp_status": "FedRAMP Approved East / West, OCISO Approved GovCloud with Conditions**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies.",
+      "Existing unencrypted data bases cannot be encrypted. A new encrypted enabled can be created and data",
+      "Encryption must be enabled for data in transit and data at rest. Instructions for configure encrypti"
+    ],
+    "risks": [
+      "The risks associated with the use of this service are as followed:\n\n   1. Misconfiguration of Networ"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [
+      "//aws"
+    ],
+    "links": [
+      [
+        "Use Caveats",
+        "#use-caveats:"
+      ],
+      [
+        "AWS Aurora \u2013 Security Cont.",
+        "https://aws.amazon.com/rds/aurora/faqs/"
+      ],
+      [
+        "AWS Aurora",
+        "https://aws.amazon.com/rds/aurora/?nc2=h_m1"
+      ],
+      [
+        "relational database",
+        "https://aws.amazon.com/relational-database/"
+      ],
+      [
+        "here",
+        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+      ],
+      [
+        "AWS Database Migration Service",
+        "https://aws.amazon.com/dms/"
+      ],
+      [
+        "here",
+        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Overview.html#Aurora.Overview.Security.SSL"
+      ],
+      [
+        "AWS Aurora \\- Security",
+        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.html"
+      ],
+      [
+        "AWS Identity and Access Management",
+        "https://aws.amazon.com/iam/"
+      ]
+    ]
+  },
+  "AWS Service - EC2 Systems Manager Parameter Store.md": {
+    "filename": "AWS Service - EC2 Systems Manager Parameter Store.md",
+    "service_name": "EC2 Systems Manager (SSM) Parameter Store Parameter Store",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies.",
+      "EC2 Systems Manager (SSM) Parameter Store approval **is limited to Secure Strings only with KMS encr",
+      "The use of this service requires the implementation of KMS as [defined](https://docs.google.com/docu",
+      "The use of the parameter store is limited to only application and system relevant information i.e. p"
+    ],
+    "risks": [
+      "The risks associated with the use of this service are as followed:  \n   1. Misconfigured KMS keys  \n"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS EC2 Systems Manager Parameter Store",
+        "http://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html"
+      ],
+      [
+        "SSM API set",
+        "http://docs.aws.amazon.com/cli/latest/reference/ssm/"
+      ],
+      [
+        "Use Caveats",
+        "#use-caveats:"
+      ],
+      [
+        "defined",
+        "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
+      ]
+    ]
+  },
+  "AWS Service - Lambda.md": {
+    "filename": "AWS Service - Lambda.md",
+    "service_name": "Lambda",
+    "fedramp_status": "FedRAMP Approved East / West**",
+    "recommendation": null,
+    "use_caveats": [
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies instead of emb",
+      "External calls to this service should be performed securely and the code or process that triggers it"
+    ],
+    "risks": [
+      "Permits the invocation of code on behalf of a user or group."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://aws.amazon.com/lambda/faqs/\\#edge",
+        "https://aws.amazon.com/lambda/faqs/#edge"
+      ],
+      [
+        "Lambda \\- Security",
+        "https://aws.amazon.com/lambda/faqs/#scalability"
+      ],
+      [
+        "http://docs.aws.amazon.com/lambda/latest/dg/best-practices.html",
+        "http://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+      ],
+      [
+        "requirements",
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html"
+      ],
+      [
+        "AWS Service\\_Name",
+        "http://aws.com"
+      ]
+    ]
+  },
+  "AWS Service - Resource Access Manager.md": {
+    "filename": "AWS Service - Resource Access Manager.md",
+    "service_name": "Resource Access Manager",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "This service\u2019s sharing capabilities should be limited to AWS Services that have already been previou"
+    ],
+    "risks": [
+      "Misconfiguration \\- Could accidentally expose a resource",
+      "Shared Resource Control \\- Centrally shared resources settings are controlled by a central account a"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "RejectResourceShareInvitation",
+        "https://docs.aws.amazon.com/ram/latest/APIReference/API_RejectResourceShareInvitation.html"
+      ],
+      [
+        "https://aws.amazon.com/ram/",
+        "https://aws.amazon.com/ram/"
+      ],
+      [
+        "AWS Resource Access Manager",
+        "https://aws.amazon.com/ram/"
+      ],
+      [
+        "ListResources",
+        "https://docs.aws.amazon.com/ram/latest/APIReference/API_ListResources.html"
+      ],
+      [
+        "ListPendingInvitationResources",
+        "https://docs.aws.amazon.com/ram/latest/APIReference/API_ListPendingInvitationResources.html"
+      ],
+      [
+        "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html",
+        "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+      ],
+      [
+        "DisassociateResourceSharePermission",
+        "https://docs.aws.amazon.com/ram/latest/APIReference/API_DisassociateResourceSharePermission.html"
+      ],
+      [
+        "GetResourcePolicies",
+        "https://docs.aws.amazon.com/ram/latest/APIReference/API_GetResourcePolicies.html"
+      ],
+      [
+        "ListPrincipals",
+        "https://docs.aws.amazon.com/ram/latest/APIReference/API_ListPrincipals.html"
+      ],
+      [
+        "resource-share\\*",
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsresourceaccessmanager.html#awsresourceaccessmanager-resource-share"
+      ]
+    ]
+  },
+  "AWS Service - Secrets Manager.md": {
+    "filename": "AWS Service - Secrets Manager.md",
+    "service_name": "Secrets Manager",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Best practices should enforce that only security keys be stored within the AWS Secrets Manager and n",
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies.",
+      "The use of this service requires the implementation of KMS as [defined](https://docs.google.com/docu",
+      "Use of Third Party API keys is limited to approved application and services as listed on ea.gsa.gov.",
+      "The use of secrets manager is limited to only application and system relevant information i.e. passw"
+    ],
+    "risks": [
+      "Any leak of administrator level access credentials will compromise access to all sensitive informati"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [
+      "Programmatically Retrieve Encrypted Secret Values at Runtime Instead of Storing Them",
+      "Store Just About Any Kind of Secret",
+      "Automatically Rotate Any Controlled Secrets",
+      "Control Who Can Access Secrets",
+      "Compliant with HIPAA standards (possibly not business relevant)"
+    ],
+    "supported_services": [],
+    "links": [
+      [
+        "https://aws.amazon.com/secrets-manager/faqs/\\#",
+        "https://aws.amazon.com/secrets-manager/faqs/#"
+      ],
+      [
+        "Use Caveats",
+        "#heading=h.gjdgxs"
+      ],
+      [
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/monitoring.html",
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/monitoring.html"
+      ],
+      [
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+      ],
+      [
+        "https://aws.amazon.com/about-aws/whats-new/2018/06/secrets-manager-hipaa-announcement/",
+        "https://aws.amazon.com/about-aws/whats-new/2018/06/secrets-manager-hipaa-announcement/"
+      ],
+      [
+        "https://aws.amazon.com/secrets-manager/",
+        "https://aws.amazon.com/secrets-manager/"
+      ],
+      [
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access.html",
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access.html"
+      ],
+      [
+        "Secrets Manager",
+        "https://aws.amazon.com/secrets-manager/"
+      ],
+      [
+        "defined",
+        "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
+      ]
+    ]
+  },
+  "AWS Service - SnowBall Edge.docx.md": {
+    "filename": "AWS Service - SnowBall Edge.docx.md",
+    "service_name": "AWS SnowBall Edge",
+    "fedramp_status": "FedRAMP Approved East / West & GovCloud**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies.",
+      "As with AWS Snowball, Snowball Edge is dependent on the AWS Key Management Service and must be utili"
+    ],
+    "risks": [
+      "The risks associated with the use of this service are as followed:\n\n   1. Large of amounts of data a"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "Use Caveats",
+        "#use-caveats:"
+      ],
+      [
+        "AWS SnowBall Edge \\- Security",
+        "http://docs.aws.amazon.com/snowball/latest/ug/security.html"
+      ],
+      [
+        "AWS SnowBall Edge",
+        "http://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html"
+      ]
+    ]
+  },
+  "AWS Service - Storage Gateway.docx.md": {
+    "filename": "AWS Service - Storage Gateway.docx.md",
+    "service_name": "AWS Storage Gateway",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "AWS Storage Gateway requires the use of an unvetted appliance that communicates bidirectionally with",
+      "The use of this service should be performed using IAM Roles and AWS Resource Policies.",
+      "Data in scope must be encrypted everywhere, at rest, in transit and in S3.  Data in transit between ",
+      "Service is NOT approved for use cases involving pci/pii until service acquires FedRAMP ATO.",
+      "Service is NOT approved for use cases involving data transfer from GSA on-premise environment."
+    ],
+    "risks": [
+      "The risks associated with the use of this service are as followed:\n\n   1. Misconfiguration of networ",
+      "The storage appliance, both physical or virtual, is relatively a \u201cblack box\u201d. There is a limited she"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS Storage Gateway \\- Security",
+        "https://aws.amazon.com/storagegateway/faqs/"
+      ],
+      [
+        "Use Caveats",
+        "#use-caveats:"
+      ],
+      [
+        "AWS Storage Gateway",
+        "http://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html"
+      ]
+    ]
+  },
+  "AWS Service - XRAY.md": {
+    "filename": "AWS Service - XRAY.md",
+    "service_name": "XRAY",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Ensure Encryption at Rest is enabled either by default or a valid CMK method",
+      "Ensure granular IAM permissions are in place preventing unauthorized access of viewing application t",
+      "Only use AWS Service integrations that have been approved with XRAY  \n   \n\n**Links to additional inf"
+    ],
+    "risks": [
+      "Misconfiguration \\- While data at rest is encrypted by default it could be disabled in error if chan",
+      "Possible Sensitive Data Exposure \\- Debug Data and Traces could expose sensitive data in logs depend",
+      "AWS XRAY Can integrate with AWS Services that are currently (11-5-20) not fedramp or GSA Approved"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "BatchGetTraces",
+        "https://docs.aws.amazon.com/xray/latest/api/API_BatchGetTraces.html"
+      ],
+      [
+        "GetTimeSeriesServiceStatistics",
+        "https://docs.aws.amazon.com/xray/latest/api/API_GetTimeSeriesServiceStatistics.html"
+      ],
+      [
+        "PutTelemetryRecords",
+        "https://docs.aws.amazon.com/xray/latest/api/API_PutTelemetryRecords.html"
+      ],
+      [
+        "sampling-rule\\*",
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-sampling-rule"
+      ],
+      [
+        "GetInsightEvents",
+        "https://docs.aws.amazon.com/xray/latest/api/API_GetInsightEvents.html"
+      ],
+      [
+        "GetSamplingRules",
+        "https://docs.aws.amazon.com/xray/latest/api/API_GetSamplingRules.html"
+      ],
+      [
+        "AWS XRAY",
+        "https://aws.amazon.com/xray/"
+      ],
+      [
+        "GetInsightSummaries",
+        "https://docs.aws.amazon.com/xray/latest/api/API_GetInsightSummaries.html"
+      ],
+      [
+        "https://aws.amazon.com/ram/",
+        "https://aws.amazon.com/ram/"
+      ],
+      [
+        "DeleteSamplingRule",
+        "https://docs.aws.amazon.com/xray/latest/api/API_DeleteSamplingRule.html"
+      ]
+    ]
+  },
+  "AWS Service Review- AWS PinPoint .md": {
+    "filename": "AWS Service Review- AWS PinPoint .md",
+    "service_name": "AWS Service Review- AWS PinPoint ",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": null,
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [
+      {
+        "Use Case": "Channel Management, Campaign Management, Application Management",
+        "Pinpoint Component": "Control Plane / Engage API Lambdas",
+        "Pinpoint Sub-team": "Pinpoint Targeting",
+        "Dependent Storage / Services": "DynamoDB"
+      },
+      {
+        "Use Case": "Campaign Execution",
+        "Pinpoint Component": "Scheduler / Campaign Scheduler / Export Dispatcher Lambdas",
+        "Pinpoint Sub-team": "Pinpoint Targeting",
+        "Dependent Storage / Services": "DynamoDB / S3"
+      },
+      {
+        "Use Case": "**Direct Messaging, Message Delivery**",
+        "Pinpoint Component": "Message Send Service",
+        "Pinpoint Sub-team": "Pinpoint Targeting",
+        "Dependent Storage / Services": "\\[ PNS / SES / SMS \\] / Kinesis"
+      },
+      {
+        "Use Case": "Device Registration",
+        "Pinpoint Component": "Endpoint Registration Lambda",
+        "Pinpoint Sub-team": "Pinpoint Analytics",
+        "Dependent Storage / Services": "DynamoDB / Kinesis / ES"
+      },
+      {
+        "Use Case": "Event Ingestion",
+        "Pinpoint Component": "Event Reporting Service",
+        "Pinpoint Sub-team": "Pinpoint Analytics",
+        "Dependent Storage / Services": "S3"
+      },
+      {
+        "Use Case": "Analytics Reporting",
+        "Pinpoint Component": "Raw Event Processor",
+        "Pinpoint Sub-team": "Pinpoint Analytics",
+        "Dependent Storage / Services": "ES"
+      }
+    ],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html"
+      ],
+      [
+        "Amazon Personalize",
+        "https://aws.amazon.com/personalize/"
+      ],
+      [
+        "dynamic audience segment",
+        "https://aws.amazon.com/pinpoint/features/engagement-management/audience-management/"
+      ],
+      [
+        "Amazon Comprehend",
+        "https://aws.amazon.com/comprehend/"
+      ],
+      [
+        "on-demand messages",
+        "https://aws.amazon.com/pinpoint/features/engagement-management/transactional-messages/"
+      ],
+      [
+        "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html",
+        "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html"
+      ],
+      [
+        "https://aws.amazon.com/pinpoint/",
+        "https://aws.amazon.com/pinpoint/"
+      ],
+      [
+        "real-time data",
+        "https://aws.amazon.com/pinpoint/features/analytics/"
+      ],
+      [
+        "Amazon QuickSight",
+        "https://aws.amazon.com/quicksight/"
+      ],
+      [
+        "https://aws.amazon.com/about-aws/whats-new/2017/07/amazon-kinesis-streams-introduces-server-side-encryption/).",
+        "https://aws.amazon.com/about-aws/whats-new/2017/07/amazon-kinesis-streams-introduces-server-side-encryption/\\"
+      ]
+    ]
+  },
+  "Cloud9.md": {
+    "filename": "Cloud9.md",
+    "service_name": "Cloud9",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Create the environment in a private subnet with an IAM Account and use the No Ingress style deployme",
+      "Treat the instance as if it were not AWS managed.",
+      "Use AWS PrivateLink/VPC Endpoints to secure traffic",
+      "Encryption must be set on EBS Drives.",
+      "MFA needs to be enforced for cloud9 access. Authorization should be limited using IAM policy adoptin"
+    ],
+    "risks": [
+      "The default setup of Cloud9 exposes the required underlying EC2 instance in a public subnet.",
+      "The more secure implementation inside of a private subnet disables AWS Temporary Managed Credentials",
+      "The \u201c AWS Managed\u201d underlying EC2 instance that is spun up is questionable. Patches are applied base",
+      "Trend Micro has demonstrated cloud ide\u2019s are at risk to browser based malware and can scrape input a",
+      "Currently Cloud9 is not in scope of FedRamp or any other compliance families."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "cloud9:EnvironmentId",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_EnvironmentId"
+      ],
+      [
+        "cloud9:EnvironmentName",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_EnvironmentName"
+      ],
+      [
+        "aws:TagKeys",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-aws_TagKeys"
+      ],
+      [
+        "https://docs.aws.amazon.com/cloud9/latest/user-guide/welcome.html",
+        "https://docs.aws.amazon.com/cloud9/latest/user-guide/welcome.html"
+      ],
+      [
+        "Trend Micro Article",
+        "https://www.trendmicro.com/en_us/research/20/c/security-risks-in-online-coding-platforms.html"
+      ],
+      [
+        "cloud9:Permissions",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_Permissions"
+      ],
+      [
+        "cloud9:InstanceType",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_InstanceType"
+      ],
+      [
+        "environment\\*",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-environment"
+      ],
+      [
+        "cloud9:SubnetId",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-cloud9_SubnetId"
+      ],
+      [
+        "aws:RequestTag/${TagKey}",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awscloud9.html#awscloud9-aws_RequestTag___TagKey_"
+      ]
+    ]
+  },
+  "ElastiCache.md": {
+    "filename": "ElastiCache.md",
+    "service_name": "ElastiCache",
+    "fedramp_status": null,
+    "recommendation": null,
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "ElastiCache Redis Documentation",
+        "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.html"
+      ],
+      [
+        "ElastiCache Memcache Documentation",
+        "https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/WhatIs.html"
+      ],
+      [
+        "Redis Auth",
+        "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html"
+      ]
+    ]
+  },
+  "Glacier.md": {
+    "filename": "Glacier.md",
+    "service_name": "Glacier",
+    "fedramp_status": null,
+    "recommendation": null,
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": []
+  },
+  "GuardDuty.md": {
+    "filename": "GuardDuty.md",
+    "service_name": "AWS GuardDuty**",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "The correct IAM identity must have the correct permissions to enable GuardDuty.",
+      "If storing GuardDuty findings for longer than 90-days, use CloudWatch Events to push findings to an "
+    ],
+    "risks": [
+      "Low: Subject to Amazon internal staff for developing and maintaining rule sets. New detections are c",
+      "Low: The more advanced behavioral and machine learning detections take **between 7 and 14 days** to ",
+      "Low: Detection responses work best with alerts management through automation. If those skill sets ar",
+      "Low:  Log data is processed in memory and then expunged  once processed; findings/alerts are stored ",
+      "Medium: No visibility into GuardDuty itself.  It doesn\u2019t generate logs that we can consume, so until"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS GuardDuty",
+        "https://aws.amazon.com/guardduty/"
+      ],
+      [
+        "GuardDuty Overview:",
+        "https://aws.amazon.com/blogs/aws/amazon-guardduty-continuous-security-monitoring-threat-detection/"
+      ],
+      [
+        "Why to Access GuardDuty:",
+        "http://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
+      ],
+      [
+        "How AWS GuardDuty Works:",
+        "https://aws.amazon.com/guardduty/"
+      ],
+      [
+        "AWS GuardDuty User Guide:",
+        "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
+      ],
+      [
+        "AWS GuardDuty FAQ",
+        "https://aws.amazon.com/guardduty/faqs/"
+      ]
+    ]
+  },
+  "ISE AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK).md": {
+    "filename": "ISE AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK).md",
+    "service_name": "AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK)",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Encryption in transit. Only the default settings, \u201cOnly allow TLS encrypted data\u201d can be used. The o"
+    ],
+    "risks": [
+      "Service enablement will allow a more robust queuing option for ingesting data into the ELP without d",
+      "Users can enable data in transit to be either hybrid tls and plaintext or plaintext only."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS Kafka",
+        "https://console.aws.amazon.com/msk"
+      ],
+      [
+        "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html",
+        "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+      ],
+      [
+        "use caveats",
+        "#use-caveats:"
+      ]
+    ]
+  },
+  "ISE AWS Bedrock.md": {
+    "filename": "ISE AWS Bedrock.md",
+    "service_name": "AWS Bedrock",
+    "fedramp_status": "FedRAMP Approved**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "**Complete safety board [review](https://feedback.gsa.gov/jfe/form/SV_5tgn61GaufYZOlg).**",
+      "**Complete the [AI Security Review Checklist](https://docs.google.com/spreadsheets/d/1cekVRPvWjGEIW1",
+      "**VPC Configuration:**  \n   * Implement a **VPC** with **public and private subnets**.  \n   * Use a ",
+      "**Third-Party Integrations:**  \n   * Ensure all third-party integrations (e.g., vector stores or plu",
+      "**Container Security:**  \n   * Enable **inter-container traffic encryption** to secure communication"
+    ],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "Yes",
+        "https://ea.gsa.gov/#!/itstandards/1876%20"
+      ],
+      [
+        "AWS Community",
+        "https://community.aws/content/2ibjw3otz5LFNJsARUtx9LkjjxG/deep-dive-within-amazon-bedrock-security-architecture?utm_source=chatgpt.com"
+      ],
+      [
+        "Amazon Web Services",
+        "https://aws.amazon.com/blogs/security/securing-the-rag-ingestion-pipeline-filtering-mechanisms/?utm_source=chatgpt.com"
+      ],
+      [
+        "Amazon Bedrock FAQ",
+        "https://aws.amazon.com/bedrock/faqs/"
+      ],
+      [
+        "review",
+        "https://feedback.gsa.gov/jfe/form/SV_5tgn61GaufYZOlg"
+      ],
+      [
+        "Amazon Bedrock Developer Guide",
+        "https://docs.aws.amazon.com/bedrock/latest/userguide/"
+      ],
+      [
+        "here",
+        "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-amazonsagemakerfullaccess-policy"
+      ],
+      [
+        "AI Security Review Checklist",
+        "https://docs.google.com/spreadsheets/d/1cekVRPvWjGEIW1IXISkdy01muwE5KskkECTn0BaPKw8/edit?usp=drive_link"
+      ],
+      [
+        "https://docs.aws.amazon.com/general/latest/gr/bedrock.html",
+        "https://docs.aws.amazon.com/general/latest/gr/bedrock.html"
+      ],
+      [
+        "Seceng@gsa.gov",
+        "mailto:Seceng@gsa.gov"
+      ]
+    ]
+  },
+  "ISE AWS ECR Review .md": {
+    "filename": "ISE AWS ECR Review .md",
+    "service_name": "AWS Elastic Container Registry",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Twistlock must be integrated for image vulnerability identification and security visibility per [GSA",
+      "Ensure to use least privilege IAM policy per your organizations needs. \n\n**Links to additional infor"
+    ],
+    "risks": [
+      "While ECR can provide granular control over who can access or pull from it, an authorized user could",
+      "Without proper lifecycle policy, image sprawl could become an issue with both risk and cost."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "User Guide",
+        "http://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-ug.pdf"
+      ],
+      [
+        "GSA\u2019s policy",
+        "https://docs.google.com/document/d/1zXpKoMd8qJx3ALULNRgnJL3GwLojAiqCXW8LxRbU5ZA/edit"
+      ],
+      [
+        "ECR Frequently Asked Questions",
+        "https://aws.amazon.com/ecr/faqs/"
+      ],
+      [
+        "Service Overview",
+        "https://aws.amazon.com/ecr/"
+      ],
+      [
+        "AWS Service\\_Name",
+        "http://aws.com"
+      ]
+    ]
+  },
+  "ISE AWS ECS and Fargate Service Review.md": {
+    "filename": "ISE AWS ECS and Fargate Service Review.md",
+    "service_name": "AWS Elastic Container Service (ECS)**",
+    "fedramp_status": "Approve East/West/GovCloud**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "All ECS implementations must have TwistLock integrated as per [GSA\u2019s policy](https://docs.google.com",
+      "If using the EC2 cluster option, ensure to encrypt the EBS root and data volumes.",
+      "If using EFS, ensure the security groups are configured to only allow access to the specific EC2 hos",
+      "Ensure security groups are configured to allow least privilege access.",
+      "If using ECR, ensure the S3 bucket is encrypted\n\n**Links to additional information:**    \nAbout Docu"
+    ],
+    "risks": [
+      "If you do not use a load balancer, a security group is created to allow all public traffic to your s",
+      "Fargate does not support root volume encryption. (It's on the roadmap to implement).",
+      "The default deployment wizard does not encrypt the EBS volumes for ECS clusters.",
+      "Encryption at rest must be configured either using the ALB or container itself."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "FedRAMPed?",
+        "https://aws.amazon.com/compliance/services-in-scope/"
+      ],
+      [
+        "here",
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_managed_policies.html"
+      ],
+      [
+        "https://aws.amazon.com/ecs/faqs/",
+        "https://aws.amazon.com/ecs/faqs/"
+      ],
+      [
+        "GSA\u2019s policy",
+        "https://docs.google.com/document/d/1zXpKoMd8qJx3ALULNRgnJL3GwLojAiqCXW8LxRbU5ZA/edit"
+      ],
+      [
+        "AWS ECS",
+        "https://aws.amazon.com/ecs/"
+      ],
+      [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+      ]
+    ]
+  },
+  "ISE AWS EKS.md": {
+    "filename": "ISE AWS EKS.md",
+    "service_name": "AWS Elastic Container Service for Kubernetes (EKS)",
+    "fedramp_status": "Approved in AWS East/West, under JAB review in GovCloud (as of 2020/12/01)Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "All worker nodes must use EBS encrypted volumes.",
+      "All worker nodes must have TwistLock integrated as per [GSA\u2019s policy](https://docs.google.com/docume",
+      "EKS is restricted to use with just Docker.\n\n**Links to additional information:**    \n[Amazon Elastic"
+    ],
+    "risks": [
+      "The base AMI from AWS that is EKS ready does not have encrypted EBS volumes.",
+      "The customer has no visibility into the Master node hosted on the AWS control plane."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS EKS",
+        "https://aws.amazon.com/eks/"
+      ],
+      [
+        "FAQ",
+        "https://aws.amazon.com/eks/faq/"
+      ],
+      [
+        "GSA\u2019s policy",
+        "https://docs.google.com/document/d/1zXpKoMd8qJx3ALULNRgnJL3GwLojAiqCXW8LxRbU5ZA/edit"
+      ],
+      [
+        "User Guide",
+        "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+      ],
+      [
+        "Amazon Elastic Container Service for Kubernetes",
+        "https://aws.amazon.com/eks/"
+      ]
+    ]
+  },
+  "ISE AWS Elastic File Service (EFS) v2.md": {
+    "filename": "ISE AWS Elastic File Service (EFS) v2.md",
+    "service_name": "AWS Elastic File System (EFS)",
+    "fedramp_status": "Approved**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Encryption for both in transit and at rest must be enabled.",
+      "Cannot use with Windows EC2 currently.",
+      "Ensure Security Groups are configured so only authorized hosts can mount to EFS. \n\n**Links to additi"
+    ],
+    "risks": [
+      "EFS is billed by usage so its recommend to monitor and control storage use as to best manage cost. U"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://aws.amazon.com/efs/details/\\#security",
+        "https://aws.amazon.com/efs/details/#security"
+      ],
+      [
+        "https://aws.amazon.com/efs/",
+        "https://aws.amazon.com/efs/"
+      ],
+      [
+        "https://docs.aws.amazon.com/efs/latest/ug/security-considerations.html",
+        "https://docs.aws.amazon.com/efs/latest/ug/security-considerations.html"
+      ],
+      [
+        "AWS Elastic File System (EFS)",
+        "https://aws.amazon.com/efs/"
+      ],
+      [
+        "https://docs.aws.amazon.com/efs/latest/ug/encryption.html",
+        "https://docs.aws.amazon.com/efs/latest/ug/encryption.html"
+      ],
+      [
+        "https://forums.aws.amazon.com/thread.jspa?messageID=789728",
+        "https://forums.aws.amazon.com/thread.jspa?messageID=789728"
+      ]
+    ]
+  },
+  "ISE AWS Firewall Manager.md": {
+    "filename": "ISE AWS Firewall Manager.md",
+    "service_name": "AWS Firewall Manager",
+    "fedramp_status": "FedRAMP Approved East / West**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "AWS Firewall Manager needs aws organization and assigned Firewall administrator account. Any member ",
+      "The use of 3rd party AWS Managed Rules must be  identified in the SSP as third party rules. Third pa"
+    ],
+    "risks": [
+      "Improper configuration can impact availability of service or unauthorized wider access on multiple a",
+      "Third party rules are considered proprietary and \u200bthere are no mechanisms to review before automated",
+      "Third Party rules from marketplace are deployed in group and cannot be viewed or modified separately"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "https://aws.amazon.com/firewall-manager/faqs/",
+        "https://aws.amazon.com/firewall-manager/faqs/"
+      ],
+      [
+        "https://aws.amazon.com/firewall-manager/",
+        "https://aws.amazon.com/firewall-manager/"
+      ],
+      [
+        "AWS Firewall Manager",
+        "https://aws.amazon.com/firewall-manager/"
+      ],
+      [
+        "https://aws.amazon.com/firewall-manager/features/",
+        "https://aws.amazon.com/firewall-manager/features/"
+      ],
+      [
+        "https://docs.aws.amazon.com/general/latest/gr/rande.html\\#firewallmanager\\_region",
+        "https://docs.aws.amazon.com/general/latest/gr/rande.html#firewallmanager_region"
+      ],
+      [
+        "https://aws.amazon.com/blogs/aws/aws-firewall-manager-central-management-for-your-web-application-portfolio/",
+        "https://aws.amazon.com/blogs/aws/aws-firewall-manager-central-management-for-your-web-application-portfolio/"
+      ]
+    ]
+  },
+  "ISE AWS Kinesis Data FireHose Review.md": {
+    "filename": "ISE AWS Kinesis Data FireHose Review.md",
+    "service_name": "AWS Kinesis Data FireHose",
+    "fedramp_status": "[Authorized](https://aws.amazon.com/compliance/services-in-scope/FedRAMP/)**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Encryption in transit of the records must be [configured](https://docs.aws.amazon.com/streams/latest",
+      "Records must be encrypted while at rest.",
+      "Least privileged IAM policies need to be enforced.",
+      "Cannot use use AWS IOT"
+    ],
+    "risks": [
+      "Records are not encrypted in transit or rest by default."
+    ],
+    "integrations": [
+      {
+        "Service Name": "AWS Kinesis Datastream",
+        "Fed Ramped?": "Yes",
+        "GSA Approved": "Yes"
+      },
+      {
+        "Service Name": "AWS SQS",
+        "Fed Ramped?": "Yes",
+        "GSA Approved": "Yes"
+      },
+      {
+        "Service Name": "AWS S3",
+        "Fed Ramped?": "Yes",
+        "GSA Approved": "Yes"
+      },
+      {
+        "Service Name": "AWS Lambda",
+        "Fed Ramped?": "Yes",
+        "GSA Approved": "Yes"
+      },
+      {
+        "Service Name": "AWS Redshift",
+        "Fed Ramped?": "Yes",
+        "GSA Approved": "Yes"
+      },
+      {
+        "Service Name": "AWS Elasticsearch Service",
+        "Fed Ramped?": "For GovCloud, not East/West Regions. Currently under Jab Review",
+        "GSA Approved": "Yes"
+      }
+    ],
+    "non_aws_integrations": [],
+    "iam_permissions": [
+      {
+        "Service Name": "CloudTrail",
+        "Effect": "",
+        "Action": "DescribeTrail",
+        "Resource": "",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "",
+        "Action": "LookupEvents",
+        "Resource": "",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "VPC",
+        "Effect": "",
+        "Action": "DescribeFlowLogs",
+        "Resource": "",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "CloudWatch",
+        "Effect": "",
+        "Action": "DescribeLogStreams",
+        "Resource": "",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "",
+        "Action": "GetLogEvents",
+        "Resource": "",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "AWS Kinesis Firehose (Default for S3)",
+        "Effect": "Allow",
+        "Action": "glue:GetTable             glue:GetTableVersion               glue:GetTableVersions",
+        "Resource": "\\*",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "Allow",
+        "Action": "s3:AbortMultipartUpload                s3:GetBucketLocation                s3:GetObject                s3:ListBucket                s3:ListBucketMultipartUploads s3:PutObject",
+        "Resource": "Destination S3 bucket",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "Allow",
+        "Action": "lambda:InvokeFunction                lambda:GetFunctionConfiguration",
+        "Resource": "Default or specified Lambda Transform function",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "Allow",
+        "Action": "kms:GenerateDataKey kms:Decrypt",
+        "Resource": "Specified KMS key for encryption",
+        "Request Condition": "Destination S3 bucket"
+      },
+      {
+        "Service Name": "",
+        "Effect": "Allow",
+        "Action": "logs:PutLogEvents",
+        "Resource": "Log group for firehose stream",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "Allow",
+        "Action": "kinesis:DescribeStream                kinesis:GetShardIterator               kinesis:GetRecords",
+        "Resource": "Firehose stream Name",
+        "Request Condition": ""
+      },
+      {
+        "Service Name": "",
+        "Effect": "Allow",
+        "Action": "kms:Decrypt",
+        "Resource": "KMS Key specified in configuration",
+        "Request Condition": "Kinesis region id and stream id"
+      }
+    ],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS Kinesis Data FireHose",
+        "https://aws.amazon.com/kinesis/data-firehose/?nc=sn&loc=1%20"
+      ],
+      [
+        "https://www.splunk.com/blog/2017/11/29/ready-set-stream-with-the-kinesis-firehose-and-splunk-integration.html",
+        "https://www.splunk.com/blog/2017/11/29/ready-set-stream-with-the-kinesis-firehose-and-splunk-integration.html"
+      ],
+      [
+        "configured",
+        "https://docs.aws.amazon.com/streams/latest/dev/what-is-sse.html"
+      ],
+      [
+        "Overview",
+        "https://aws.amazon.com/kinesis/data-firehose/"
+      ],
+      [
+        "Developer Guide",
+        "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+      ],
+      [
+        "Encrypt and Decrypt AWS Kinesis Records",
+        "https://aws.amazon.com/blogs/big-data/encrypt-and-decrypt-amazon-kinesis-records-using-aws-kms/"
+      ],
+      [
+        "https://docs.splunk.com/Documentation/AddOns/released/Firehose/About",
+        "https://docs.splunk.com/Documentation/AddOns/released/Firehose/About"
+      ],
+      [
+        "https://answers.splunk.com/answers/659560/splunk-add-on-for-aws-doesnot-report-cloudwatch-lo.html",
+        "https://answers.splunk.com/answers/659560/splunk-add-on-for-aws-doesnot-report-cloudwatch-lo.html"
+      ],
+      [
+        "https://aws.amazon.com/compliance/services-in-scope/",
+        "https://aws.amazon.com/compliance/services-in-scope/"
+      ],
+      [
+        "FAQ",
+        "https://aws.amazon.com/kinesis/data-firehose/faqs/?nc=sn&loc=5"
+      ]
+    ]
+  },
+  "ISE AWS SageMaker.md": {
+    "filename": "ISE AWS SageMaker.md",
+    "service_name": "AWS SageMaker",
+    "fedramp_status": "FedRAMP Approved**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "For use in GSA, please [implement](https://docs.aws.amazon.com/sagemaker/latest/dg/train-vpc.html) t",
+      "Ensure that all third party integrations are approved for use in GSA.",
+      "Ensure inter-container traffic encryption is enabled for containers.",
+      "Ensure all endpoints are enabled with HTTPS.",
+      "Ensure all data and models at rest are encrypted with KMS. \n\n**Links to additional information:**   "
+    ],
+    "risks": [
+      "Notebook Instance Security: By default, notebook instances are internet-enabled. A malicious user or",
+      "SageMaker runs training jobs in an Amazon Virtual Private Cloud. However, training containers access"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "Yes",
+        "https://ea.gsa.gov/#!/itstandards/1876%20"
+      ],
+      [
+        "implement",
+        "https://docs.aws.amazon.com/sagemaker/latest/dg/train-vpc.html"
+      ],
+      [
+        "AWS SageMaker",
+        "https://aws.amazon.com/sagemaker"
+      ],
+      [
+        "here",
+        "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-amazonsagemakerfullaccess-policy"
+      ],
+      [
+        "VPC with public and Private Subnets",
+        "https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario2.html"
+      ]
+    ]
+  },
+  "ISE AWS Service Review - AWS Certificate Manager.md": {
+    "filename": "ISE AWS Service Review - AWS Certificate Manager.md",
+    "service_name": "AWS Certificate Manager (ACM)",
+    "fedramp_status": "Not reviewed/ Under Review**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "Usage of the certificates must be consistent with the [GSA SSL / TLS Procedural Guide](https://insit",
+      "End user is in charge of safely maintaining and rotating private keys for imported certificates.",
+      "DNS based domain name validation is preferred and recommended to be used. \n\n**Links to additional in"
+    ],
+    "risks": [
+      "AWS stores private key in encrypted format using AWS managed KMS keys.  We would be relying on the A",
+      "Revoking a certificate is not instantaneous. A CRL is typically updated approximately 30 minutes aft",
+      "ACM uses DNS and email based methods for domain name validation to issue certificates. Poorly mainta"
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "GSA SSL / TLS Procedural Guide",
+        "https://insite.gsa.gov/portal/getMediaData?mediaId=536145"
+      ],
+      [
+        "https://aws.amazon.com/certificate-manager/faqs/",
+        "https://aws.amazon.com/certificate-manager/faqs/"
+      ],
+      [
+        "AWS Certificate Manager (ACM)",
+        "https://aws.amazon.com/certificate-manager/"
+      ],
+      [
+        "https://aws.amazon.com/certificate-manager/?nc=sn\\&loc=0",
+        "https://aws.amazon.com/certificate-manager/?nc=sn&loc=0"
+      ]
+    ]
+  },
+  "ISE AWS Service SSM Incident Manager.md": {
+    "filename": "ISE AWS Service SSM Incident Manager.md",
+    "service_name": "ISE AWS Service SSM Incident Manager",
+    "fedramp_status": "approved**",
+    "recommendation": ":**",
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "FRED AGYEPONG YEBOAH - IST-C",
+        "mailto:fred.agyepongyeboah@gsa.gov"
+      ],
+      [
+        "https://docs.aws.amazon.com/systems-manager/latest/userguide/security-best-practices.html",
+        "https://docs.aws.amazon.com/systems-manager/latest/userguide/security-best-practices.html"
+      ],
+      [
+        "Mossadeq Zia - ISE",
+        "mailto:mossadeq.zia@gsa.gov"
+      ],
+      [
+        "https://docs.aws.amazon.com/pdfs/incident-manager/latest/APIReference/incident-manager-api.pdf\\#Welcome",
+        "https://docs.aws.amazon.com/pdfs/incident-manager/latest/APIReference/incident-manager-api.pdf#Welcome"
+      ],
+      [
+        "Nicholas Willey - Q2AABF",
+        "mailto:nicholas.willey@gsa.gov"
+      ],
+      [
+        "Incident Response and Collaboration with AWS | AWS Events",
+        "https://youtu.be/-L49l6cBE6k?si=EMy050XwljFHc9rE"
+      ],
+      [
+        "Douglas Sillex - ISE",
+        "mailto:douglas.sillex@gsa.gov"
+      ],
+      [
+        "Parimala Rao - IS",
+        "mailto:parimala.rao@gsa.gov"
+      ],
+      [
+        "https://docs.google.com/document/d/1jfxtzuVB4wanohRX-P8dAS8MAQKNTGffdqd3zb2kix8/edit\\#heading=h.m6ip4vux6d38",
+        "https://docs.google.com/document/d/1jfxtzuVB4wanohRX-P8dAS8MAQKNTGffdqd3zb2kix8/edit#heading=h.m6ip4vux6d38"
+      ],
+      [
+        "Bo Berlas - IS",
+        "mailto:bo.berlas@gsa.gov"
+      ]
+    ]
+  },
+  "KMS.md": {
+    "filename": "KMS.md",
+    "service_name": "KMS",
+    "fedramp_status": null,
+    "recommendation": null,
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "AWS Re-Encrypt",
+        "http://docs.aws.amazon.com/kms/latest/APIReference/API_ReEncrypt.html"
+      ],
+      [
+        "GSA IT Security Procedural Guide 09-43, Key Management",
+        "https://insite.gsa.gov/portal/getMediaData?mediaId=515341"
+      ]
+    ]
+  },
+  "RDS.md": {
+    "filename": "RDS.md",
+    "service_name": "RDS",
+    "fedramp_status": null,
+    "recommendation": null,
+    "use_caveats": [],
+    "risks": [],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "FIPS 140-2 compliant",
+        "http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/140val-all.htm#1747"
+      ]
+    ]
+  },
+  "Transfer Family.md": {
+    "filename": "Transfer Family.md",
+    "service_name": "Transfer Family",
+    "fedramp_status": "Not approved / Not reviewed**",
+    "recommendation": ":**",
+    "use_caveats": [
+      "The standard FTP protocol is not permitted to be enabled or used.  This is a HARD requirement.",
+      "FIPS Mode is required to be enabled.",
+      "Use of the SFTP Protocol must be implemented in conjunction with a GSA Approved Identity Provider an",
+      "Key based authentication must be implemented for programmatic or automated file transfers.",
+      "IAM Permissions must be implemented with least privilege to stored files and folders. Use multiple I"
+    ],
+    "risks": [
+      "The Standard FTP Protocol is insecure and does not provide encryption.",
+      "Several  Cipher Suites are available and could weaken security posture if used too excessively.",
+      "SFTP can be used without an Identity Provider/MFA Solution.",
+      "IAM Permission Misconfiguration can allow access to more data than necessary.",
+      "S3 and EFS Misconfiguration could expose data if not configured properly."
+    ],
+    "integrations": [],
+    "non_aws_integrations": [],
+    "iam_permissions": [],
+    "encryption_in_transit": [],
+    "encryption_at_rest": [],
+    "features": [],
+    "supported_services": [],
+    "links": [
+      [
+        "DeleteUser",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_DeleteUser.html"
+      ],
+      [
+        "ImportSshPublicKey",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_ImportSshPublicKey.html"
+      ],
+      [
+        "ListSecurityPolicies",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_ListSecurityPolicies.html"
+      ],
+      [
+        "DescribeServer",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_DescribeServer.html"
+      ],
+      [
+        "What Is Amazon Elastic File System?",
+        "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+      ],
+      [
+        "UpdateUser",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_UpdateUser.html"
+      ],
+      [
+        "user\\*",
+        "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-user"
+      ],
+      [
+        "StartServer",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_StartServer.html"
+      ],
+      [
+        "StopServer",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_StopServer.html"
+      ],
+      [
+        "ListTagsForResource",
+        "https://docs.aws.amazon.com/transfer/latest/userguide/API_ListTagsForResource.html"
+      ]
+    ]
+  }
+}
