@@ -1,7 +1,5 @@
 module.exports = {
   siteMetadata: {
-    // Replace the Site URL with your domain, ex. https://example.gov
-    siteUrl: 'https://example.gov',
     author: 'Foo',
     title: `Agency Name`,
     description: `Agency Name (EAC) Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -37,25 +35,29 @@ module.exports = {
 
     /**
      * Search.gov configuration
-     *
+     * 
      * 1. Create an account with Search.gov https://search.usa.gov/signup
      * 2. Add a new site.
      * 3. Add your site/affiliate name here.
      */
     searchgov: {
-      // Only change this if you're using a CNAME. Learn more here: https://search.gov/manual/cname.html
+      
+      // You should not change this.
       endpoint: 'https://search.usa.gov',
-
-      // Replace this with your search.gov site handle.
-      affiliate: 'affiliate-agency-account',
-
-      // Replace this with your access key.
-      access_key: 'affiliate-agency-account-access-key',
+      
+      // replace this with your search.gov account
+      affiliate: 'federalist-uswds-example',
+      
+      // replace with your access key
+      access_key: 'xX1gtb2RcnLbIYkHAcB6IaTRr4ZfN-p16ofcyUebeko=',
+      
+      // this renders the results within the page instead of sending to user to search.gov
+      inline: true, 
     },
 
     /**
      * Digital Analytics Program (DAP) configuration
-     *
+     * 
      * USAID   - Agency for International Development
      * USDA    - Department of Agriculture
      * DOC     - Department of Commerce
@@ -86,6 +88,7 @@ module.exports = {
      */
     dap: {
       // agency: 'your-agency',
+
       // Optional
       // subagency: 'your-subagency',
     },
@@ -97,19 +100,11 @@ module.exports = {
       // ua: 'your-ua',
     },
   },
-  pathPrefix: process.env.BASEURL || '/',
+  // For GitHub Pages: defaults to the repo subpath.
+  // Override with PATHPREFIX env var (or leave as BASEURL for Federalist).
+  pathPrefix: process.env.PATHPREFIX || process.env.BASEURL || '/oscal-static-site-playground',
   plugins: [
-    {
-      resolve: 'gatsby-plugin-sass',
-      options: {
-        cssLoaderOptions: {
-          esModule: false,
-          modules: {
-            namedExport: false,
-          },
-        },
-      },
-    },
+    `gatsby-plugin-sass`,
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
@@ -121,45 +116,49 @@ module.exports = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
-        name: `blog-posts`,
-        path: `${__dirname}/src/blog-posts`,
+        name: `blog`,
+        path: `${__dirname}/src/blog`,
       },
     },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
-        name: `documentation-pages`,
-        path: `${__dirname}/src/documentation-pages`,
+        name: `documentation`,
+        path: `${__dirname}/src/documentation`,
       },
+    },  
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `oscal`,
+        path: `${__dirname}/content`,
+      }
     },
     `gatsby-transformer-remark`,
+    'gatsby-transformer-json',
     {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `oscal-content`,
+        path: `${__dirname}/content`,
+      },
+    },
+    // gatsby-plugin-manifest requires the sharp native binary.
+    // Enable by setting GATSBY_ENABLE_MANIFEST=true in your environment.
+    ...(process.env.GATSBY_ENABLE_MANIFEST === 'true' ? [{
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
+        name: `U.S. Web Design System + Gatsby + OSCAL`,
+        short_name: `OSCAL Playground`,
         start_url: `/`,
-        background_color: `#663399`,
-        theme_color: `#663399`,
+        background_color: `#ffffff`,
+        theme_color: `#005ea2`,
         display: `minimal-ui`,
-        icon: `src/images/federalist-icon.png`, // This path is relative to the root of the site.
+        icon: `src/images/gatsby-icon.png`,
       },
-    },
-    `gatsby-plugin-sitemap`,
-    {
-      resolve: 'gatsby-plugin-robots-txt',
-      options: {
-        resolveEnv: () => process.env.GATSBY_ENV,
-        env: {
-          development: {
-            policy: [{ userAgent: '*', disallow: ['/'] }],
-          },
-          production: {
-            policy: [{ userAgent: '*', allow: '/' }],
-          },
-        },
-      },
-    },
+    }] : []),
+    // Decap CMS plugin — enable by setting GATSBY_ENABLE_CMS=true in your environment.
+    ...(process.env.GATSBY_ENABLE_CMS === 'true' ? [`gatsby-plugin-decap-cms`] : []),
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
