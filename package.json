@@ -1,0 +1,40 @@
+{
+  "name": "federalist-gatsby-uswds-template",
+  "description": "Description A template for Federalist that uses Gatsby and USWDS 2.0",
+  "license": "CC0-1.0",
+  "version": "0.1.0",
+  "author": "davemcorwin",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/18f/federalist-gatsby-uswds-template.git"
+  },
+  "engines": {
+    "node": ">=8.0.0 <11.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf .cache public",
+    "develop": "gatsby develop",
+    "start": "npm run develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "federalist": "npm run build -- --prefix-paths"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "gatsby": "^2.19.12",
+    "gatsby-image": "^2.2.40",
+    "gatsby-plugin-sharp": "^2.4.5",
+    "gatsby-source-filesystem": "^2.1.48",
+    "gatsby-transformer-sharp": "^2.3.14",
+    "gatsby-transformer-yaml": "^2.2.24",
+    "lodash": "^4.17.15",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "uswds": "^2.4.0"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1",
+    "rimraf": "^2.7.1"
+  }
+}
