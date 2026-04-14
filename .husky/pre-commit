@@ -1,6 +1,34 @@
 #!/usr/bin/env sh
 # Scans staged changes for secrets using gitleaks before every commit.
+# Also verifies that GPG commit signing is enabled.
 # Requires: gitleaks >= 8.0  (brew install gitleaks)
+#           gpg               (brew install gnupg)
+
+# ── Check GPG signing is configured ──────────────────────────────────────────
+_sign=$(git config --get commit.gpgsign 2>/dev/null)
+if [ "${_sign}" != "true" ]; then
+  echo ""
+  echo "  ✗ Commit signing is not enabled for this repo."
+  echo "    Run the following to fix it:"
+  echo "      git config --local commit.gpgsign true"
+  echo "      git config --local user.signingkey <your-key-id>"
+  echo "    Or globally:"
+  echo "      git config --global commit.gpgsign true"
+  echo ""
+  exit 1
+fi
+
+_key=$(git config --get user.signingkey 2>/dev/null)
+if [ -z "${_key}" ]; then
+  echo ""
+  echo "  ✗ No GPG signing key configured."
+  echo "    Run:  git config --local user.signingkey <your-key-id>"
+  echo "    List keys:  gpg --list-secret-keys --keyid-format LONG"
+  echo ""
+  exit 1
+fi
+
+echo "  ✓ Commit signing: GPG key ${_key}"
 
 # ── Check gitleaks is available ───────────────────────────────────────────────
 if ! command -v gitleaks >/dev/null 2>&1; then

@@ -296,15 +296,50 @@ pnpm dev        # http://localhost:8000
 ### Provision a sandbox service
 
 ```bash
-# PostgreSQL on AWS — 8-hour sandbox tier
+# 1. Start the broker first (brokers are stopped when not in active use)
+pnpm run broker:start:aws
+
+# 2. Provision a service
 cf create-service csb-aws-postgresql sandbox-8h my-db \
   -c '{"ttl_hours":8,"project":"my-sprint","owner":"you@gsa.gov"}'
 
-# Extend once (+4 hours; one extension per instance)
+# 3. Extend once (+4 hours; one extension per instance)
 cf update-service my-db -c '{"extend_hours":4}'
 
-# Delete manually (TTL controller will handle it if you don't)
+# 4. Delete manually (TTL controller will handle it automatically on expiry)
 cf delete-service my-db -f
+
+# 5. Stop the broker when done to save resources
+pnpm run broker:stop:aws
+```
+
+### Broker start / stop reference
+
+The broker apps are **stopped** when not in active use. The service registration and all
+existing service instance state persists — only the OSBAPI endpoint goes offline.
+No re-registration is needed when restarting.
+
+```bash
+# Start individual brokers before provisioning
+pnpm run broker:start:aws
+pnpm run broker:start:gcp
+
+# Start all registered brokers at once
+pnpm run broker:start:all
+
+# Stop individual brokers
+pnpm run broker:stop:aws
+pnpm run broker:stop:gcp
+
+# Stop all running broker apps
+pnpm run broker:stop:all
+
+# Check app + broker + marketplace state
+pnpm run broker:status
+
+# Full redeploy (only needed when brokerpak code or env vars change)
+pnpm run broker:deploy:aws
+pnpm run broker:deploy:gcp
 ```
 
 ---
