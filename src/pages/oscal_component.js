@@ -1,9 +1,9 @@
-import React from 'react'
-import raw from '../../content/oscal_component_schema.json'
-import OscalPage from '../components/oscal-page'
+import React from "react";
+import raw from "../../content/oscal_component_schema.json";
+import OscalPage from "../components/oscal-page";
 
 const OscalComponent = () => (
-  <OscalPage model={raw['component-definition']} modelLabel="Component Definition" />
-)
+  <OscalPage model={raw["component-definition"]} modelLabel="Component Definition" />
+);
 
-export default OscalComponent
+export default OscalComponent;

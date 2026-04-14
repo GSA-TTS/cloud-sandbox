@@ -38,16 +38,12 @@
               "rel": "reference"
             }
           ],
-          "email-addresses": [
-            "info@fedramp.gov"
-          ],
+          "email-addresses": ["info@fedramp.gov"],
           "addresses": [
             {
               "type": "work",
               "postal-code": "20006",
-              "addr-lines": [
-                "1800 F St. NW"
-              ],
+              "addr-lines": ["1800 F St. NW"],
               "country": "US",
               "city": "Washington",
               "state": "DC"
@@ -58,15 +54,11 @@
       "responsible-parties": [
         {
           "role-id": "prepared-by",
-          "party-uuids": [
-            "8cc0b8e5-9650-4d5f-9796-316f05fa9a2d"
-          ]
+          "party-uuids": ["8cc0b8e5-9650-4d5f-9796-316f05fa9a2d"]
         },
         {
           "role-id": "fedramp-pmo",
-          "party-uuids": [
-            "8cc0b8e5-9650-4d5f-9796-316f05fa9a2d"
-          ]
+          "party-uuids": ["8cc0b8e5-9650-4d5f-9796-316f05fa9a2d"]
         }
       ]
     },

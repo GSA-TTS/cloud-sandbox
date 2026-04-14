@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'gatsby';
+import React from "react";
+import { Link } from "gatsby";
 
 /*
   The sidenav is not loaded by default on the main pages. To include this navigation you can

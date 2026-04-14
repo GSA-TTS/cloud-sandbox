@@ -24,9 +24,9 @@
  * @property {OscalModel} model       – root model object extracted from the JSON envelope
  * @property {string} [modelLabel]    – human-readable model type label
  */
-import React, { useState } from 'react'
-import Layout from './layout'
-import SEO from './seo'
+import React, { useState } from "react";
+import Layout from "./layout";
+import SEO from "./seo";
 
 /* ── helpers ─────────────────────────────────────────────── */
 
@@ -34,37 +34,37 @@ import SEO from './seo'
 const toAnchorId = (label) =>
   String(label)
     .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
 const fmt = (val) => {
-  if (val === null || val === undefined) return '—'
-  if (typeof val === 'boolean') return val ? 'Yes' : 'No'
-  if (typeof val !== 'object') return String(val)
-  return JSON.stringify(val)
-}
+  if (val === null || val === undefined) return "—";
+  if (typeof val === "boolean") return val ? "Yes" : "No";
+  if (typeof val !== "object") return String(val);
+  return JSON.stringify(val);
+};
 
 const formatDate = (str) => {
-  if (!str) return '—'
+  if (!str) return "—";
   try {
-    return new Date(str).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    return new Date(str).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   } catch (_) {
-    return str
+    return str;
   }
-}
+};
 
 /* render a small table for an array of objects */
 const ArraySection = ({ label, items }) => {
-  const [expanded, setExpanded] = useState(false)
-  if (!items || items.length === 0) return null
+  const [expanded, setExpanded] = useState(false);
+  if (!items || items.length === 0) return null;
   // pick columns that appear on most items (first 3-4 values)
-  const sample = items[0]
-  const cols = Object.keys(sample || {}).slice(0, 4)
-  const anchorId = toAnchorId(label)
+  const sample = items[0];
+  const cols = Object.keys(sample || {}).slice(0, 4);
+  const anchorId = toAnchorId(label);
 
   return (
     <div id={anchorId} className="margin-y-3">
@@ -73,7 +73,7 @@ const ArraySection = ({ label, items }) => {
         onClick={() => setExpanded((e) => !e)}
         aria-expanded={expanded}
       >
-        {expanded ? '▼' : '▶'} {label}{' '}
+        {expanded ? "▼" : "▶"} {label}{" "}
         <span className="usa-tag bg-base-lighter text-ink">{items.length}</span>
       </button>
       {expanded && (
@@ -101,16 +101,16 @@ const ArraySection = ({ label, items }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 /* render a nested object as a definition list */
 const ObjectSection = ({ label, obj }) => {
-  const [expanded, setExpanded] = useState(false)
-  if (!obj || typeof obj !== 'object') return null
-  const entries = Object.entries(obj)
-  if (entries.length === 0) return null
-  const anchorId = toAnchorId(label)
+  const [expanded, setExpanded] = useState(false);
+  if (!obj || typeof obj !== "object") return null;
+  const entries = Object.entries(obj);
+  if (entries.length === 0) return null;
+  const anchorId = toAnchorId(label);
   return (
     <div id={anchorId} className="margin-y-3">
       <button
@@ -118,7 +118,7 @@ const ObjectSection = ({ label, obj }) => {
         onClick={() => setExpanded((e) => !e)}
         aria-expanded={expanded}
       >
-        {expanded ? '▼' : '▶'} {label}
+        {expanded ? "▼" : "▶"} {label}
       </button>
       {expanded && (
         <dl className="usa-list--unstyled margin-top-1 font-body-xs border-left-05 border-accent-cool-light padding-left-2">
@@ -131,8 +131,8 @@ const ObjectSection = ({ label, obj }) => {
         </dl>
       )}
     </div>
-  )
-}
+  );
+};
 
 /**
  * RevisionTimeline — renders metadata.revisions as a vertical timeline.
@@ -142,8 +142,8 @@ const ObjectSection = ({ label, obj }) => {
  * @param {{ revisions: Array<Object> }} props
  */
 const RevisionTimeline = ({ revisions }) => {
-  const [expanded, setExpanded] = useState(false)
-  if (!revisions || revisions.length === 0) return null
+  const [expanded, setExpanded] = useState(false);
+  if (!revisions || revisions.length === 0) return null;
   return (
     <div id="revisions" className="margin-y-3">
       <button
@@ -151,66 +151,74 @@ const RevisionTimeline = ({ revisions }) => {
         onClick={() => setExpanded((e) => !e)}
         aria-expanded={expanded}
       >
-        {expanded ? '▼' : '▶'} Revision History{' '}
+        {expanded ? "▼" : "▶"} Revision History{" "}
         <span className="usa-tag bg-base-lighter text-ink">{revisions.length}</span>
       </button>
       {expanded && (
         <ol
           className="margin-top-2 padding-left-0"
-          style={{ listStyle: 'none', borderLeft: '3px solid #005ea2', paddingLeft: '1.5rem' }}
+          style={{ listStyle: "none", borderLeft: "3px solid #005ea2", paddingLeft: "1.5rem" }}
         >
           {revisions.map((rev, i) => (
             <li
               key={rev.version || rev.published || i}
               className="margin-bottom-3 position-relative"
-              style={{ marginLeft: '0' }}
+              style={{ marginLeft: "0" }}
             >
               {/* Timeline dot */}
               <span
                 aria-hidden="true"
                 style={{
-                  position: 'absolute',
-                  left: '-1.85rem',
-                  top: '0.25rem',
-                  width: '0.75rem',
-                  height: '0.75rem',
-                  borderRadius: '50%',
-                  background: '#005ea2',
-                  display: 'inline-block',
+                  position: "absolute",
+                  left: "-1.85rem",
+                  top: "0.25rem",
+                  width: "0.75rem",
+                  height: "0.75rem",
+                  borderRadius: "50%",
+                  background: "#005ea2",
+                  display: "inline-block",
                 }}
               />
               <div className="usa-card__container border-base-lighter radius-md padding-2 font-body-xs">
-                {rev.title && (
-                  <p className="text-bold margin-0 margin-bottom-05">{rev.title}</p>
-                )}
+                {rev.title && <p className="text-bold margin-0 margin-bottom-05">{rev.title}</p>}
                 <dl className="usa-list--unstyled margin-0">
                   {rev.version && (
                     <div className="display-flex margin-bottom-05">
-                      <dt className="text-base-dark margin-right-1" style={{ minWidth: '9rem' }}>Version</dt>
+                      <dt className="text-base-dark margin-right-1" style={{ minWidth: "9rem" }}>
+                        Version
+                      </dt>
                       <dd className="margin-0">{rev.version}</dd>
                     </div>
                   )}
-                  {rev['oscal-version'] && (
+                  {rev["oscal-version"] && (
                     <div className="display-flex margin-bottom-05">
-                      <dt className="text-base-dark margin-right-1" style={{ minWidth: '9rem' }}>OSCAL Version</dt>
-                      <dd className="margin-0">{rev['oscal-version']}</dd>
+                      <dt className="text-base-dark margin-right-1" style={{ minWidth: "9rem" }}>
+                        OSCAL Version
+                      </dt>
+                      <dd className="margin-0">{rev["oscal-version"]}</dd>
                     </div>
                   )}
                   {rev.published && (
                     <div className="display-flex margin-bottom-05">
-                      <dt className="text-base-dark margin-right-1" style={{ minWidth: '9rem' }}>Published</dt>
+                      <dt className="text-base-dark margin-right-1" style={{ minWidth: "9rem" }}>
+                        Published
+                      </dt>
                       <dd className="margin-0">{formatDate(rev.published)}</dd>
                     </div>
                   )}
-                  {rev['last-modified'] && (
+                  {rev["last-modified"] && (
                     <div className="display-flex margin-bottom-05">
-                      <dt className="text-base-dark margin-right-1" style={{ minWidth: '9rem' }}>Last Modified</dt>
-                      <dd className="margin-0">{formatDate(rev['last-modified'])}</dd>
+                      <dt className="text-base-dark margin-right-1" style={{ minWidth: "9rem" }}>
+                        Last Modified
+                      </dt>
+                      <dd className="margin-0">{formatDate(rev["last-modified"])}</dd>
                     </div>
                   )}
                   {rev.remarks && (
                     <div className="display-flex">
-                      <dt className="text-base-dark margin-right-1" style={{ minWidth: '9rem' }}>Remarks</dt>
+                      <dt className="text-base-dark margin-right-1" style={{ minWidth: "9rem" }}>
+                        Remarks
+                      </dt>
                       <dd className="margin-0 text-base-dark">{rev.remarks}</dd>
                     </div>
                   )}
@@ -221,8 +229,8 @@ const RevisionTimeline = ({ revisions }) => {
         </ol>
       )}
     </div>
-  )
-}
+  );
+};
 
 /* ── main component ──────────────────────────────────────── */
 
@@ -234,16 +242,14 @@ const OscalPage = ({ title, model, modelLabel }) => {
           <p className="text-base">Loading…</p>
         </div>
       </Layout>
-    )
+    );
   }
 
-  const meta = model.metadata || {}
-  const pageTitle = title || meta.title || modelLabel || 'OSCAL Document'
+  const meta = model.metadata || {};
+  const pageTitle = title || meta.title || modelLabel || "OSCAL Document";
 
   // Sections = every top-level key except uuid and metadata
-  const sectionKeys = Object.keys(model).filter(
-    (k) => k !== 'uuid' && k !== 'metadata'
-  )
+  const sectionKeys = Object.keys(model).filter((k) => k !== "uuid" && k !== "metadata");
 
   return (
     <Layout>
@@ -257,27 +263,35 @@ const OscalPage = ({ title, model, modelLabel }) => {
             </span>
           )}
           <h1 className="margin-top-0">{pageTitle}</h1>
-          <code className="font-mono-xs text-base">UUID: {model.uuid || '—'}</code>
+          <code className="font-mono-xs text-base">UUID: {model.uuid || "—"}</code>
         </div>
 
         {/* ── metadata card ── */}
-        <div className="usa-summary-box margin-bottom-4" role="region" aria-label="Document metadata">
+        <div
+          className="usa-summary-box margin-bottom-4"
+          role="region"
+          aria-label="Document metadata"
+        >
           <div className="usa-summary-box__body">
             <h2 className="usa-summary-box__heading font-heading-sm">Metadata</h2>
             <div className="usa-summary-box__text">
               <table className="usa-table usa-table--borderless usa-table--compact width-full font-body-sm">
                 <tbody>
                   {[
-                    ['Version', meta.version],
-                    ['OSCAL Version', meta['oscal-version']],
-                    ['Published', formatDate(meta.published)],
-                    ['Last Modified', formatDate(meta['last-modified'])],
-                    ['Remarks', meta.remarks],
+                    ["Version", meta.version],
+                    ["OSCAL Version", meta["oscal-version"]],
+                    ["Published", formatDate(meta.published)],
+                    ["Last Modified", formatDate(meta["last-modified"])],
+                    ["Remarks", meta.remarks],
                   ]
                     .filter(([, v]) => v)
                     .map(([label, val]) => (
                       <tr key={label}>
-                        <th scope="row" className="text-normal text-base-dark" style={{ width: '160px' }}>
+                        <th
+                          scope="row"
+                          className="text-normal text-base-dark"
+                          style={{ width: "160px" }}
+                        >
                           {label}
                         </th>
                         <td>{String(val)}</td>
@@ -299,8 +313,8 @@ const OscalPage = ({ title, model, modelLabel }) => {
               {meta.locations && meta.locations.length > 0 && (
                 <ArraySection label="Locations" items={meta.locations} />
               )}
-              {meta['responsible-parties'] && (
-                <ArraySection label="Responsible Parties" items={meta['responsible-parties']} />
+              {meta["responsible-parties"] && (
+                <ArraySection label="Responsible Parties" items={meta["responsible-parties"]} />
               )}
               {meta.revisions && meta.revisions.length > 0 && (
                 <RevisionTimeline revisions={meta.revisions} />
@@ -313,24 +327,24 @@ const OscalPage = ({ title, model, modelLabel }) => {
         <h2 className="font-heading-md">Model Sections</h2>
         <div className="border-top border-base-lighter">
           {sectionKeys.map((key) => {
-            const val = model[key]
+            const val = model[key];
             if (Array.isArray(val)) {
-              return <ArraySection key={key} label={key} items={val} />
+              return <ArraySection key={key} label={key} items={val} />;
             }
-            if (val && typeof val === 'object') {
-              return <ObjectSection key={key} label={key} obj={val} />
+            if (val && typeof val === "object") {
+              return <ObjectSection key={key} label={key} obj={val} />;
             }
             return (
               <div key={key} className="margin-y-2 font-body-sm">
-                <span className="text-bold">{key}:</span>{' '}
+                <span className="text-bold">{key}:</span>{" "}
                 <span className="text-base-dark">{fmt(val)}</span>
               </div>
-            )
+            );
           })}
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
-export default OscalPage
+export default OscalPage;

@@ -1,8 +1,8 @@
-import React from 'react';
-import { graphql } from 'gatsby';
+import React from "react";
+import { graphql } from "gatsby";
 
-import Layout from '../components/layout';
-import SEO from '../components/seo';
+import Layout from "../components/layout";
+import SEO from "../components/seo";
 
 /*
   This is used in blog posts. The index page can be found at src/pages/blog.js
@@ -22,8 +22,7 @@ const BlogPost = ({ data }) => {
                 <h1 className="title">{frontmatter.title}</h1>
                 <div className="text-base margin-bottom-2">
                   <div className="margin-top-neg-105">
-                    By <span className="text-bold">{frontmatter.author}</span> ·{' '}
-                    {frontmatter.date}
+                    By <span className="text-bold">{frontmatter.author}</span> · {frontmatter.date}
                   </div>
                   <span dangerouslySetInnerHTML={{ __html: html }} />
                 </div>
@@ -37,13 +36,8 @@ const BlogPost = ({ data }) => {
 };
 
 export const pageQuery = graphql`
-  query($name: String!) {
-    markdownRemark(
-      fields: {
-        sourceName: { eq: "blog" }
-        name: { eq: $name }
-      }
-    ) {
+  query ($name: String!) {
+    markdownRemark(fields: { sourceName: { eq: "blog" }, name: { eq: $name } }) {
       html
       frontmatter {
         author

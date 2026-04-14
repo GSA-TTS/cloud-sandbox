@@ -1,9 +1,9 @@
-import React from 'react';
-import { graphql } from 'gatsby';
+import React from "react";
+import { graphql } from "gatsby";
 
-import Layout from '../components/layout';
-import SEO from '../components/seo';
-import Sidenav from '../components/sidenav';
+import Layout from "../components/layout";
+import SEO from "../components/seo";
+import Sidenav from "../components/sidenav";
 
 /*
   This template is for a single page that does not have a date associated with it. For example, an about page.
@@ -21,9 +21,11 @@ const Documentation = ({ data }) => {
           <div className="grid-row grid-gap">
             {frontmatter.sidenav && <Sidenav />}
 
-            <main id="main-content" className="usa-layout-docs__main desktop:grid-col-9 usa-prose"
-              dangerouslySetInnerHTML={{ __html: html }}>
-            </main>
+            <main
+              id="main-content"
+              className="usa-layout-docs__main desktop:grid-col-9 usa-prose"
+              dangerouslySetInnerHTML={{ __html: html }}
+            ></main>
           </div>
         </div>
       </div>
@@ -32,13 +34,8 @@ const Documentation = ({ data }) => {
 };
 
 export const pageQuery = graphql`
-  query($name: String!) {
-    markdownRemark(
-      fields: {
-        sourceName: { eq: "documentation" }
-        name: { eq: $name }
-      }
-    ) {
+  query ($name: String!) {
+    markdownRemark(fields: { sourceName: { eq: "documentation" }, name: { eq: $name } }) {
       html
       frontmatter {
         title

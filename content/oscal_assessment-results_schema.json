@@ -97,10 +97,7 @@
           "title": "Assessor's HQ",
           "address": {
             "type": "work",
-            "addr-lines": [
-              "Suite 0000",
-              "1234 Some Street"
-            ],
+            "addr-lines": ["Suite 0000", "1234 Some Street"],
             "city": "Haven",
             "state": "ME",
             "postal-code": "00000",
@@ -129,9 +126,7 @@
               "rel": "home-page"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
           "remarks": "Replace sample 3PAO information.\n\nIf the assessor is A2LA Certified, include the ISO/IEC-17020 "
         },
         {
@@ -157,15 +152,11 @@
               "rel": "reference"
             }
           ],
-          "email-addresses": [
-            "info@fedramp.gov"
-          ],
+          "email-addresses": ["info@fedramp.gov"],
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "1800 F St. NW"
-              ],
+              "addr-lines": ["1800 F St. NW"],
               "city": "Washington",
               "state": "DC",
               "postal-code": "20006",
@@ -190,20 +181,14 @@
               "value": "Office 1-A"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0001"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "e934d8b5-13e5-4f77-b55e-871e6f2df2fe",
@@ -216,20 +201,14 @@
               "value": "Mailstop 2-B"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0002"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "bcf47707-49e4-4acc-bf43-e63156046390",
@@ -242,20 +221,14 @@
               "value": "Mailstop 3-C"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0003"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "abc15ce6-1f43-4951-bcd5-ab62cdff7ed9",
@@ -268,20 +241,14 @@
               "value": "Mailstop 4-D"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0004"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "9135b789-a40c-4a20-9be6-fab23c0ab0f3",
@@ -299,20 +266,14 @@
               "value": "Mailstop 5-E"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0005"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "ca9fca9c-4a8a-4487-8242-0a06d6fbed1f",
@@ -330,18 +291,14 @@
               "value": "Mailstop 6-F"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "type": "mobile",
               "number": "000-000-0000"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"]
         },
         {
           "uuid": "877e5bdc-07c3-45da-a2b4-35367a9a0cd0",
@@ -354,9 +311,7 @@
               "value": "Individual's Title"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "type": "office",
@@ -366,10 +321,7 @@
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "Suite 0000",
-                "1234 Some Street"
-              ],
+              "addr-lines": ["Suite 0000", "1234 Some Street"],
               "city": "Haven",
               "state": "ME",
               "postal-code": "00000"
@@ -380,36 +332,26 @@
       "responsible-parties": [
         {
           "role-id": "fedramp-pmo",
-          "party-uuids": [
-            "77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"
-          ]
+          "party-uuids": ["77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"]
         },
         {
           "role-id": "prepared-by",
-          "party-uuids": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ],
+          "party-uuids": ["49f73135-efab-4275-9a79-003656ad890a"],
           "remarks": "Exactly one party\n\nThis is the assessor."
         },
         {
           "role-id": "prepared-for",
-          "party-uuids": [
-            "77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"
-          ],
+          "party-uuids": ["77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"],
           "remarks": "Exactly one party.\n\nThis is the UUID for the CSP in the SSP.\n\nIf no OSCAL-based SSP exists, create a CSP party in the SAP, and provide that UUID here."
         },
         {
           "role-id": "content-approver",
-          "party-uuids": [
-            "f4568fda-c6d2-4640-adec-0012015af7d0"
-          ],
+          "party-uuids": ["f4568fda-c6d2-4640-adec-0012015af7d0"],
           "remarks": "One ore more parties"
         },
         {
           "role-id": "assessor",
-          "party-uuids": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ],
+          "party-uuids": ["49f73135-efab-4275-9a79-003656ad890a"],
           "remarks": "Exactly one party\n\nAssessment Organization (3PAO)"
         },
         {
@@ -424,9 +366,7 @@
         },
         {
           "role-id": "assessment-lead",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "Exactly one party"
         },
         {
@@ -440,23 +380,17 @@
         },
         {
           "role-id": "penetration-test-lead",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "Exactly one party"
         },
         {
           "role-id": "assessment-executive",
-          "party-uuids": [
-            "f4568fda-c6d2-4640-adec-0012015af7d0"
-          ],
+          "party-uuids": ["f4568fda-c6d2-4640-adec-0012015af7d0"],
           "remarks": "Exactly one party"
         },
         {
           "role-id": "csp-operations-center",
-          "party-uuids": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "Exactly one party\n\nThe party-uuid should reference a party in the SSP.\n\nIf an appropriate party does not exist in the SSP, the SAP tool should add a party to the SAP, or have the CSP add the party to the SSP..\n\nThe SAP tool should not modify the SSP."
         },
         {
@@ -469,16 +403,12 @@
         },
         {
           "role-id": "csp-end-of-testing-poc",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "One or more parties"
         },
         {
           "role-id": "csp-results-poc",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "One or more parties"
         }
       ],
@@ -966,12 +896,8 @@
             "uuid": "d02f9117-84e3-4993-af59-c5ce5e8675ab",
             "title": "[EXAMPLE]Examine AC Policy",
             "description": "[EXAMPLE]The AC policy existed, and had all the required elements.",
-            "methods": [
-              "EXAMINE"
-            ],
-            "types": [
-              "control-objective"
-            ],
+            "methods": ["EXAMINE"],
+            "types": ["control-objective"],
             "origins": [
               {
                 "actors": [
@@ -1014,12 +940,8 @@
             "uuid": "29e4ce70-6a17-411d-aa65-ec7cef21e774",
             "title": "[EXAMPLE]AC Policy Interview",
             "description": "[EXAMPLE]The person interviewed knew about the policy and where to find it.",
-            "methods": [
-              "INTERVIEW"
-            ],
-            "types": [
-              "control-objective"
-            ],
+            "methods": ["INTERVIEW"],
+            "types": ["control-objective"],
             "origins": [
               {
                 "actors": [
@@ -1054,12 +976,8 @@
           {
             "uuid": "6841d8eb-a72c-4672-acc2-2fd265d9617d",
             "description": "Undocumented devices found on network.",
-            "methods": [
-              "TEST"
-            ],
-            "types": [
-              "finding"
-            ],
+            "methods": ["TEST"],
+            "types": ["finding"],
             "origins": [
               {
                 "actors": [
@@ -1106,12 +1024,8 @@
           {
             "uuid": "63fd3d97-26c9-4d4c-8d24-9fbc482b7f52",
             "description": "[EXAMPLE]Scanner Output.",
-            "methods": [
-              "TEST"
-            ],
-            "types": [
-              "finding"
-            ],
+            "methods": ["TEST"],
+            "types": ["finding"],
             "origins": [
               {
                 "actors": [
@@ -1158,12 +1072,8 @@
             "uuid": "9de7cba9-40fc-4c4d-b6af-01bd24f1def6",
             "title": "Operational Requirement",
             "description": "Provide the justification for the operational requirement.",
-            "methods": [
-              "EXAMINE"
-            ],
-            "types": [
-              "operational-requirement"
-            ],
+            "methods": ["EXAMINE"],
+            "types": ["operational-requirement"],
             "relevant-evidence": [
               {
                 "href": "#53af7193-b25d-4ed2-a82f-5954d2d0df61",
@@ -1180,12 +1090,8 @@
             "uuid": "46209140-8263-4e74-b3c9-cead4ffed22c",
             "title": "False Positive",
             "description": "Describe the false positive here.",
-            "methods": [
-              "EXAMINE"
-            ],
-            "types": [
-              "false-positive"
-            ],
+            "methods": ["EXAMINE"],
+            "types": ["false-positive"],
             "relevant-evidence": [
               {
                 "href": "#53af7193-b25d-4ed2-a82f-5954d2d0df61",
@@ -1202,12 +1108,8 @@
             "uuid": "7acee179-1570-4ea0-94dc-01b8c0a29c0a",
             "title": "Risk Adjustment",
             "description": "Describe the risk adjustment justification here.",
-            "methods": [
-              "EXAMINE"
-            ],
-            "types": [
-              "risk-adjustment"
-            ],
+            "methods": ["EXAMINE"],
+            "types": ["risk-adjustment"],
             "relevant-evidence": [
               {
                 "description": "Describe the risk adjustment evidence here.",
@@ -1225,12 +1127,8 @@
           {
             "uuid": "21b26801-2e00-4e59-979c-bf2a4ed93920",
             "description": "[EXAMPLE]Spear phishing test yielded a 22% click rate.\n\n[EXAMPLE]The target threshold was below 20%.",
-            "methods": [
-              "TEST"
-            ],
-            "types": [
-              "finding"
-            ],
+            "methods": ["TEST"],
+            "types": ["finding"],
             "origins": [
               {
                 "actors": [
@@ -1277,9 +1175,7 @@
                 "class": "infrastructure"
               }
             ],
-            "methods": [
-              "EXAMINE"
-            ],
+            "methods": ["EXAMINE"],
             "collected": "2023-05-10T00:00:00Z",
             "remarks": "Describe how comprehensive the scans were by using the FedRAMP \\\"scan-percentage\\\", \\\"discrepancies\\\", and \\\"ia-manual-review\\\" `prop` within the `observation` data item.\n\nIf the value of the \\\"discrepancies\\\" `prop` is \\\"yes\\\", that indicates that there are discrepancies between the inventory and the scanned items. In that case, a \\\"discrepancies-reason\\\" `prop` must be provided."
           },
@@ -1306,9 +1202,7 @@
                 "class": "database"
               }
             ],
-            "methods": [
-              "EXAMINE"
-            ],
+            "methods": ["EXAMINE"],
             "collected": "2023-05-10T03:00:00Z",
             "remarks": "Describe how comprehensive the scans were by using the FedRAMP \\\"scan-percentage\\\", \\\"discrepancies\\\", and \\\"ia-manual-review\\\" `prop` within the `observation` data item.\n\nIf the value of the \\\"discrepancies\\\" `prop` is \\\"yes\\\", that indicates that there are discrepancies between the inventory and the scanned items. In that case, a \\\"discrepancies-reason\\\" `prop` must be provided."
           },
@@ -1342,21 +1236,15 @@
                 "class": "web"
               }
             ],
-            "methods": [
-              "EXAMINE"
-            ],
+            "methods": ["EXAMINE"],
             "collected": "2023-05-10T03:00:00Z",
             "remarks": "Describe how comprehensive the scans were by using the FedRAMP \\\"scan-percentage\\\", \\\"discrepancies\\\", and \\\"ia-manual-review\\\" `prop` within the `observation` data item.\n\nIf the value of the \\\"discrepancies\\\" `prop` is \\\"yes\\\", that indicates that there are discrepancies between the inventory and the scanned items. In that case, a \\\"discrepancies-reason\\\" `prop` must be provided."
           },
           {
             "uuid": "21b26801-2e00-4e59-979c-bf2a4ed93920",
             "description": "[EXAMPLE]Describe the finding.",
-            "methods": [
-              "TEST"
-            ],
-            "types": [
-              "finding"
-            ],
+            "methods": ["TEST"],
+            "types": ["finding"],
             "origins": [
               {
                 "actors": [
@@ -1383,12 +1271,8 @@
           {
             "uuid": "A38F3BBA-5B71-400D-B8F2-D808E1D4627F",
             "description": "The policy describes a procedure, which could not be found.",
-            "methods": [
-              "EXAMINE"
-            ],
-            "types": [
-              "ssp-statement-issue"
-            ],
+            "methods": ["EXAMINE"],
+            "types": ["ssp-statement-issue"],
             "origins": [
               {
                 "actors": [

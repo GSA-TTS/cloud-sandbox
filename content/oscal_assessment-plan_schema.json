@@ -119,10 +119,7 @@
           "title": "Assessor's HQ",
           "address": {
             "type": "work",
-            "addr-lines": [
-              "Suite 0000",
-              "1234 Some Street"
-            ],
+            "addr-lines": ["Suite 0000", "1234 Some Street"],
             "city": "Haven",
             "state": "ME",
             "postal-code": "00000",
@@ -150,9 +147,7 @@
               "rel": "home-page"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
           "remarks": "Replace sample 3PAO information.\n\nIf the assessor is A2LA Certified, include the ISO/IEC-17020 "
         },
         {
@@ -170,15 +165,11 @@
               "rel": "logo"
             }
           ],
-          "email-addresses": [
-            "info@fedramp.gov"
-          ],
+          "email-addresses": ["info@fedramp.gov"],
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "1800 F St. NW"
-              ],
+              "addr-lines": ["1800 F St. NW"],
               "city": "Washington",
               "state": "DC",
               "postal-code": "20006",
@@ -203,20 +194,14 @@
               "value": "Office 1-A"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0001"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "e934d8b5-13e5-4f77-b55e-871e6f2df2fe",
@@ -229,20 +214,14 @@
               "value": "Office 2-B"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0002"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "bcf47707-49e4-4acc-bf43-e63156046390",
@@ -255,20 +234,14 @@
               "value": "Office 3-C"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0003"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "abc15ce6-1f43-4951-bcd5-ab62cdff7ed9",
@@ -281,20 +254,14 @@
               "value": "Office 4-D"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0004"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "9135b789-a40c-4a20-9be6-fab23c0ab0f3",
@@ -312,20 +279,14 @@
               "value": "Office 5-E"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0005"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ],
-          "member-of-organizations": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"],
+          "member-of-organizations": ["49f73135-efab-4275-9a79-003656ad890a"]
         },
         {
           "uuid": "ca9fca9c-4a8a-4487-8242-0a06d6fbed1f",
@@ -343,18 +304,14 @@
               "value": "Office 6-F"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "type": "mobile",
               "number": "000-000-0000"
             }
           ],
-          "location-uuids": [
-            "2ba201ac-8ee9-4a1d-812a-a755591a3963"
-          ]
+          "location-uuids": ["2ba201ac-8ee9-4a1d-812a-a755591a3963"]
         },
         {
           "uuid": "877e5bdc-07c3-45da-a2b4-35367a9a0cd0",
@@ -367,9 +324,7 @@
               "value": "Individual's Title"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "type": "office",
@@ -379,10 +334,7 @@
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "Suite 0000",
-                "1234 Some Street"
-              ],
+              "addr-lines": ["Suite 0000", "1234 Some Street"],
               "city": "Haven",
               "state": "ME",
               "postal-code": "00000"
@@ -393,36 +345,26 @@
       "responsible-parties": [
         {
           "role-id": "fedramp-pmo",
-          "party-uuids": [
-            "77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"
-          ]
+          "party-uuids": ["77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"]
         },
         {
           "role-id": "prepared-by",
-          "party-uuids": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ],
+          "party-uuids": ["49f73135-efab-4275-9a79-003656ad890a"],
           "remarks": "Exactly one party\n\nThis is the assessor."
         },
         {
           "role-id": "prepared-for",
-          "party-uuids": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "Exactly one party.\n\nThis is the UUID for the CSP in the imported SSP.\n\nIf no OSCAL-based SSP exists, create a CSP party in the SAP, and provide that UUID here."
         },
         {
           "role-id": "content-approver",
-          "party-uuids": [
-            "f4568fda-c6d2-4640-adec-0012015af7d0"
-          ],
+          "party-uuids": ["f4568fda-c6d2-4640-adec-0012015af7d0"],
           "remarks": "One ore more parties"
         },
         {
           "role-id": "assessor",
-          "party-uuids": [
-            "49f73135-efab-4275-9a79-003656ad890a"
-          ],
+          "party-uuids": ["49f73135-efab-4275-9a79-003656ad890a"],
           "remarks": "Exactly one party\n\nAssessment Organization (3PAO)"
         },
         {
@@ -448,9 +390,7 @@
         },
         {
           "role-id": "assessment-team",
-          "party-uuids": [
-            "9135b789-a40c-4a20-9be6-fab23c0ab0f3"
-          ],
+          "party-uuids": ["9135b789-a40c-4a20-9be6-fab23c0ab0f3"],
           "props": [
             {
               "name": "ia-validated",
@@ -466,9 +406,7 @@
         },
         {
           "role-id": "assessment-lead",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "Exactly one party"
         },
         {
@@ -482,23 +420,17 @@
         },
         {
           "role-id": "penetration-test-lead",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "Exactly one party"
         },
         {
           "role-id": "assessment-executive",
-          "party-uuids": [
-            "f4568fda-c6d2-4640-adec-0012015af7d0"
-          ],
+          "party-uuids": ["f4568fda-c6d2-4640-adec-0012015af7d0"],
           "remarks": "Exactly one party"
         },
         {
           "role-id": "csp-operations-center",
-          "party-uuids": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "Exactly one party\n\nThe party-uuid should observation-source a party in the SSP.\n\nIf an appropriate party does not exist in the SSP, the SAP tool should add a party to the SAP, or have the CSP add the party to the SSP.\n\nThe SAP tool should not modify the SSP."
         },
         {
@@ -512,9 +444,7 @@
         },
         {
           "role-id": "csp-end-of-testing-poc",
-          "party-uuids": [
-            "e934d8b5-13e5-4f77-b55e-871e6f2df2fe"
-          ],
+          "party-uuids": ["e934d8b5-13e5-4f77-b55e-871e6f2df2fe"],
           "remarks": "One or more parties"
         },
         {
@@ -673,11 +603,7 @@
           "authorized-privileges": [
             {
               "title": "Corrected Function List",
-              "functions-performed": [
-                "Add/Remove Groups",
-                "Add/Remove other admins",
-                "Manage logs"
-              ]
+              "functions-performed": ["Add/Remove Groups", "Add/Remove other admins", "Manage logs"]
             }
           ],
           "remarks": "The UUID assigned to the origional incorrect role in the SSP must be cited in the \\\"updates-uuid\\\" property.\n\nThe SAP syntax duplicates the SSP user syntax.\n\nThis local entry completely replaces the entry in the SSP.\n\nTools should duplicate the entire assembly from the SSP to this location, then allow the assessor to add or change the details.\n\nThis ensures the entry here is complete."
@@ -688,10 +614,7 @@
           "authorized-privileges": [
             {
               "title": "Typical External User",
-              "functions-performed": [
-                "View Team Content",
-                "View/Edit Individual Content"
-              ]
+              "functions-performed": ["View Team Content", "View/Edit Individual Content"]
             }
           ],
           "remarks": "The ID assigned to this missing role must not be used in the SSP user list.\n\nThe SAP user assembly duplicates the SSP user assembly, which requires a role-id.\n\nIf an existing role in the SSP is appropriate, reference it here.\n\nIf no appropriate role exists in the SSP, the role-id may be left blank in the SAP."

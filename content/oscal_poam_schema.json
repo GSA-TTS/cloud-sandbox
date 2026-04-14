@@ -55,9 +55,7 @@
         {
           "uuid": "1bd641ff-54a7-40d5-acc9-82eed9d22d4a",
           "address": {
-            "addr-lines": [
-              "1234 Main Street"
-            ],
+            "addr-lines": ["1234 Main Street"],
             "city": "Arlington",
             "state": "VA"
           },
@@ -70,9 +68,7 @@
           "type": "organization",
           "name": "Cloud Service Provider (CSP) Name",
           "short-name": "CSP Acronym/Short Name",
-          "location-uuids": [
-            "1bd641ff-54a7-40d5-acc9-82eed9d22d4a"
-          ],
+          "location-uuids": ["1bd641ff-54a7-40d5-acc9-82eed9d22d4a"],
           "remarks": "Replace sample CSP information."
         },
         {
@@ -98,15 +94,11 @@
               "rel": "reference"
             }
           ],
-          "email-addresses": [
-            "info@fedramp.gov"
-          ],
+          "email-addresses": ["info@fedramp.gov"],
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "1800 F St. NW"
-              ],
+              "addr-lines": ["1800 F St. NW"],
               "city": "Washington",
               "state": "DC",
               "postal-code": "20006",
@@ -131,9 +123,7 @@
               "value": "Individual's Title"
             }
           ],
-          "email-addresses": [
-            "name@example.com"
-          ],
+          "email-addresses": ["name@example.com"],
           "telephone-numbers": [
             {
               "number": "202-000-0001"
@@ -142,56 +132,40 @@
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "Address Line"
-              ],
+              "addr-lines": ["Address Line"],
               "city": "City",
               "state": "ST",
               "postal-code": "00000",
               "country": "US"
             }
           ],
-          "member-of-organizations": [
-            "72bf37e1-9f76-4261-886f-8e297599f365"
-          ]
+          "member-of-organizations": ["72bf37e1-9f76-4261-886f-8e297599f365"]
         }
       ],
       "responsible-parties": [
         {
           "role-id": "cloud-service-provider",
-          "party-uuids": [
-            "72bf37e1-9f76-4261-886f-8e297599f365"
-          ]
+          "party-uuids": ["72bf37e1-9f76-4261-886f-8e297599f365"]
         },
         {
           "role-id": "fedramp-pmo",
-          "party-uuids": [
-            "8cc0b8e5-9650-4d5f-9796-316f05fa9a2d"
-          ]
+          "party-uuids": ["8cc0b8e5-9650-4d5f-9796-316f05fa9a2d"]
         },
         {
           "role-id": "fedramp-jab",
-          "party-uuids": [
-            "ca9ba80e-1342-4bfd-b32a-abac468c24b4"
-          ]
+          "party-uuids": ["ca9ba80e-1342-4bfd-b32a-abac468c24b4"]
         },
         {
           "role-id": "prepared-by",
-          "party-uuids": [
-            "72bf37e1-9f76-4261-886f-8e297599f365"
-          ]
+          "party-uuids": ["72bf37e1-9f76-4261-886f-8e297599f365"]
         },
         {
           "role-id": "prepared-for",
-          "party-uuids": [
-            "72bf37e1-9f76-4261-886f-8e297599f365"
-          ]
+          "party-uuids": ["72bf37e1-9f76-4261-886f-8e297599f365"]
         },
         {
           "role-id": "information-system-security-officer",
-          "party-uuids": [
-            "afe665d1-9021-4ad8-8bd2-c15b0f2dcf2d"
-          ]
+          "party-uuids": ["afe665d1-9021-4ad8-8bd2-c15b0f2dcf2d"]
         }
       ]
     },
@@ -280,12 +254,8 @@
       {
         "uuid": "0aa54106-8a63-4953-ac0d-30ff91f8d4ab",
         "description": "",
-        "methods": [
-          "TEST"
-        ],
-        "types": [
-          "finding"
-        ],
+        "methods": ["TEST"],
+        "types": ["finding"],
         "origins": [
           {
             "actors": [
@@ -312,12 +282,8 @@
       {
         "uuid": "63fd3d97-26c9-4d4c-8d24-9fbc482b7f52",
         "description": "[EXAMPLE]Scanner Output.",
-        "methods": [
-          "TEST"
-        ],
-        "types": [
-          "finding"
-        ],
+        "methods": ["TEST"],
+        "types": ["finding"],
         "origins": [
           {
             "actors": [
@@ -366,12 +332,8 @@
         "uuid": "6c103050-d72a-4391-b830-dc669641231c",
         "title": "Vendor Dependency",
         "description": "Describe the vendor dependency here.",
-        "methods": [
-          "INTERVIEW"
-        ],
-        "types": [
-          "vendor-dependency"
-        ],
+        "methods": ["INTERVIEW"],
+        "types": ["vendor-dependency"],
         "subjects": [
           {
             "subject-uuid": "a49ed61e-fca1-4ffa-b5e7-c23a2375a7a0",
@@ -384,12 +346,8 @@
         "uuid": "9de7cba9-40fc-4c4d-b6af-01bd24f1def6",
         "title": "Operational Requirement",
         "description": "Provide the justification for the operational requirement.",
-        "methods": [
-          "EXAMINE"
-        ],
-        "types": [
-          "operational-requirement"
-        ],
+        "methods": ["EXAMINE"],
+        "types": ["operational-requirement"],
         "relevant-evidence": [
           {
             "href": "#53af7193-b25d-4ed2-a82f-5954d2d0df61",
@@ -406,12 +364,8 @@
         "uuid": "46209140-8263-4e74-b3c9-cead4ffed22c",
         "title": "False Positive",
         "description": "Describe the false positive here.",
-        "methods": [
-          "EXAMINE"
-        ],
-        "types": [
-          "false-positive"
-        ],
+        "methods": ["EXAMINE"],
+        "types": ["false-positive"],
         "relevant-evidence": [
           {
             "href": "#53af7193-b25d-4ed2-a82f-5954d2d0df61",
@@ -428,12 +382,8 @@
         "uuid": "7acee179-1570-4ea0-94dc-01b8c0a29c0a",
         "title": "Risk Adjustment",
         "description": "Describe the risk adjustment justification here.",
-        "methods": [
-          "EXAMINE"
-        ],
-        "types": [
-          "risk-adjustment"
-        ],
+        "methods": ["EXAMINE"],
+        "types": ["risk-adjustment"],
         "relevant-evidence": [
           {
             "description": "Describe the risk adjustment evidence here.",

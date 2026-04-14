@@ -65,87 +65,87 @@ regexes = [
 # ── Custom rules: GCP credentials ────────────────────────────────────────────
 
 [[rules]]
-id          = "gcp-service-account-json"
+id = "gcp-service-account-json"
 description = "GCP service account JSON key (inline or file)"
-regex       = '''(?i)(GOOGLE_CREDENTIALS|GOOGLE_APPLICATION_CREDENTIALS)\s*[=:]\s*['\"]?\{[^}]*"type"\s*:\s*"service_account"'''
+regex = '''(?i)(GOOGLE_CREDENTIALS|GOOGLE_APPLICATION_CREDENTIALS)\s*[=:]\s*['\"]?\{[^}]*"type"\s*:\s*"service_account"'''
 secretGroup = 1
-tags        = ["gcp", "service-account", "key"]
-  [rules.allowlist]
-  # .env.example files intentionally contain placeholder SA JSON structures
-  paths = ["scripts/envs/gcp.env.example"]
-  regexes = ["YOUR_PROJECT_ID"]
+tags = ["gcp", "service-account", "key"]
+[rules.allowlist]
+# .env.example files intentionally contain placeholder SA JSON structures
+paths = ["scripts/envs/gcp.env.example"]
+regexes = ["YOUR_PROJECT_ID"]
 [[rules]]
-id          = "gcp-service-account-private-key"
+id = "gcp-service-account-private-key"
 description = "GCP service account private_key field inside a JSON blob"
-regex       = '''"private_key"\s*:\s*"-----BEGIN [A-Z ]+ KEY-----'''
-tags        = ["gcp", "service-account", "private-key"]
+regex = '''"private_key"\s*:\s*"-----BEGIN [A-Z ]+ KEY-----'''
+tags = ["gcp", "service-account", "private-key"]
 
-  [rules.allowlist]
-  # .env.example files contain a placeholder \n... stub, not a real key
-  paths   = ["scripts/envs/gcp.env.example"]
-  regexes = ['''-----BEGIN RSA PRIVATE KEY-----\\n\.\.\.''']
+[rules.allowlist]
+# .env.example files contain a placeholder \n... stub, not a real key
+paths = ["scripts/envs/gcp.env.example"]
+regexes = ['''-----BEGIN RSA PRIVATE KEY-----\\n\.\.\.''']
 
 [[rules]]
-id          = "gcp-api-key"
+id = "gcp-api-key"
 description = "GCP API key (AIza prefix, 39 chars)"
-regex       = '''AIza[0-9A-Za-z\-_]{35}'''
-tags        = ["gcp", "api-key"]
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
+tags = ["gcp", "api-key"]
 
-  [rules.allowlist]
-  # GCP API keys from docs examples
-  regexes = ["AIzaSyEXAMPLE"]
+[rules.allowlist]
+# GCP API keys from docs examples
+regexes = ["AIzaSyEXAMPLE"]
 
 [[rules]]
-id          = "gcp-oauth-client-secret"
+id = "gcp-oauth-client-secret"
 description = "GCP OAuth 2.0 client secret"
-regex       = '''GOCSPX-[0-9A-Za-z\-_]{28}'''
-tags        = ["gcp", "oauth"]
+regex = '''GOCSPX-[0-9A-Za-z\-_]{28}'''
+tags = ["gcp", "oauth"]
 
 # ── Custom rules: Azure credentials ──────────────────────────────────────────
 
 [[rules]]
-id          = "azure-arm-client-secret"
+id = "azure-arm-client-secret"
 description = "Azure ARM_CLIENT_SECRET in env file or shell export"
-regex       = '''(?i)(ARM_CLIENT_SECRET|AZURE_CLIENT_SECRET)\s*[=:]\s*['"]?([A-Za-z0-9~._\-]{30,})['"]?'''
+regex = '''(?i)(ARM_CLIENT_SECRET|AZURE_CLIENT_SECRET)\s*[=:]\s*['"]?([A-Za-z0-9~._\-]{30,})['"]?'''
 secretGroup = 2
-tags        = ["azure", "service-principal"]
+tags = ["azure", "service-principal"]
 
-  [rules.allowlist]
-  regexes = ["CHANGEME-sp-secret"]
+[rules.allowlist]
+regexes = ["CHANGEME-sp-secret"]
 
 [[rules]]
-id          = "azure-storage-connection-string"
+id = "azure-storage-connection-string"
 description = "Azure Storage account connection string"
-regex       = '''DefaultEndpointsProtocol=https;AccountName=[^;]+;AccountKey=[A-Za-z0-9+/]{86}=='''
-tags        = ["azure", "storage", "connection-string"]
+regex = '''DefaultEndpointsProtocol=https;AccountName=[^;]+;AccountKey=[A-Za-z0-9+/]{86}=='''
+tags = ["azure", "storage", "connection-string"]
 
 [[rules]]
-id          = "azure-storage-account-key"
+id = "azure-storage-account-key"
 description = "Azure Storage account key (Base64, 88 chars ending ==)"
-regex       = '''(?i)(AZURE_STORAGE_KEY|STORAGE_ACCOUNT_KEY|AccountKey)\s*[=:]\s*['"]?([A-Za-z0-9+/]{86}==)['"]?'''
+regex = '''(?i)(AZURE_STORAGE_KEY|STORAGE_ACCOUNT_KEY|AccountKey)\s*[=:]\s*['"]?([A-Za-z0-9+/]{86}==)['"]?'''
 secretGroup = 2
-tags        = ["azure", "storage"]
+tags = ["azure", "storage"]
 
 [[rules]]
-id          = "azure-sas-token"
+id = "azure-sas-token"
 description = "Azure Shared Access Signature token"
-regex       = '''sv=20\d{2}-\d{2}-\d{2}&s[a-z]=&[a-z]+=[^&\s'"]{10,}&sig=[A-Za-z0-9+/%]{40,}'''
-tags        = ["azure", "sas-token"]
+regex = '''sv=20\d{2}-\d{2}-\d{2}&s[a-z]=&[a-z]+=[^&\s'"]{10,}&sig=[A-Za-z0-9+/%]{40,}'''
+tags = ["azure", "sas-token"]
 
 [[rules]]
-id          = "azure-eventhubs-connection-string"
+id = "azure-eventhubs-connection-string"
 description = "Azure Event Hubs / Service Bus connection string"
-regex       = '''Endpoint=sb://[^.]+\.servicebus\.windows\.net/[^;]*;SharedAccessKeyName=[^;]+;SharedAccessKey=[A-Za-z0-9+/=]{44}'''
-tags        = ["azure", "eventhubs", "servicebus"]
+regex = '''Endpoint=sb://[^.]+\.servicebus\.windows\.net/[^;]*;SharedAccessKeyName=[^;]+;SharedAccessKey=[A-Za-z0-9+/=]{44}'''
+tags = ["azure", "eventhubs", "servicebus"]
 
 # ── Custom rules: Cloud Foundry / CSB broker credentials ─────────────────────
 
 [[rules]]
-id          = "cf-broker-password"
+id = "cf-broker-password"
 description = "CSB broker SECURITY_USER_PASSWORD set to a real (non-example) value"
-regex       = '''(?i)SECURITY_USER_PASSWORD\s*[=:]\s*['"]?([A-Za-z0-9!@#$%^&*()\-_+=]{16,})['"]?'''
+regex = '''(?i)SECURITY_USER_PASSWORD\s*[=:]\s*['"]?([A-Za-z0-9!@#$%^&*()\-_+=]{16,})['"]?'''
 secretGroup = 1
-tags        = ["cf", "broker", "password"]
+tags = ["cf", "broker", "password"]
 
-  [rules.allowlist]
-  regexes = ["CHANGEME-strong-password", "REPLACE_WITH_STRONG_PASSWORD"]
+[rules.allowlist]
+regexes = ["CHANGEME-strong-password", "REPLACE_WITH_STRONG_PASSWORD"]

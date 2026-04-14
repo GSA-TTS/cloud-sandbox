@@ -51,10 +51,10 @@ jobs:
 
       - name: Trigger GitLab pipeline
         env:
-          GITLAB_API_URL:    ${{ secrets.GITLAB_API_URL || 'https://gitlab.com' }}
+          GITLAB_API_URL: ${{ secrets.GITLAB_API_URL || 'https://gitlab.com' }}
           GITLAB_PROJECT_ID: ${{ secrets.GITLAB_PROJECT_ID }}
-          TRIGGER_TOKEN:     ${{ secrets.GITLAB_PIPELINE_TRIGGER_TOKEN }}
-          GITLAB_REF:        ${{ secrets.GITLAB_REF || 'main' }}
+          TRIGGER_TOKEN: ${{ secrets.GITLAB_PIPELINE_TRIGGER_TOKEN }}
+          GITLAB_REF: ${{ secrets.GITLAB_REF || 'main' }}
         run: |
           echo "Triggering GitLab pipeline for ref: ${GITLAB_REF}"
           HTTP_STATUS=$(curl --silent --output /tmp/gl-response.json --write-out "%{http_code}" \

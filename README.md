@@ -24,14 +24,14 @@ sandbox budget ceiling mandated by TTS Infrastructure policy.
 
 ### Key Outcomes
 
-| Outcome | Detail |
-|---------|--------|
-| **Zero idle spend** | Sandbox instances auto-deprovision after 8 hours; one 4-hour renewal permitted |
-| **Budget guardrails** | Hard $500/mo ceiling with 80%/100% alert thresholds and automated service suspension |
-| **Audit-ready tagging** | All resources tagged: `Project`, `Owner`, `TTLExpiry`, `CostCenter`, `Cloud`, `Environment` |
-| **Self-service provisioning** | Engineers use standard `cf` CLI; no IAM access or cloud console required |
-| **FedRAMP alignment** | Inherits cloud.gov FedRAMP Moderate controls; OSCAL-maintained per service broker |
-| **Security baseline** | Prowler continuous scanning of all three CSP accounts for CIS/FedRAMP hardening |
+| Outcome                       | Detail                                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------------------------- |
+| **Zero idle spend**           | Sandbox instances auto-deprovision after 8 hours; one 4-hour renewal permitted              |
+| **Budget guardrails**         | Hard $500/mo ceiling with 80%/100% alert thresholds and automated service suspension        |
+| **Audit-ready tagging**       | All resources tagged: `Project`, `Owner`, `TTLExpiry`, `CostCenter`, `Cloud`, `Environment` |
+| **Self-service provisioning** | Engineers use standard `cf` CLI; no IAM access or cloud console required                    |
+| **FedRAMP alignment**         | Inherits cloud.gov FedRAMP Moderate controls; OSCAL-maintained per service broker           |
+| **Security baseline**         | Prowler continuous scanning of all three CSP accounts for CIS/FedRAMP hardening             |
 
 ---
 
@@ -60,14 +60,14 @@ sandbox budget ceiling mandated by TTS Infrastructure policy.
 
 ## Architecture
 
-| Layer | Component | Responsibility |
-|-------|-----------|----------------|
-| **Provisioning** | CSB + aws/gcp/azure-brokerpak | Create, bind, update, delete service instances via OpenTofu |
-| **Governance** | TTL Controller (CF cron task) | Tag at creation; poll for expired instances; `cf delete-service` |
-| **Cost Observability** | AWS Budgets / GCP Budget API / Azure Cost Management | Spending alerts at 50%, 80%, 100% thresholds |
-| **Secrets** | CredHub (cloud.gov native) | Encrypt and manage all per-binding cloud credentials |
-| **Audit** | CF audit events + `.csb.db` + OpenTofu state | Log all lifecycle events with timestamp, actor, and state |
-| **Security Scanning** | Prowler (submodule) | Continuous CIS/FedRAMP baseline assessment across all CSPs |
+| Layer                  | Component                                            | Responsibility                                                   |
+| ---------------------- | ---------------------------------------------------- | ---------------------------------------------------------------- |
+| **Provisioning**       | CSB + aws/gcp/azure-brokerpak                        | Create, bind, update, delete service instances via OpenTofu      |
+| **Governance**         | TTL Controller (CF cron task)                        | Tag at creation; poll for expired instances; `cf delete-service` |
+| **Cost Observability** | AWS Budgets / GCP Budget API / Azure Cost Management | Spending alerts at 50%, 80%, 100% thresholds                     |
+| **Secrets**            | CredHub (cloud.gov native)                           | Encrypt and manage all per-binding cloud credentials             |
+| **Audit**              | CF audit events + `.csb.db` + OpenTofu state         | Log all lifecycle events with timestamp, actor, and state        |
+| **Security Scanning**  | Prowler (submodule)                                  | Continuous CIS/FedRAMP baseline assessment across all CSPs       |
 
 ### Lifecycle State Machine
 
@@ -90,17 +90,17 @@ ACTIVE  (TTL clock running, cost telemetry active)
 Broker: `csb-aws-sandbox` — deployed and registered in `gsa-tts-iae-lava-beds / dev`
 App: `csb-aws` (route auto-assigned by cloud.gov, e.g. `csb-aws-<random>.app.cloud.gov`) · Memory: 1G · Buildpack: binary
 
-| Service | Plan | CF Marketplace Status | Constraints |
-|---------|------|-----------------------|-------------|
-| `csb-aws-s3-bucket` | `sandbox-8h` | ✅ Available | Private ACL; no versioning |
-| `csb-aws-postgresql` | `sandbox-8h` | ✅ Available | `db.t3.micro`; no multi-AZ |
-| `csb-aws-mysql` | `sandbox-8h` | ✅ Available | `db.t3.micro`; no multi-AZ |
-| `csb-aws-redis` | `sandbox-8h` | ✅ Available | `t2.micro`; single-node |
-| `csb-aws-sqs` | `sandbox-8h` | ✅ Available | Standard queues only |
-| `csb-aws-aurora-postgresql` | `not-available` | 🚫 Stub | Not approved for sandbox |
-| `csb-aws-aurora-mysql` | `not-available` | 🚫 Stub | Not approved for sandbox |
-| `csb-aws-mssql` | `not-available` | 🚫 Stub | Not approved for sandbox |
-| `csb-aws-dynamodb-namespace` | `not-available` | 🚫 Stub | Not approved for sandbox |
+| Service                      | Plan            | CF Marketplace Status | Constraints                |
+| ---------------------------- | --------------- | --------------------- | -------------------------- |
+| `csb-aws-s3-bucket`          | `sandbox-8h`    | ✅ Available          | Private ACL; no versioning |
+| `csb-aws-postgresql`         | `sandbox-8h`    | ✅ Available          | `db.t3.micro`; no multi-AZ |
+| `csb-aws-mysql`              | `sandbox-8h`    | ✅ Available          | `db.t3.micro`; no multi-AZ |
+| `csb-aws-redis`              | `sandbox-8h`    | ✅ Available          | `t2.micro`; single-node    |
+| `csb-aws-sqs`                | `sandbox-8h`    | ✅ Available          | Standard queues only       |
+| `csb-aws-aurora-postgresql`  | `not-available` | 🚫 Stub               | Not approved for sandbox   |
+| `csb-aws-aurora-mysql`       | `not-available` | 🚫 Stub               | Not approved for sandbox   |
+| `csb-aws-mssql`              | `not-available` | 🚫 Stub               | Not approved for sandbox   |
+| `csb-aws-dynamodb-namespace` | `not-available` | 🚫 Stub               | Not approved for sandbox   |
 
 > **Stub plans** are required by CSB v2.6.10 for brokerpak services that define no built-in plans.
 > They appear in the marketplace but cannot be used to provision resources. To promote a stub
@@ -111,23 +111,23 @@ App: `csb-aws` (route auto-assigned by cloud.gov, e.g. `csb-aws-<random>.app.clo
 Broker: `csb-gcp-sandbox` — deployed and registered in `gsa-tts-iae-lava-beds / dev`
 App: `csb-gcp` (route auto-assigned by cloud.gov, e.g. `csb-gcp-<random>.app.cloud.gov`) · Memory: 1G · Buildpack: binary
 
-| Service | Plan | CF Marketplace Status | Constraints |
-|---------|------|-----------------------|-------------|
-| `csb-google-storage-bucket` | `sandbox-8h` | ✅ Available | Uniform ACL; 10-day lifecycle delete |
-| `csb-google-postgres` | `sandbox-8h` | ✅ Available | `db-f1-micro`; no HA/PITR |
-| `csb-google-mysql` | `sandbox-8h` | ✅ Available | `db-f1-micro`; no HA/PITR |
+| Service                     | Plan         | CF Marketplace Status | Constraints                          |
+| --------------------------- | ------------ | --------------------- | ------------------------------------ |
+| `csb-google-storage-bucket` | `sandbox-8h` | ✅ Available          | Uniform ACL; 10-day lifecycle delete |
+| `csb-google-postgres`       | `sandbox-8h` | ✅ Available          | `db-f1-micro`; no HA/PITR            |
+| `csb-google-mysql`          | `sandbox-8h` | ✅ Available          | `db-f1-micro`; no HA/PITR            |
 
 ### Azure (`submodules/csb-brokerpak-azure`)
 
 Broker: `csb-azure-sandbox` — **pending deployment** (requires `scripts/envs/azure.env`)
 
-| Service | Plan | CF Marketplace Status | Constraints |
-|---------|------|-----------------------|-------------|
-| `csb-azure-postgresql` | `sandbox-8h` | ⏳ Pending deploy | Flexible Server `B1ms`; no zone redundancy |
-| `csb-azure-mssql` | `sandbox-8h` | ⏳ Pending deploy | Basic 2 DTU; no geo-replication |
-| `csb-azure-redis` | `sandbox-8h` | ⏳ Pending deploy | `C0` Basic; no clustering |
-| `csb-azure-storage-account` | `sandbox-8h` | ⏳ Pending deploy | LRS only |
-| `csb-azure-eventhubs` | `sandbox-8h` | ⏳ Pending deploy | Basic namespace, 1 TU |
+| Service                     | Plan         | CF Marketplace Status | Constraints                                |
+| --------------------------- | ------------ | --------------------- | ------------------------------------------ |
+| `csb-azure-postgresql`      | `sandbox-8h` | ⏳ Pending deploy     | Flexible Server `B1ms`; no zone redundancy |
+| `csb-azure-mssql`           | `sandbox-8h` | ⏳ Pending deploy     | Basic 2 DTU; no geo-replication            |
+| `csb-azure-redis`           | `sandbox-8h` | ⏳ Pending deploy     | `C0` Basic; no clustering                  |
+| `csb-azure-storage-account` | `sandbox-8h` | ⏳ Pending deploy     | LRS only                                   |
+| `csb-azure-eventhubs`       | `sandbox-8h` | ⏳ Pending deploy     | Basic namespace, 1 TU                      |
 
 > **Service not on the approved list?**
 > Provisioning returns `HTTP 503`. CI automatically opens a GitHub Issue tagged
@@ -161,15 +161,15 @@ OSCAL (Open Security Controls Assessment Language) content is maintained for eve
 broker and every resource type provisioned, providing machine-readable control inheritance
 mappings that stay current with the brokerpak catalog.
 
-| OSCAL Document | Purpose |
-|---------------|---------|
-| `content/oscal_ssp_schema.json` | System Security Plan — control implementation statements per brokerpak |
-| `content/oscal_catalog_schema.json` | Control catalog baseline (NIST SP 800-53 Rev 5) |
-| `content/oscal_profile_schema.json` | FedRAMP Moderate profile overlay |
-| `content/oscal_component_schema.json` | Per-service component definitions (RDS, GCS, Azure PG, etc.) |
-| `content/oscal_assessment-plan_schema.json` | Assessment plan driven by Prowler scan findings |
-| `content/oscal_assessment-results_schema.json` | SAR populated from Prowler scan results |
-| `content/oscal_poam_schema.json` | Plan of Action & Milestones for open findings |
+| OSCAL Document                                 | Purpose                                                                |
+| ---------------------------------------------- | ---------------------------------------------------------------------- |
+| `content/oscal_ssp_schema.json`                | System Security Plan — control implementation statements per brokerpak |
+| `content/oscal_catalog_schema.json`            | Control catalog baseline (NIST SP 800-53 Rev 5)                        |
+| `content/oscal_profile_schema.json`            | FedRAMP Moderate profile overlay                                       |
+| `content/oscal_component_schema.json`          | Per-service component definitions (RDS, GCS, Azure PG, etc.)           |
+| `content/oscal_assessment-plan_schema.json`    | Assessment plan driven by Prowler scan findings                        |
+| `content/oscal_assessment-results_schema.json` | SAR populated from Prowler scan results                                |
+| `content/oscal_poam_schema.json`               | Plan of Action & Milestones for open findings                          |
 
 **Workflow:** When a new service is added to a brokerpak, a Copilot task (`.github/agents/oscal.md`)
 opens a PR to add the corresponding OSCAL component definition and update the SSP
@@ -183,6 +183,7 @@ control implementation statements.
 and scanning across all three CSP accounts.
 
 **Scope:**
+
 - CIS Benchmark assessments for AWS, GCP, and Azure
 - FedRAMP Moderate control checks
 - Continuous baseline hardening validation
@@ -208,26 +209,26 @@ Scan results are exported to the audit S3 bucket on completion.
 
 ## Cost & Budget Monitoring
 
-| Threshold | Action | Escalation |
-|-----------|--------|------------|
-| 50% ($250) | Email + Slack alert to space owner | Awareness only |
-| 80% ($400) | Alert + new provisioning requires TechOps approval | Email `tts-tech-operations@gsa.gov` |
-| 100% ($500) | Suspend all sandbox provisioning; TTL deprovision continues | Pager + GSA spend reporting |
-| Anomaly spike | Auto-deprovision instances >3x average hourly cost | Immediate notify + optional auto-kill |
+| Threshold     | Action                                                      | Escalation                            |
+| ------------- | ----------------------------------------------------------- | ------------------------------------- |
+| 50% ($250)    | Email + Slack alert to space owner                          | Awareness only                        |
+| 80% ($400)    | Alert + new provisioning requires TechOps approval          | Email `tts-tech-operations@gsa.gov`   |
+| 100% ($500)   | Suspend all sandbox provisioning; TTL deprovision continues | Pager + GSA spend reporting           |
+| Anomaly spike | Auto-deprovision instances >3x average hourly cost          | Immediate notify + optional auto-kill |
 
 ### Required Resource Tags
 
 Every resource carries these tags, injected by OpenTofu at provision time:
 
-| Tag | Example | Required |
-|-----|---------|----------|
-| `Project` | `tts-sandbox-<your-username>` | YES |
-| `Owner` | `your.name@gsa.gov` | YES |
-| `TTLExpiry` | `2026-04-14T22:00:00Z` | YES |
-| `CostCenter` | `sandbox-nonprod` | YES |
-| `Cloud` | `aws` / `gcp` / `azure` | YES |
-| `Environment` | `sandbox` | YES |
-| `Brokerpak` | `csb-aws-postgresql-sandbox-8h` | RECOMMENDED |
+| Tag           | Example                         | Required    |
+| ------------- | ------------------------------- | ----------- |
+| `Project`     | `tts-sandbox-<your-username>`   | YES         |
+| `Owner`       | `your.name@gsa.gov`             | YES         |
+| `TTLExpiry`   | `2026-04-14T22:00:00Z`          | YES         |
+| `CostCenter`  | `sandbox-nonprod`               | YES         |
+| `Cloud`       | `aws` / `gcp` / `azure`         | YES         |
+| `Environment` | `sandbox`                       | YES         |
+| `Brokerpak`   | `csb-aws-postgresql-sandbox-8h` | RECOMMENDED |
 
 ---
 
@@ -235,10 +236,10 @@ Every resource carries these tags, injected by OpenTofu at provision time:
 
 This repo follows a **public-GitHub / private-GitLab** split:
 
-| Repo | Role |
-|------|------|
-| **GitHub** (`GSA-TTS/cloud-sandbox`) | Public documentation and reuse template — no secrets |
-| **GitLab** (production mirror) | GitLab runners, CI/CD variables, production `cf push` |
+| Repo                                 | Role                                                  |
+| ------------------------------------ | ----------------------------------------------------- |
+| **GitHub** (`GSA-TTS/cloud-sandbox`) | Public documentation and reuse template — no secrets  |
+| **GitLab** (production mirror)       | GitLab runners, CI/CD variables, production `cf push` |
 
 ```
 GitHub merge to main
@@ -260,6 +261,7 @@ GitLab .gitlab-ci.yml
 Each deploy job is **version-pinned** to its submodule's `manifest.yml` version and only triggers when files in that submodule (or its deploy scripts) change.
 
 **Set up the webhook:**
+
 1. GitHub: add `GITLAB_PROJECT_ID`, `GITLAB_PIPELINE_TRIGGER_TOKEN`, `GITLAB_API_URL` as repository secrets.
 2. GitLab: add all CF and CSP credentials as CI/CD variables (masked). See `.github/agents/cicd-pipeline.md`.
 
@@ -267,13 +269,13 @@ Each deploy job is **version-pinned** to its submodule's `manifest.yml` version 
 
 ## Implementation Phases
 
-| Phase | Description | Duration |
-|-------|-------------|----------|
-| **1** | Core CSB Deployment — load brokerpaks, CredHub credentials, verify provision/delete | 2 weeks |
-| **2** | TTL Controller — `ttl_expires_at` injection, T-1h notification, auto-deprovision, retry | 1 week |
-| **3** | Budget Integration — AWS/GCP/Azure alerts at 50/80/100%, provisioning gate, CF quota | 1 week |
-| **4** | Audit & Observability — OpenTofu state to S3, CF audit events, cost dashboard | 1 week |
-| **5** | Self-Service Portal *(optional)* — FastAPI + React UI; Slack bot | Ongoing |
+| Phase | Description                                                                             | Duration |
+| ----- | --------------------------------------------------------------------------------------- | -------- |
+| **1** | Core CSB Deployment — load brokerpaks, CredHub credentials, verify provision/delete     | 2 weeks  |
+| **2** | TTL Controller — `ttl_expires_at` injection, T-1h notification, auto-deprovision, retry | 1 week   |
+| **3** | Budget Integration — AWS/GCP/Azure alerts at 50/80/100%, provisioning gate, CF quota    | 1 week   |
+| **4** | Audit & Observability — OpenTofu state to S3, CF audit events, cost dashboard           | 1 week   |
+| **5** | Self-Service Portal _(optional)_ — FastAPI + React UI; Slack bot                        | Ongoing  |
 
 ---
 
@@ -294,11 +296,11 @@ write them to the corresponding `scripts/envs/<provider>.env` file.
 See **[docs/credential-provisioning.md](docs/credential-provisioning.md)** for
 the full step-by-step guide:
 
-| Provider | CLI | Doc section |
-|----------|-----|-------------|
-| AWS | `aws-cli` | [AWS — brew install → IAM user → access key → aws.env](docs/credential-provisioning.md#aws----aws-cli) |
-| Azure | `azd` + `az` | [Azure — brew install → service principal → azure.env](docs/credential-provisioning.md#azure----azd--az) |
-| GCP | `gcloud` | [GCP — brew install → service account → gcp.env](docs/credential-provisioning.md#gcp----gcloud) |
+| Provider | CLI          | Doc section                                                                                              |
+| -------- | ------------ | -------------------------------------------------------------------------------------------------------- |
+| AWS      | `aws-cli`    | [AWS — brew install → IAM user → access key → aws.env](docs/credential-provisioning.md#aws----aws-cli)   |
+| Azure    | `azd` + `az` | [Azure — brew install → service principal → azure.env](docs/credential-provisioning.md#azure----azd--az) |
+| GCP      | `gcloud`     | [GCP — brew install → service account → gcp.env](docs/credential-provisioning.md#gcp----gcloud)          |
 
 ```bash
 # Quick-copy the example files, then fill in with values from the guide above

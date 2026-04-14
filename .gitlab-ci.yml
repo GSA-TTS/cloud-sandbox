@@ -50,17 +50,17 @@
 # ── Brokerpak versions pinned to submodule manifest.yml -----------------------
 # Update these when you bump a submodule commit pointer.
 variables:
-  CSB_AWS_VERSION:    "0.1.0"   # submodules/csb-brokerpak-aws/manifest.yml
-  CSB_GCP_VERSION:    "0.1.0"   # submodules/csb-brokerpak-gcp/manifest.yml
-  CSB_AZURE_VERSION:  "0.1.0"   # submodules/csb-brokerpak-azure/manifest.yml
-  PROWLER_VERSION:    "5.23.0"  # submodules/prowler/pyproject.toml
-  MYSQL_INSTANCE:     "csb-sql"
-  APP_NAME_AWS:       "csb-aws"
-  APP_NAME_GCP:       "csb-gcp"
-  APP_NAME_AZURE:     "csb-azure"
-  BROKER_NAME_AWS:    "csb-aws-sandbox"
-  BROKER_NAME_GCP:    "csb-gcp-sandbox"
-  BROKER_NAME_AZURE:  "csb-azure-sandbox"
+  CSB_AWS_VERSION: "0.1.0" # submodules/csb-brokerpak-aws/manifest.yml
+  CSB_GCP_VERSION: "0.1.0" # submodules/csb-brokerpak-gcp/manifest.yml
+  CSB_AZURE_VERSION: "0.1.0" # submodules/csb-brokerpak-azure/manifest.yml
+  PROWLER_VERSION: "5.23.0" # submodules/prowler/pyproject.toml
+  MYSQL_INSTANCE: "csb-sql"
+  APP_NAME_AWS: "csb-aws"
+  APP_NAME_GCP: "csb-gcp"
+  APP_NAME_AZURE: "csb-azure"
+  BROKER_NAME_AWS: "csb-aws-sandbox"
+  BROKER_NAME_GCP: "csb-gcp-sandbox"
+  BROKER_NAME_AZURE: "csb-azure-sandbox"
   GIT_SUBMODULE_STRATEGY: recursive
 
 # ── Pipeline triggers ---------------------------------------------------------
@@ -104,7 +104,7 @@ stages:
 # =============================================================================
 validate:
   stage: validate
-  image: governmentpaas/cf-cli:latest   # TODO: pin to a specific digest
+  image: governmentpaas/cf-cli:latest # TODO: pin to a specific digest
   script:
     - *cf_login
     - cf apps
@@ -160,16 +160,16 @@ backing-db:
 # =============================================================================
 deploy-aws:
   stage: deploy-aws
-  image: governmentpaas/cf-cli:latest  # TODO: add Go + make to image or use custom
+  image: governmentpaas/cf-cli:latest # TODO: add Go + make to image or use custom
   needs: [backing-db]
   variables:
-    SECURITY_USER_NAME:     "$CSB_AWS_SECURITY_USER_NAME"
+    SECURITY_USER_NAME: "$CSB_AWS_SECURITY_USER_NAME"
     SECURITY_USER_PASSWORD: "$CSB_AWS_SECURITY_USER_PASSWORD"
-    AWS_ACCESS_KEY_ID:      "$AWS_ACCESS_KEY_ID"
-    AWS_SECRET_ACCESS_KEY:  "$AWS_SECRET_ACCESS_KEY"
-    AWS_PAS_VPC_ID:         "$AWS_PAS_VPC_ID"
-    APP_NAME:               "$APP_NAME_AWS"
-    BROKER_NAME:            "$BROKER_NAME_AWS"
+    AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+    AWS_PAS_VPC_ID: "$AWS_PAS_VPC_ID"
+    APP_NAME: "$APP_NAME_AWS"
+    BROKER_NAME: "$BROKER_NAME_AWS"
   script:
     - *cf_login
     # TODO: install Go 1.22+ and make if not in image, or use a multi-stage build
@@ -202,12 +202,12 @@ deploy-gcp:
   image: governmentpaas/cf-cli:latest
   needs: [backing-db]
   variables:
-    SECURITY_USER_NAME:     "$CSB_GCP_SECURITY_USER_NAME"
+    SECURITY_USER_NAME: "$CSB_GCP_SECURITY_USER_NAME"
     SECURITY_USER_PASSWORD: "$CSB_GCP_SECURITY_USER_PASSWORD"
-    GOOGLE_CREDENTIALS:     "$GOOGLE_CREDENTIALS"  # file-type CI variable
-    GOOGLE_PROJECT:         "$GOOGLE_PROJECT"
-    APP_NAME:               "$APP_NAME_GCP"
-    BROKER_NAME:            "$BROKER_NAME_GCP"
+    GOOGLE_CREDENTIALS: "$GOOGLE_CREDENTIALS" # file-type CI variable
+    GOOGLE_PROJECT: "$GOOGLE_PROJECT"
+    APP_NAME: "$APP_NAME_GCP"
+    BROKER_NAME: "$BROKER_NAME_GCP"
   script:
     - *cf_login
     - echo "==> Building brokerpak v$CSB_GCP_VERSION..."
@@ -239,14 +239,14 @@ deploy-azure:
   image: governmentpaas/cf-cli:latest
   needs: [backing-db]
   variables:
-    SECURITY_USER_NAME:     "$CSB_AZURE_SECURITY_USER_NAME"
+    SECURITY_USER_NAME: "$CSB_AZURE_SECURITY_USER_NAME"
     SECURITY_USER_PASSWORD: "$CSB_AZURE_SECURITY_USER_PASSWORD"
-    ARM_TENANT_ID:          "$ARM_TENANT_ID"
-    ARM_SUBSCRIPTION_ID:    "$ARM_SUBSCRIPTION_ID"
-    ARM_CLIENT_ID:          "$ARM_CLIENT_ID"
-    ARM_CLIENT_SECRET:      "$ARM_CLIENT_SECRET"
-    APP_NAME:               "$APP_NAME_AZURE"
-    BROKER_NAME:            "$BROKER_NAME_AZURE"
+    ARM_TENANT_ID: "$ARM_TENANT_ID"
+    ARM_SUBSCRIPTION_ID: "$ARM_SUBSCRIPTION_ID"
+    ARM_CLIENT_ID: "$ARM_CLIENT_ID"
+    ARM_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+    APP_NAME: "$APP_NAME_AZURE"
+    BROKER_NAME: "$BROKER_NAME_AZURE"
   script:
     - *cf_login
     - echo "==> Building brokerpak v$CSB_AZURE_VERSION..."
@@ -275,18 +275,18 @@ deploy-azure:
 # =============================================================================
 prowler-scan-aws:
   stage: prowler-scan
-  image: python:3.12-slim   # TODO: pin to prowler official image when available
+  image: python:3.12-slim # TODO: pin to prowler official image when available
   needs: []
   variables:
-    AWS_ACCESS_KEY_ID:     "$PROWLER_AWS_ACCESS_KEY_ID"
+    AWS_ACCESS_KEY_ID: "$PROWLER_AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$PROWLER_AWS_SECRET_ACCESS_KEY"
   script:
     - pip install prowler==$PROWLER_VERSION --quiet
     - echo "==> Running Prowler v$PROWLER_VERSION — FedRAMP Moderate (AWS)..."
     # TODO: replace --output-directory with upload to $PROWLER_RESULTS_BUCKET
     - prowler aws --compliance fedramp_moderate_revision_4 --no-banner \
-        --output-formats json-ocsf html \
-        --output-directory /tmp/prowler-aws-results
+      --output-formats json-ocsf html \
+      --output-directory /tmp/prowler-aws-results
     - echo "Scan complete. Results at /tmp/prowler-aws-results"
     # TODO: cf api "$CF_API" ... && upload results to OSCAL assessment-results JSON
   artifacts:
@@ -308,8 +308,8 @@ prowler-scan-gcp:
     - pip install prowler==$PROWLER_VERSION --quiet
     - echo "==> Running Prowler v$PROWLER_VERSION — FedRAMP Moderate (GCP)..."
     - prowler gcp --compliance fedramp_moderate_revision_4 --no-banner \
-        --output-formats json-ocsf html \
-        --output-directory /tmp/prowler-gcp-results
+      --output-formats json-ocsf html \
+      --output-directory /tmp/prowler-gcp-results
   artifacts:
     paths:
       - /tmp/prowler-gcp-results/
@@ -324,16 +324,16 @@ prowler-scan-azure:
   image: python:3.12-slim
   needs: []
   variables:
-    AZURE_TENANT_ID:     "$ARM_TENANT_ID"
-    AZURE_CLIENT_ID:     "$ARM_CLIENT_ID"
+    AZURE_TENANT_ID: "$ARM_TENANT_ID"
+    AZURE_CLIENT_ID: "$ARM_CLIENT_ID"
     AZURE_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
   script:
     - pip install prowler==$PROWLER_VERSION --quiet
     - echo "==> Running Prowler v$PROWLER_VERSION — FedRAMP Moderate (Azure)..."
     - prowler azure --compliance fedramp_moderate_revision_4 --no-banner \
-        --subscription-id "$ARM_SUBSCRIPTION_ID" \
-        --output-formats json-ocsf html \
-        --output-directory /tmp/prowler-azure-results
+      --subscription-id "$ARM_SUBSCRIPTION_ID" \
+      --output-formats json-ocsf html \
+      --output-directory /tmp/prowler-azure-results
   artifacts:
     paths:
       - /tmp/prowler-azure-results/

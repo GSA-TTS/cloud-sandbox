@@ -1,63 +1,60 @@
 module.exports = {
   siteMetadata: {
-    author: 'Foo',
+    author: "Foo",
     title: `Agency Name`,
     description: `Agency Name (EAC) Lorem ipsum dolor sit amet, consectetur adipiscing elit.
     Aenean et sapien a leo auctor scelerisque quis nec magna. Sed dictum ante a risus vehicula facilisis.`,
     navigation: [
       {
-        items: [{ text: 'Home', link: '/' }],
+        items: [{ text: "Home", link: "/" }],
       },
       {
-        items: [{ text: 'Blog', link: '/blog' }],
+        items: [{ text: "Blog", link: "/blog" }],
       },
       {
-        items: [{ text: 'Document', link: '/document' }],
+        items: [{ text: "Document", link: "/document" }],
       },
       {
+        items: [{ text: "Document with sidenav", link: "/document-with-sidenav" }],
+      },
+      {
+        title: "Document submenu",
         items: [
-          { text: 'Document with sidenav', link: '/document-with-sidenav' },
-        ],
-      },
-      {
-        title: 'Document submenu',
-        items: [
-          { text: 'Navigation link', link: '/' },
-          { text: 'Navigation link', link: '/' },
-          { text: 'Navigation link', link: '/' },
+          { text: "Navigation link", link: "/" },
+          { text: "Navigation link", link: "/" },
+          { text: "Navigation link", link: "/" },
         ],
       },
     ],
     secondaryLinks: [
-      { text: 'Secondary link', link: '/' },
-      { text: 'Another secondary link', link: '/' },
+      { text: "Secondary link", link: "/" },
+      { text: "Another secondary link", link: "/" },
     ],
 
     /**
      * Search.gov configuration
-     * 
+     *
      * 1. Create an account with Search.gov https://search.usa.gov/signup
      * 2. Add a new site.
      * 3. Add your site/affiliate name here.
      */
     searchgov: {
-      
       // You should not change this.
-      endpoint: 'https://search.usa.gov',
-      
+      endpoint: "https://search.usa.gov",
+
       // replace this with your search.gov account
-      affiliate: 'federalist-uswds-example',
-      
-      // replace with your access key
-      access_key: 'xX1gtb2RcnLbIYkHAcB6IaTRr4ZfN-p16ofcyUebeko=',
-      
+      affiliate: "federalist-uswds-example",
+
+      // set SEARCHGOV_ACCESS_KEY in the environment; keep the committed value as a fake placeholder
+      access_key: process.env.SEARCHGOV_ACCESS_KEY || "REPLACE_WITH_SEARCHGOV_ACCESS_KEY",
+
       // this renders the results within the page instead of sending to user to search.gov
-      inline: true, 
+      inline: true,
     },
 
     /**
      * Digital Analytics Program (DAP) configuration
-     * 
+     *
      * USAID   - Agency for International Development
      * USDA    - Department of Agriculture
      * DOC     - Department of Commerce
@@ -88,7 +85,6 @@ module.exports = {
      */
     dap: {
       // agency: 'your-agency',
-
       // Optional
       // subagency: 'your-subagency',
     },
@@ -102,7 +98,7 @@ module.exports = {
   },
   // For GitHub Pages: defaults to the repo subpath.
   // Override with PATHPREFIX env var (or leave as BASEURL for Federalist).
-  pathPrefix: process.env.PATHPREFIX || process.env.BASEURL || '/oscal-static-site-playground',
+  pathPrefix: process.env.PATHPREFIX || process.env.BASEURL || "/oscal-static-site-playground",
   plugins: [
     `gatsby-plugin-sass`,
     `gatsby-plugin-react-helmet`,
@@ -126,16 +122,7 @@ module.exports = {
         name: `documentation`,
         path: `${__dirname}/src/documentation`,
       },
-    },  
-    {
-      resolve: `gatsby-source-filesystem`,
-      options: {
-        name: `oscal`,
-        path: `${__dirname}/content`,
-      }
     },
-    `gatsby-transformer-remark`,
-    'gatsby-transformer-json',
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -143,22 +130,28 @@ module.exports = {
         path: `${__dirname}/content`,
       },
     },
+    `gatsby-transformer-remark`,
+    "gatsby-transformer-json",
     // gatsby-plugin-manifest requires the sharp native binary.
     // Enable by setting GATSBY_ENABLE_MANIFEST=true in your environment.
-    ...(process.env.GATSBY_ENABLE_MANIFEST === 'true' ? [{
-      resolve: `gatsby-plugin-manifest`,
-      options: {
-        name: `U.S. Web Design System + Gatsby + OSCAL`,
-        short_name: `OSCAL Playground`,
-        start_url: `/`,
-        background_color: `#ffffff`,
-        theme_color: `#005ea2`,
-        display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`,
-      },
-    }] : []),
+    ...(process.env.GATSBY_ENABLE_MANIFEST === "true"
+      ? [
+          {
+            resolve: `gatsby-plugin-manifest`,
+            options: {
+              name: `U.S. Web Design System + Gatsby + OSCAL`,
+              short_name: `OSCAL Playground`,
+              start_url: `/`,
+              background_color: `#ffffff`,
+              theme_color: `#005ea2`,
+              display: `minimal-ui`,
+              icon: `src/images/gatsby-icon.png`,
+            },
+          },
+        ]
+      : []),
     // Decap CMS plugin — enable by setting GATSBY_ENABLE_CMS=true in your environment.
-    ...(process.env.GATSBY_ENABLE_CMS === 'true' ? [`gatsby-plugin-decap-cms`] : []),
+    ...(process.env.GATSBY_ENABLE_CMS === "true" ? [`gatsby-plugin-decap-cms`] : []),
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
