@@ -1,0 +1,344 @@
+# .gitlab-ci.yml
+#
+# Cloud Sandbox — Production Deployment Pipeline (GitLab)
+#
+# ARCHITECTURE
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub (GSA-TTS/cloud-sandbox):  Public repo · documentation · reuse template
+# GitLab (this repo):              Production deployment · secrets · runners
+#
+# GitHub pushes to main → GitHub Action (.github/workflows/sync-to-gitlab.yml)
+# triggers this pipeline via GitLab Pipeline Trigger API.
+#
+# PIPELINE TRIGGER
+# ─────────────────────────────────────────────────────────────────────────────
+# Trigger token stored as GitLab CI variable: GITLAB_PIPELINE_TRIGGER_TOKEN
+# GitHub calls: POST /api/v4/projects/<id>/trigger/pipeline
+#
+# REQUIRED CI/CD VARIABLES (set in GitLab project Settings → CI/CD → Variables)
+# ─────────────────────────────────────────────────────────────────────────────
+# CF_API                   https://api.fr.cloud.gov
+# CF_ORG                   gsa-tts-iae-lava-beds
+# CF_SPACE                 dev
+# CF_USERNAME              <cf service account username>
+# CF_PASSWORD              <cf service account password>   [masked]
+#
+# AWS_ACCESS_KEY_ID        <IAM access key>                [masked]
+# AWS_SECRET_ACCESS_KEY    <IAM secret key>                [masked]
+# AWS_PAS_VPC_ID           <vpc-xxxxxxxx>                  [masked]
+# CSB_AWS_SECURITY_USER_NAME      csb-aws-broker
+# CSB_AWS_SECURITY_USER_PASSWORD  <random>                 [masked]
+#
+# GOOGLE_CREDENTIALS       <service account JSON>          [masked, file]
+# GOOGLE_PROJECT           tts-sandbox
+# CSB_GCP_SECURITY_USER_NAME      csb-gcp-broker
+# CSB_GCP_SECURITY_USER_PASSWORD  <random>                 [masked]
+#
+# ARM_TENANT_ID            <azure tenant uuid>             [masked]
+# ARM_SUBSCRIPTION_ID      <azure subscription uuid>       [masked]
+# ARM_CLIENT_ID            <azure sp client id>            [masked]
+# ARM_CLIENT_SECRET        <azure sp secret>               [masked]
+# CSB_AZURE_SECURITY_USER_NAME      csb-azure-broker
+# CSB_AZURE_SECURITY_USER_PASSWORD  <random>               [masked]
+#
+# PROWLER_AWS_ACCESS_KEY_ID     <read-only IAM key>        [masked]
+# PROWLER_AWS_SECRET_ACCESS_KEY <read-only IAM secret>     [masked]
+# PROWLER_RESULTS_BUCKET        <s3 bucket for scan output>
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Brokerpak versions pinned to submodule manifest.yml -----------------------
+# Update these when you bump a submodule commit pointer.
+variables:
+  CSB_AWS_VERSION:    "0.1.0"   # submodules/csb-brokerpak-aws/manifest.yml
+  CSB_GCP_VERSION:    "0.1.0"   # submodules/csb-brokerpak-gcp/manifest.yml
+  CSB_AZURE_VERSION:  "0.1.0"   # submodules/csb-brokerpak-azure/manifest.yml
+  PROWLER_VERSION:    "5.23.0"  # submodules/prowler/pyproject.toml
+  MYSQL_INSTANCE:     "csb-sql"
+  APP_NAME_AWS:       "csb-aws"
+  APP_NAME_GCP:       "csb-gcp"
+  APP_NAME_AZURE:     "csb-azure"
+  BROKER_NAME_AWS:    "csb-aws-sandbox"
+  BROKER_NAME_GCP:    "csb-gcp-sandbox"
+  BROKER_NAME_AZURE:  "csb-azure-sandbox"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+# ── Pipeline triggers ---------------------------------------------------------
+workflow:
+  rules:
+    # Triggered by GitHub Action webhook on merge to main
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    # Manual run from GitLab UI
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    # Scheduled scans (nightly Prowler)
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+
+# ── Stages -------------------------------------------------------------------
+stages:
+  - validate
+  - backing-db
+  - deploy-aws
+  - deploy-gcp
+  - deploy-azure
+  - prowler-scan
+
+# ── Reusable CF login anchor --------------------------------------------------
+.cf_login: &cf_login |
+  cf api "$CF_API"
+  cf auth "$CF_USERNAME" "$CF_PASSWORD"
+  cf target -o "$CF_ORG" -s "$CF_SPACE"
+
+# ── Reusable cleanup (always stop broker after deploy to save resources) ------
+.broker_stop_aws: &broker_stop_aws |
+  cf stop "$APP_NAME_AWS" || true
+
+.broker_stop_gcp: &broker_stop_gcp |
+  cf stop "$APP_NAME_GCP" || true
+
+.broker_stop_azure: &broker_stop_azure |
+  cf stop "$APP_NAME_AZURE" || true
+
+# =============================================================================
+# STAGE: validate
+# Check CF login, env vars, and submodule versions before any deployment
+# =============================================================================
+validate:
+  stage: validate
+  image: governmentpaas/cf-cli:latest   # TODO: pin to a specific digest
+  script:
+    - *cf_login
+    - cf apps
+    - cf service-brokers || true
+    - echo "CSB AWS version   = $CSB_AWS_VERSION"
+    - echo "CSB GCP version   = $CSB_GCP_VERSION"
+    - echo "CSB Azure version = $CSB_AZURE_VERSION"
+    - echo "Prowler version   = $PROWLER_VERSION"
+    # Verify required variables are non-empty
+    # TODO: extend this list as more variables are required
+    - |
+      for var in CF_API CF_ORG CF_SPACE CF_USERNAME CF_PASSWORD; do
+        if [ -z "$(eval echo \$$var)" ]; then
+          echo "ERROR: Required variable '$var' is not set"; exit 1
+        fi
+      done
+    - echo "Validation passed."
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "schedule"'
+
+# =============================================================================
+# STAGE: backing-db
+# Ensure csb-sql MySQL instance exists before any broker deployment
+# =============================================================================
+backing-db:
+  stage: backing-db
+  image: governmentpaas/cf-cli:latest
+  needs: [validate]
+  script:
+    - *cf_login
+    - |
+      if cf service "$MYSQL_INSTANCE" > /dev/null 2>&1; then
+        echo "Backing database '$MYSQL_INSTANCE' already exists — skipping create."
+      else
+        echo "Creating backing database '$MYSQL_INSTANCE'..."
+        cf create-service aws-rds micro-mysql "$MYSQL_INSTANCE"
+        # Poll until the service instance is ready (up to 10 minutes)
+        for i in $(seq 1 20); do
+          STATUS=$(cf service "$MYSQL_INSTANCE" | grep -E "^status:" | awk '{print $2}')
+          if [ "$STATUS" = "succeeded" ]; then break; fi
+          echo "  Waiting for $MYSQL_INSTANCE ($STATUS)... [$i/20]"
+          sleep 30
+        done
+        cf service "$MYSQL_INSTANCE"
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "web"'
+
+# =============================================================================
+# STAGE: deploy-aws
+# Build csb-brokerpak-aws and deploy to CF as csb-aws
+# Keyed on CSB_AWS_VERSION (from submodules/csb-brokerpak-aws/manifest.yml)
+# =============================================================================
+deploy-aws:
+  stage: deploy-aws
+  image: governmentpaas/cf-cli:latest  # TODO: add Go + make to image or use custom
+  needs: [backing-db]
+  variables:
+    SECURITY_USER_NAME:     "$CSB_AWS_SECURITY_USER_NAME"
+    SECURITY_USER_PASSWORD: "$CSB_AWS_SECURITY_USER_PASSWORD"
+    AWS_ACCESS_KEY_ID:      "$AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY:  "$AWS_SECRET_ACCESS_KEY"
+    AWS_PAS_VPC_ID:         "$AWS_PAS_VPC_ID"
+    APP_NAME:               "$APP_NAME_AWS"
+    BROKER_NAME:            "$BROKER_NAME_AWS"
+  script:
+    - *cf_login
+    # TODO: install Go 1.22+ and make if not in image, or use a multi-stage build
+    - echo "==> Building brokerpak v$CSB_AWS_VERSION..."
+    - cd submodules/csb-brokerpak-aws
+    - bash ../../scripts/lib/patch-provider-display-name.sh
+    - make build
+    - echo "==> Deploying $APP_NAME_AWS..."
+    - source ../../scripts/lib/cf-push-broker.sh
+    - *broker_stop_aws
+    - echo "Deployed csb-brokerpak-aws v$CSB_AWS_VERSION as $BROKER_NAME_AWS"
+  after_script:
+    # Always stop on failure too — don't leave broker running idle
+    - cf api "$CF_API" && cf auth "$CF_USERNAME" "$CF_PASSWORD" && cf target -o "$CF_ORG" -s "$CF_SPACE" && cf stop "$APP_NAME_AWS" || true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "web"'
+      changes:
+        - submodules/csb-brokerpak-aws/**/*
+        - scripts/deploy-aws.sh
+        - scripts/lib/**/*
+        - scripts/manifests/aws-manifest.yml
+
+# =============================================================================
+# STAGE: deploy-gcp
+# Build csb-brokerpak-gcp and deploy to CF as csb-gcp
+# Keyed on CSB_GCP_VERSION (from submodules/csb-brokerpak-gcp/manifest.yml)
+# =============================================================================
+deploy-gcp:
+  stage: deploy-gcp
+  image: governmentpaas/cf-cli:latest
+  needs: [backing-db]
+  variables:
+    SECURITY_USER_NAME:     "$CSB_GCP_SECURITY_USER_NAME"
+    SECURITY_USER_PASSWORD: "$CSB_GCP_SECURITY_USER_PASSWORD"
+    GOOGLE_CREDENTIALS:     "$GOOGLE_CREDENTIALS"  # file-type CI variable
+    GOOGLE_PROJECT:         "$GOOGLE_PROJECT"
+    APP_NAME:               "$APP_NAME_GCP"
+    BROKER_NAME:            "$BROKER_NAME_GCP"
+  script:
+    - *cf_login
+    - echo "==> Building brokerpak v$CSB_GCP_VERSION..."
+    - cd submodules/csb-brokerpak-gcp
+    - bash ../../scripts/lib/patch-provider-display-name.sh
+    - make build
+    - echo "==> Deploying $APP_NAME_GCP..."
+    - source ../../scripts/lib/cf-push-broker.sh
+    - *broker_stop_gcp
+    - echo "Deployed csb-brokerpak-gcp v$CSB_GCP_VERSION as $BROKER_NAME_GCP"
+  after_script:
+    - cf api "$CF_API" && cf auth "$CF_USERNAME" "$CF_PASSWORD" && cf target -o "$CF_ORG" -s "$CF_SPACE" && cf stop "$APP_NAME_GCP" || true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "web"'
+      changes:
+        - submodules/csb-brokerpak-gcp/**/*
+        - scripts/deploy-gcp.sh
+        - scripts/lib/**/*
+
+# =============================================================================
+# STAGE: deploy-azure
+# Build csb-brokerpak-azure and deploy to CF as csb-azure
+# Keyed on CSB_AZURE_VERSION (from submodules/csb-brokerpak-azure/manifest.yml)
+# BLOCKED: requires ARM_TENANT_ID / ARM_SUBSCRIPTION_ID / ARM_CLIENT_ID /
+#          ARM_CLIENT_SECRET — run scripts/provision-azure-sp.sh first
+# =============================================================================
+deploy-azure:
+  stage: deploy-azure
+  image: governmentpaas/cf-cli:latest
+  needs: [backing-db]
+  variables:
+    SECURITY_USER_NAME:     "$CSB_AZURE_SECURITY_USER_NAME"
+    SECURITY_USER_PASSWORD: "$CSB_AZURE_SECURITY_USER_PASSWORD"
+    ARM_TENANT_ID:          "$ARM_TENANT_ID"
+    ARM_SUBSCRIPTION_ID:    "$ARM_SUBSCRIPTION_ID"
+    ARM_CLIENT_ID:          "$ARM_CLIENT_ID"
+    ARM_CLIENT_SECRET:      "$ARM_CLIENT_SECRET"
+    APP_NAME:               "$APP_NAME_AZURE"
+    BROKER_NAME:            "$BROKER_NAME_AZURE"
+  script:
+    - *cf_login
+    - echo "==> Building brokerpak v$CSB_AZURE_VERSION..."
+    - cd submodules/csb-brokerpak-azure
+    - bash ../../scripts/lib/patch-provider-display-name.sh
+    - make build
+    - echo "==> Deploying $APP_NAME_AZURE..."
+    - source ../../scripts/lib/cf-push-broker.sh
+    - *broker_stop_azure
+    - echo "Deployed csb-brokerpak-azure v$CSB_AZURE_VERSION as $BROKER_NAME_AZURE"
+  after_script:
+    - cf api "$CF_API" && cf auth "$CF_USERNAME" "$CF_PASSWORD" && cf target -o "$CF_ORG" -s "$CF_SPACE" && cf stop "$APP_NAME_AZURE" || true
+  rules:
+    # TODO: enable once ARM_* variables are provisioned
+    - if: '$DEPLOY_AZURE == "true" && ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "web")'
+      changes:
+        - submodules/csb-brokerpak-azure/**/*
+        - scripts/deploy-azure.sh
+        - scripts/lib/**/*
+
+# =============================================================================
+# STAGE: prowler-scan
+# Run Prowler FedRAMP Moderate assessment across all provisioned CSP accounts
+# Keyed on PROWLER_VERSION (from submodules/prowler/pyproject.toml)
+# Runs nightly via GitLab scheduled pipeline in addition to post-deploy
+# =============================================================================
+prowler-scan-aws:
+  stage: prowler-scan
+  image: python:3.12-slim   # TODO: pin to prowler official image when available
+  needs: []
+  variables:
+    AWS_ACCESS_KEY_ID:     "$PROWLER_AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$PROWLER_AWS_SECRET_ACCESS_KEY"
+  script:
+    - pip install prowler==$PROWLER_VERSION --quiet
+    - echo "==> Running Prowler v$PROWLER_VERSION — FedRAMP Moderate (AWS)..."
+    # TODO: replace --output-directory with upload to $PROWLER_RESULTS_BUCKET
+    - prowler aws --compliance fedramp_moderate_revision_4 --no-banner \
+        --output-formats json-ocsf html \
+        --output-directory /tmp/prowler-aws-results
+    - echo "Scan complete. Results at /tmp/prowler-aws-results"
+    # TODO: cf api "$CF_API" ... && upload results to OSCAL assessment-results JSON
+  artifacts:
+    paths:
+      - /tmp/prowler-aws-results/
+    expire_in: 30 days
+    when: always
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$RUN_PROWLER == "true"'
+
+prowler-scan-gcp:
+  stage: prowler-scan
+  image: python:3.12-slim
+  needs: []
+  variables:
+    GOOGLE_APPLICATION_CREDENTIALS: "$GOOGLE_CREDENTIALS"
+  script:
+    - pip install prowler==$PROWLER_VERSION --quiet
+    - echo "==> Running Prowler v$PROWLER_VERSION — FedRAMP Moderate (GCP)..."
+    - prowler gcp --compliance fedramp_moderate_revision_4 --no-banner \
+        --output-formats json-ocsf html \
+        --output-directory /tmp/prowler-gcp-results
+  artifacts:
+    paths:
+      - /tmp/prowler-gcp-results/
+    expire_in: 30 days
+    when: always
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$RUN_PROWLER == "true"'
+
+prowler-scan-azure:
+  stage: prowler-scan
+  image: python:3.12-slim
+  needs: []
+  variables:
+    AZURE_TENANT_ID:     "$ARM_TENANT_ID"
+    AZURE_CLIENT_ID:     "$ARM_CLIENT_ID"
+    AZURE_CLIENT_SECRET: "$ARM_CLIENT_SECRET"
+  script:
+    - pip install prowler==$PROWLER_VERSION --quiet
+    - echo "==> Running Prowler v$PROWLER_VERSION — FedRAMP Moderate (Azure)..."
+    - prowler azure --compliance fedramp_moderate_revision_4 --no-banner \
+        --subscription-id "$ARM_SUBSCRIPTION_ID" \
+        --output-formats json-ocsf html \
+        --output-directory /tmp/prowler-azure-results
+  artifacts:
+    paths:
+      - /tmp/prowler-azure-results/
+    expire_in: 30 days
+    when: always
+  rules:
+    - if: '$DEPLOY_AZURE == "true" && $CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$DEPLOY_AZURE == "true" && $RUN_PROWLER == "true"'

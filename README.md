@@ -231,6 +231,40 @@ Every resource carries these tags, injected by OpenTofu at provision time:
 
 ---
 
+## CI/CD Architecture
+
+This repo follows a **public-GitHub / private-GitLab** split:
+
+| Repo | Role |
+|------|------|
+| **GitHub** (`GSA-TTS/cloud-sandbox`) | Public documentation and reuse template — no secrets |
+| **GitLab** (production mirror) | GitLab runners, CI/CD variables, production `cf push` |
+
+```
+GitHub merge to main
+        │
+        ▼
+.github/workflows/sync-to-gitlab.yml   ← GitHub Action (pipeline trigger webhook)
+        │
+        ▼  POST /api/v4/projects/<id>/trigger/pipeline
+        │
+GitLab .gitlab-ci.yml
+  ├── validate          (CF login + env var checks)
+  ├── backing-db        (ensure csb-sql MySQL exists)
+  ├── deploy-aws        (changed when csb-brokerpak-aws/** changes)
+  ├── deploy-gcp        (changed when csb-brokerpak-gcp/** changes)
+  ├── deploy-azure      (gated: DEPLOY_AZURE=true + ARM_* vars set)
+  └── prowler-scan-*    (nightly scheduled + post-deploy)
+```
+
+Each deploy job is **version-pinned** to its submodule's `manifest.yml` version and only triggers when files in that submodule (or its deploy scripts) change.
+
+**Set up the webhook:**
+1. GitHub: add `GITLAB_PROJECT_ID`, `GITLAB_PIPELINE_TRIGGER_TOKEN`, `GITLAB_API_URL` as repository secrets.
+2. GitLab: add all CF and CSP credentials as CI/CD variables (masked). See `.github/agents/cicd-pipeline.md`.
+
+---
+
 ## Implementation Phases
 
 | Phase | Description | Duration |
