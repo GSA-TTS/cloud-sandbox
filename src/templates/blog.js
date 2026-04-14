@@ -1,22 +1,19 @@
-import React from 'react';
-import { graphql, Link } from 'gatsby';
+import React from "react";
+import { graphql, Link } from "gatsby";
 
-import Layout from '../components/layout';
-import SEO from '../components/seo';
+import Layout from "../components/layout";
+import SEO from "../components/seo";
 
 const Blog = ({ data, pageContext }) => {
   const posts = data.allMarkdownRemark.edges.map(({ node }) => ({
     html: node.html,
     ...node.frontmatter,
-    path: '/blog/' + node.fields.name,
+    path: "/blog/" + node.fields.name,
   }));
   return (
     <Layout>
       <SEO title="Blog" />
-      <div
-        id="blog"
-        className="bg-primary-darker usa-content font-serif-lg padding-y-6"
-      >
+      <div id="blog" className="bg-primary-darker usa-content font-serif-lg padding-y-6">
         <div className="grid-container">
           <h1 className="text-normal text-white margin-0">Blog</h1>
           <span className="text-base-lighter display-block padding-top-1 text-light">
@@ -29,7 +26,7 @@ const Blog = ({ data, pageContext }) => {
           <div className="desktop:grid-col-8 usa-prose padding-right-4">
             <main id="main-content">
               {/* This loops through the paginated posts */}
-              {posts.map(post => (
+              {posts.map((post) => (
                 <div
                   key={post.title}
                   className="padding-bottom-5 margin-top-4 usa-prose border-bottom-05 border-base-lightest"
@@ -41,8 +38,7 @@ const Blog = ({ data, pageContext }) => {
                   </h3>
                   <div className="text-base margin-bottom-2">
                     <div className="margin-top-neg-105">
-                      By <span className="text-bold">{post.author}</span> ·{' '}
-                      {post.date}
+                      By <span className="text-bold">{post.author}</span> · {post.date}
                     </div>
                   </div>
                   {/*
@@ -57,8 +53,7 @@ const Blog = ({ data, pageContext }) => {
               {/* Pagination links */}
               <div className="grid-row padding-top-2">
                 <div className="tablet:grid-col-4 text-center tablet:order-2 font-body-xs text-base">
-                  Page {pageContext.humanPageNumber} of{' '}
-                  {pageContext.numberOfPages}
+                  Page {pageContext.humanPageNumber} of {pageContext.numberOfPages}
                 </div>
                 <div className="tablet:grid-col-4 text-right tablet:order-3">
                   {pageContext.nextPagePath && (
@@ -103,7 +98,7 @@ const Blog = ({ data, pageContext }) => {
             <div className="border-top-1 border-accent-cool-darker padding-top-2 margin-bottom-4 usa-prose">
               <h4 className="">Most Recent Posts</h4>
               <ul className="usa-list usa-list--unstyled padding-top-2">
-                {posts.map(post => (
+                {posts.map((post) => (
                   <li key={post.title} className="padding-bottom-1">
                     <Link className="usa-link" to={post.path}>
                       {post.title}
@@ -147,7 +142,7 @@ const Blog = ({ data, pageContext }) => {
               <ul className="usa-list usa-list--unstyled padding-top-2">
                 <li className="padding-bottom-1">
                   <svg
-                    style={{ verticalAlign: 'middle' }}
+                    style={{ verticalAlign: "middle" }}
                     aria-hidden="true"
                     focusable="false"
                     data-prefix="fab"
@@ -168,7 +163,7 @@ const Blog = ({ data, pageContext }) => {
                 </li>
                 <li className="padding-bottom-1">
                   <svg
-                    style={{ verticalAlign: 'middle' }}
+                    style={{ verticalAlign: "middle" }}
                     aria-hidden="true"
                     focusable="false"
                     data-prefix="fab"
@@ -189,7 +184,7 @@ const Blog = ({ data, pageContext }) => {
                 </li>
                 <li className="padding-bottom-1">
                   <svg
-                    style={{ verticalAlign: 'middle' }}
+                    style={{ verticalAlign: "middle" }}
                     aria-hidden="true"
                     focusable="false"
                     data-prefix="fas"
@@ -223,7 +218,7 @@ const Blog = ({ data, pageContext }) => {
 };
 
 export const pageQuery = graphql`
-  query($skip: Int!, $limit: Int!) {
+  query ($skip: Int!, $limit: Int!) {
     allMarkdownRemark(
       filter: { fields: { sourceName: { eq: "blog" } } }
       sort: { fields: frontmatter___date, order: DESC }

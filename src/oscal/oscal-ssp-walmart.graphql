@@ -1,125 +1,187 @@
-type Attachments { value: String filename: String mediatype: String }
+type Attachments {
+  value: String
+  filename: String
+  mediatype: String
+}
 
-type Hashes { value: String algorithm: String }
+type Hashes {
+  value: String
+  algorithm: String
+}
 
-type Rlinks { href: String mediatype: String hashes: [Hashes ] }
+type Rlinks {
+  href: String
+  mediatype: String
+  hashes: [Hashes]
+}
 
-type Properties { value: String
+type Properties {
+  value: String
   name: String
   uuid: String
   ns: String
-  class: String }
+  class: String
+}
 
-type Citation { text: String properties: [Properties ] }
+type Citation {
+  text: String
+  properties: [Properties]
+}
 
-type Documentids { identifier: String type: String }
+type Documentids {
+  identifier: String
+  type: String
+}
 
-type Resources { uuid: String
+type Resources {
+  uuid: String
   title: String
   desc: String
   remarks: String
-  attachments: [Attachments ]
-  rlinks: [Rlinks ]
+  attachments: [Attachments]
+  rlinks: [Rlinks]
   citation: Citation
-  documentids: [Documentids ]
-  properties: [Properties ] }
+  documentids: [Documentids]
+  properties: [Properties]
+}
 
-type Backmatter { resources: [Resources ] }
+type Backmatter {
+  resources: [Resources]
+}
 
-type Links { text: String
+type Links {
+  text: String
   href: String
   rel: String
-  mediatype: String }
+  mediatype: String
+}
 
-type Annotations { name: String
+type Annotations {
+  name: String
   uuid: String
   ns: String
   value: String
-  remarks: String }
+  remarks: String
+}
 
-type Implementedrequirements { uuid: String
+type Implementedrequirements {
+  uuid: String
   controlid: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Controlimplementation { description: String
-  implementedrequirements: [Implementedrequirements ] }
+type Controlimplementation {
+  description: String
+  implementedrequirements: [Implementedrequirements]
+}
 
-type Systeminventory { remarks: String }
+type Systeminventory {
+  remarks: String
+}
 
-type Leveragedauthorizations { uuid: String
+type Leveragedauthorizations {
+  uuid: String
   title: String
   partyuuid: String
   dateauthorized: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Systemimplementation { remarks: String
+type Systemimplementation {
+  remarks: String
   systeminventory: Systeminventory
-  leveragedauthorizations: [Leveragedauthorizations ]
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  leveragedauthorizations: [Leveragedauthorizations]
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Dataflow { description: String
+type Dataflow {
+  description: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Networkarchitecture { description: String
+type Networkarchitecture {
+  description: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Authorizationboundary { description: String
+type Authorizationboundary {
+  description: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Status { state: String remarks: String }
+type Status {
+  state: String
+  remarks: String
+}
 
-type Securityimpactlevel { securityobjectiveconfidentiality: String
+type Securityimpactlevel {
+  securityobjectiveconfidentiality: String
   securityobjectiveintegrity: String
-  securityobjectiveavailability: String }
+  securityobjectiveavailability: String
+}
 
-type Availabilityimpact { base: String
+type Availabilityimpact {
+  base: String
   selected: String
   adjustmentjustification: String
-  properties: [Properties ] }
+  properties: [Properties]
+}
 
-type Integrityimpact { base: String
+type Integrityimpact {
+  base: String
   selected: String
   adjustmentjustification: String
-  properties: [Properties ] }
+  properties: [Properties]
+}
 
-type Confidentialityimpact { base: String
+type Confidentialityimpact {
+  base: String
   selected: String
   adjustmentjustification: String
-  properties: [Properties ] }
+  properties: [Properties]
+}
 
-type Informationtypes { title: String
+type Informationtypes {
+  title: String
   description: String
   uuid: String
-  properties: [Properties ]
+  properties: [Properties]
   availabilityimpact: Availabilityimpact
   integrityimpact: Integrityimpact
-  confidentialityimpact: Confidentialityimpact }
+  confidentialityimpact: Confidentialityimpact
+}
 
-type Systeminformation { links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ]
-  informationtypes: [Informationtypes ] }
+type Systeminformation {
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+  informationtypes: [Informationtypes]
+}
 
-type Systemids { id: String identifiertype: String }
+type Systemids {
+  id: String
+  identifiertype: String
+}
 
-type Systemcharacteristics { systemname: String
+type Systemcharacteristics {
+  systemname: String
   description: String
   securitysensitivitylevel: String
   systemnameshort: String
@@ -127,102 +189,130 @@ type Systemcharacteristics { systemname: String
   remarks: String
   dataflow: Dataflow
   networkarchitecture: Networkarchitecture
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ]
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
   authorizationboundary: Authorizationboundary
   status: Status
   securityimpactlevel: Securityimpactlevel
   systeminformation: Systeminformation
-  systemids: [Systemids ] }
+  systemids: [Systemids]
+}
 
-type Importprofile { href: String remarks: String }
+type Importprofile {
+  href: String
+  remarks: String
+}
 
-type Telephonenumbers { number: String type: String }
+type Telephonenumbers {
+  number: String
+  type: String
+}
 
-type Addresses { type: String
+type Addresses {
+  type: String
   city: String
   state: String
   postalcode: String
   country: String
-  postaladdress: [String ] }
+  postaladdress: [String]
+}
 
-type Externalids { id: String type: String }
+type Externalids {
+  id: String
+  type: String
+}
 
-type Parties { uuid: String
+type Parties {
+  uuid: String
   type: String
   partyname: String
   shortname: String
   remarks: String
-  locationuuids: [String ]
-  memberoforganizations: [String ]
-  telephonenumbers: [Telephonenumbers ]
-  emailaddresses: [String ]
-  addresses: [Addresses ]
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ]
-  externalids: [Externalids ] }
+  locationuuids: [String]
+  memberoforganizations: [String]
+  telephonenumbers: [Telephonenumbers]
+  emailaddresses: [String]
+  addresses: [Addresses]
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+  externalids: [Externalids]
+}
 
-type Address { type: String
+type Address {
+  type: String
   city: String
   state: String
   postalcode: String
   country: String
-  postaladdress: [String ] }
+  postaladdress: [String]
+}
 
-type Locations { uuid: String
+type Locations {
+  uuid: String
   title: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ]
-  URLs: [String ]
-  telephonenumbers: [Telephonenumbers ]
-  emailaddresses: [String ]
-  address: Address }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+  URLs: [String]
+  telephonenumbers: [Telephonenumbers]
+  emailaddresses: [String]
+  address: Address
+}
 
-type Roles { id: String
+type Roles {
+  id: String
   title: String
   shortname: String
   desc: String
   remarks: String
-  links: [Links ]
-  annotations: [Annotations ]
-  properties: [Properties ] }
+  links: [Links]
+  annotations: [Annotations]
+  properties: [Properties]
+}
 
-type Revisionhistory { title: String
+type Revisionhistory {
+  title: String
   published: String
   lastmodified: String
   version: String
   oscalversion: String
   remarks: String
-  links: [Links ]
-  properties: [Properties ] }
+  links: [Links]
+  properties: [Properties]
+}
 
-type Metadata { title: String
+type Metadata {
+  title: String
   lastmodified: String
   version: String
   oscalversion: String
   published: String
   remarks: String
-  parties: [Parties ]
-  locations: [Locations ]
-  roles: [Roles ]
-  links: [Links ]
-  properties: [Properties ]
-  documentids: [Documentids ]
-  revisionhistory: [Revisionhistory ] }
+  parties: [Parties]
+  locations: [Locations]
+  roles: [Roles]
+  links: [Links]
+  properties: [Properties]
+  documentids: [Documentids]
+  revisionhistory: [Revisionhistory]
+}
 
-type Systemsecurityplan { uuid: String
+type Systemsecurityplan {
+  uuid: String
   backmatter: Backmatter
   controlimplementation: Controlimplementation
   systemimplementation: Systemimplementation
   systemcharacteristics: Systemcharacteristics
   importprofile: Importprofile
-  metadata: Metadata }
+  metadata: Metadata
+}
 
-type AutogeneratedMainType { systemsecurityplan: Systemsecurityplan }
+type AutogeneratedMainType {
+  systemsecurityplan: Systemsecurityplan
+}
 
 # Types with identical fields:
 # Dataflow Networkarchitecture Authorizationboundary

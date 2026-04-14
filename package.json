@@ -1,7 +1,7 @@
 {
   "name": "federalist-uswds-gatsby",
-  "description": "A Federalist template using USWDS 2.0 + Gatsby",
   "version": "2.0.0",
+  "description": "A Federalist template using USWDS 2.0 + Gatsby",
   "scripts": {
     "clean": "rimraf .cache public _site",
     "build": "gatsby build",
@@ -76,7 +76,9 @@
     "broker:teardown:gcp": "bash scripts/teardown-broker.sh csb-gcp-sandbox csb-gcp",
     "broker:teardown:azure": "bash scripts/teardown-broker.sh csb-azure-sandbox csb-azure",
     "broker:status": "cf apps && echo '---' && cf service-brokers && echo '---' && cf marketplace",
-
+    "oxfmt:format": "oxfmt --ignore-path=.gitignore '!submodules/**'",
+    "oxfmt:validate": "oxfmt --ignore-path=.gitignore '!submodules/**' --check",
+    "oxfmt:lint": "pnpm run oxfmt:validate",
     "secrets:scan": "gitleaks detect --redact --no-banner --config .gitleaks.toml",
     "secrets:scan:staged": "gitleaks protect --staged --redact --no-banner --config .gitleaks.toml --exit-code 1",
     "secrets:scan:log": "gitleaks detect --redact --no-banner --config .gitleaks.toml --log-opts='--all'",
@@ -126,8 +128,12 @@
   "devDependencies": {
     "eslint-config-react-app": "^7.0.1",
     "husky": "^9.1.7",
+    "oxfmt": "^0.45.0",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.3"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.34.5"
   },
   "engines": {
     "node": ">=18",
@@ -138,8 +144,5 @@
     "neverBuiltDependencies": [
       "sharp"
     ]
-  },
-  "optionalDependencies": {
-    "sharp": "^0.34.5"
   }
 }

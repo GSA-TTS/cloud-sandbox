@@ -40,7 +40,7 @@ For each approved service, the linked source markdown contains the authoritative
 ## Aurora (1)
 
 - In-house FedRAMP status: `FedRAMP Approved East / West, OCISO Approved GovCloud with Conditions`
-- Source conditions doc: [AWS Service - Aurora.docx (1).md](AWS%20Service%20-%20Aurora.docx%20(1).md)
+- Source conditions doc: [AWS Service - Aurora.docx (1).md](<AWS%20Service%20-%20Aurora.docx%20(1).md>)
 - Approval rationale snapshot: ISE recommends the approval of this service by the OCISO when enabled with encryption at rest and in transit (see caveats).
 - Required baseline configuration/protocols/settings:
   - Encryption in transit and at rest where supported/required.
@@ -128,7 +128,7 @@ For each approved service, the linked source markdown contains the authoritative
 ## Elastic File Service (EFS)
 
 - In-house FedRAMP status: `Approved`
-- Source conditions doc: [ISE AWS Elastic File Service (EFS) v2.md](ISE%20AWS%20Elastic%20File%20Service%20(EFS)%20v2.md)
+- Source conditions doc: [ISE AWS Elastic File Service (EFS) v2.md](<ISE%20AWS%20Elastic%20File%20Service%20(EFS)%20v2.md>)
 - Approval rationale snapshot: ISE recommends approval of this service provided adherence to the use caveats defined below.
 - Required baseline configuration/protocols/settings:
   - Encryption in transit and at rest where supported/required.
@@ -201,4 +201,3 @@ For each approved service, the linked source markdown contains the authoritative
   - Least-privilege IAM policies; deny-by-default for sensitive actions.
   - Required sandbox tags: `Project`, `Owner`, `TTLExpiry`, `CostCenter`, `Cloud`, `Environment`.
   - Public exposure restricted unless explicitly approved with compensating controls.
-

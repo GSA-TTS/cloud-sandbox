@@ -17,31 +17,31 @@ collections:
     label_singular: Blog Post
     folder: src/blog
     create: true
-    preview_path: 'blog/{{slug}}'
+    preview_path: "blog/{{slug}}"
     editor:
       preview: false
     fields:
-      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: "Title", name: "title", widget: "string" }
       - {
-          label: 'Date',
-          name: 'date',
-          widget: 'datetime',
-          format: 'MMMM D, YYYY',
-          dateFormat: 'MMMM D, YYYY',
-          timeFormat: false
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          format: "MMMM D, YYYY",
+          dateFormat: "MMMM D, YYYY",
+          timeFormat: false,
         }
-      - { label: 'Author', name: 'author', widget: 'string' }
-      - { label: 'Body', name: 'body', widget: 'markdown' }
+      - { label: "Author", name: "author", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
 
   - name: documentation
     label: Documentation Pages
     label_singular: Documentation Page
     folder: src/documentation
     create: true
-    preview_path: '{{slug}}'
+    preview_path: "{{slug}}"
     editor:
       preview: false
     fields:
-      - { label: 'Title', name: 'title', widget: 'string' }
-      - { label: 'Sidenav', name: 'sidenav', widget: 'boolean' }
-      - { label: 'Body', name: 'body', widget: 'markdown' }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Sidenav", name: "sidenav", widget: "boolean" }
+      - { label: "Body", name: "body", widget: "markdown" }

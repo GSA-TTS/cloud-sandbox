@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'gatsby';
+import React from "react";
+import { Link } from "gatsby";
 
 /*
   Homepage hero — summarises the CSB sandbox lifecycle platform.
@@ -14,9 +14,9 @@ const Hero = () => (
           Lifecycle &amp; Cost Governance
         </h2>
         <p>
-          Self-service multi-cloud provisioning for AWS, GCP, and Azure with automatic
-          8-hour deprovisioning, a $500/mo budget ceiling, OSCAL-maintained security
-          controls, and continuous Prowler scanning — all on cloud.gov.
+          Self-service multi-cloud provisioning for AWS, GCP, and Azure with automatic 8-hour
+          deprovisioning, a $500/mo budget ceiling, OSCAL-maintained security controls, and
+          continuous Prowler scanning — all on cloud.gov.
         </p>
         <Link className="usa-button" to="/oscal_ssp/">
           View Security Plan

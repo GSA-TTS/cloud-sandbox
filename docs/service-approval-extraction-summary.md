@@ -4,11 +4,11 @@ Generated 2026-04-14 to preserve high-value information before source file remov
 
 ## Extraction Coverage
 
-| Cloud | Source format | Parsed count | Approved | Denied | Output review | Output conditions |
-|---|---|---:|---:|---:|---|---|
-| Azure | Spreadsheet CSV | 190 | 71 | 119 | [docs/azure/service-approval-review.md](azure/service-approval-review.md) | [docs/azure/approved-service-conditions.md](azure/approved-service-conditions.md) |
-| GCP | Spreadsheet CSV | 151 | 85 | 66 | [docs/gcp/service-approval-review.md](gcp/service-approval-review.md) | [docs/gcp/approved-service-conditions.md](gcp/approved-service-conditions.md) |
-| AWS | Markdown review files | 37 | 18 | 19 | [docs/aws/service-approval-review.md](aws/service-approval-review.md) | [docs/aws/approved-service-conditions.md](aws/approved-service-conditions.md) |
+| Cloud | Source format         | Parsed count | Approved | Denied | Output review                                                             | Output conditions                                                                 |
+| ----- | --------------------- | -----------: | -------: | -----: | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Azure | Spreadsheet CSV       |          190 |       71 |    119 | [docs/azure/service-approval-review.md](azure/service-approval-review.md) | [docs/azure/approved-service-conditions.md](azure/approved-service-conditions.md) |
+| GCP   | Spreadsheet CSV       |          151 |       85 |     66 | [docs/gcp/service-approval-review.md](gcp/service-approval-review.md)     | [docs/gcp/approved-service-conditions.md](gcp/approved-service-conditions.md)     |
+| AWS   | Markdown review files |           37 |       18 |     19 | [docs/aws/service-approval-review.md](aws/service-approval-review.md)     | [docs/aws/approved-service-conditions.md](aws/approved-service-conditions.md)     |
 
 ## Valuable Dimensions Preserved
 

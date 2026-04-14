@@ -4,20 +4,20 @@ All diagrams required by the Supplementary Service Broker (SSB) System Security 
 following FedRAMP SSP template sections 9–10 and the C4 model. Diagrams are cross-referenced
 to SSP sections and NIST SP 800-53 Rev 5 control families where applicable.
 
-| Diagram | SSP Section | Controls |
-|---------|-------------|----------|
-| [1. System Context](#1-system-context-diagram-c4-l1) | 9.2, 9.5 | SA-9, SC-7 |
-| [2. Authorization Boundary](#2-authorization-boundary-diagram) | 9.2, 9.5 | SC-7, CA-3 |
-| [3. Network Architecture](#3-network-architecture-diagram--ssp-figure-9-1) | 9.5 Fig 9-1 | SC-7, SC-8, SC-22 |
-| [4. Container Architecture](#4-container-diagram-c4-l2) | 9.2, 10 | CM-7, CM-8 |
-| [5. CSB Component Architecture](#5-csb-component-diagram-c4-l3) | 9.2, 10 | CM-7, SA-4, SC-2 |
-| [6. Deployment Architecture](#6-deployment-diagram-c4-deployment) | 10, 10.9 | CM-8, SA-9 |
-| [7. Data Flow](#7-data-flow-diagram--ssp-figure-10-1) | 10.4 Fig 10-1 | SC-8, AU-2, AC-3 |
-| [8. Authentication Flow](#8-authentication-flow--ssp-section-94) | 9.4 | IA-2, AC-17 |
-| [9. TTL Lifecycle](#9-ttl-sandbox-lifecycle-sequence) | custom | CP-10, CM-8 |
-| [10. CI/CD Pipeline](#10-cicd-pipeline--ssp-sections-1073--1079) | 10.7.3, 10.7.9 | CM-3, SA-10, SA-11 |
-| [11. RBAC & Access Control](#11-rbac--access-control) | 9.4, 10 | AC-2, AC-3, AC-6 |
-| [12. Logging & Monitoring Data Flow](#12-logging--monitoring-data-flow) | 10.8.10 | AU-2, AU-12, SI-4 |
+| Diagram                                                                    | SSP Section    | Controls           |
+| -------------------------------------------------------------------------- | -------------- | ------------------ |
+| [1. System Context](#1-system-context-diagram-c4-l1)                       | 9.2, 9.5       | SA-9, SC-7         |
+| [2. Authorization Boundary](#2-authorization-boundary-diagram)             | 9.2, 9.5       | SC-7, CA-3         |
+| [3. Network Architecture](#3-network-architecture-diagram--ssp-figure-9-1) | 9.5 Fig 9-1    | SC-7, SC-8, SC-22  |
+| [4. Container Architecture](#4-container-diagram-c4-l2)                    | 9.2, 10        | CM-7, CM-8         |
+| [5. CSB Component Architecture](#5-csb-component-diagram-c4-l3)            | 9.2, 10        | CM-7, SA-4, SC-2   |
+| [6. Deployment Architecture](#6-deployment-diagram-c4-deployment)          | 10, 10.9       | CM-8, SA-9         |
+| [7. Data Flow](#7-data-flow-diagram--ssp-figure-10-1)                      | 10.4 Fig 10-1  | SC-8, AU-2, AC-3   |
+| [8. Authentication Flow](#8-authentication-flow--ssp-section-94)           | 9.4            | IA-2, AC-17        |
+| [9. TTL Lifecycle](#9-ttl-sandbox-lifecycle-sequence)                      | custom         | CP-10, CM-8        |
+| [10. CI/CD Pipeline](#10-cicd-pipeline--ssp-sections-1073--1079)           | 10.7.3, 10.7.9 | CM-3, SA-10, SA-11 |
+| [11. RBAC & Access Control](#11-rbac--access-control)                      | 9.4, 10        | AC-2, AC-3, AC-6   |
+| [12. Logging & Monitoring Data Flow](#12-logging--monitoring-data-flow)    | 10.8.10        | AU-2, AU-12, SI-4  |
 
 ---
 
@@ -816,24 +816,24 @@ flowchart LR
 
 > **SSP Reference:** Table 9-2 System Assets, Table 10-1 Asset Physical and Virtual Components
 
-| Component | Type | Hosts | Status | Key Controls |
-|-----------|------|-------|--------|--------------|
-| `csb-aws` | CF App (Go binary) | cloud.gov dev space | ✅ Running | AC-2, AC-3, AU-2, CM-7, IA-2 |
-| `csb-gcp` | CF App (Go binary) | cloud.gov dev space | ⏳ Pending | SA-9, SC-7, SC-28 |
-| `csb-azure` | CF App (Go binary) | cloud.gov dev space | ⏳ Pending | SA-9, SC-7, SC-28 |
-| `csb-sql` | MySQL (aws-rds micro-mysql) | cloud.gov (AWS GovCloud) | ✅ Running | SC-28, AU-12 |
-| csb-brokerpak-aws v0.1.0 | Brokerpak (.brokerpak ZIP) | loaded into csb-aws | ✅ Active | SA-9, SC-7, SC-13, SI-2 |
-| csb-brokerpak-gcp | Brokerpak (.brokerpak ZIP) | loaded into csb-gcp | ⏳ Pending | SA-9, SC-7, SC-28 |
-| csb-brokerpak-azure | Brokerpak (.brokerpak ZIP) | loaded into csb-azure | ⏳ Pending | SA-9, SC-7, SC-28 |
-| `cloud.gov` | PaaS (FedRAMP P-ATO) | AWS GovCloud us-gov-west-1 | ✅ Inherited | AC-2, AU-8, IA-2, SC-7, SC-8 |
-| GSA SecureAuth | IdP (SAML 2.0) | GSA enterprise | ✅ Inherited | IA-2, IA-2(1), IA-2(12) |
-| `Prowler v3.x` | Security scanner | Developer workstation / GitHub Actions | ⏳ Config pending | CA-2, CA-7, RA-5, SI-4 |
-| TTL Controller | Lifecycle enforcer | TBD (CF app / GH Actions) | 🔲 Planned | CP-10, CM-8, SI-7 |
-| `logs.fr.cloud.gov` | ELK log aggregation | cloud.gov (inherited) | ✅ Inherited | AU-2, AU-12, AU-9 |
-| GitHub.com CI/CD | SaaS (GitHub Actions) | GitHub.com | ✅ Active | CM-3, SA-10, SA-11 |
-| OpenTofu v1.11.6 | IaC runtime | embedded in brokerpak | ✅ Active | CM-3, SA-4, SA-10 |
+| Component                | Type                        | Hosts                                  | Status            | Key Controls                 |
+| ------------------------ | --------------------------- | -------------------------------------- | ----------------- | ---------------------------- |
+| `csb-aws`                | CF App (Go binary)          | cloud.gov dev space                    | ✅ Running        | AC-2, AC-3, AU-2, CM-7, IA-2 |
+| `csb-gcp`                | CF App (Go binary)          | cloud.gov dev space                    | ⏳ Pending        | SA-9, SC-7, SC-28            |
+| `csb-azure`              | CF App (Go binary)          | cloud.gov dev space                    | ⏳ Pending        | SA-9, SC-7, SC-28            |
+| `csb-sql`                | MySQL (aws-rds micro-mysql) | cloud.gov (AWS GovCloud)               | ✅ Running        | SC-28, AU-12                 |
+| csb-brokerpak-aws v0.1.0 | Brokerpak (.brokerpak ZIP)  | loaded into csb-aws                    | ✅ Active         | SA-9, SC-7, SC-13, SI-2      |
+| csb-brokerpak-gcp        | Brokerpak (.brokerpak ZIP)  | loaded into csb-gcp                    | ⏳ Pending        | SA-9, SC-7, SC-28            |
+| csb-brokerpak-azure      | Brokerpak (.brokerpak ZIP)  | loaded into csb-azure                  | ⏳ Pending        | SA-9, SC-7, SC-28            |
+| `cloud.gov`              | PaaS (FedRAMP P-ATO)        | AWS GovCloud us-gov-west-1             | ✅ Inherited      | AC-2, AU-8, IA-2, SC-7, SC-8 |
+| GSA SecureAuth           | IdP (SAML 2.0)              | GSA enterprise                         | ✅ Inherited      | IA-2, IA-2(1), IA-2(12)      |
+| `Prowler v3.x`           | Security scanner            | Developer workstation / GitHub Actions | ⏳ Config pending | CA-2, CA-7, RA-5, SI-4       |
+| TTL Controller           | Lifecycle enforcer          | TBD (CF app / GH Actions)              | 🔲 Planned        | CP-10, CM-8, SI-7            |
+| `logs.fr.cloud.gov`      | ELK log aggregation         | cloud.gov (inherited)                  | ✅ Inherited      | AU-2, AU-12, AU-9            |
+| GitHub.com CI/CD         | SaaS (GitHub Actions)       | GitHub.com                             | ✅ Active         | CM-3, SA-10, SA-11           |
+| OpenTofu v1.11.6         | IaC runtime                 | embedded in brokerpak                  | ✅ Active         | CM-3, SA-4, SA-10            |
 
 ---
 
-*Generated: 2026-04-14 | System: TTS Cloud Sandbox SSB v0.1.0-draft | OSCAL version: 1.0.4*  
-*Cross-reference: [oscal_component_schema.json](../content/oscal_component_schema.json) | [oscal_ssp_schema.json](../content/oscal_ssp_schema.json)*
+_Generated: 2026-04-14 | System: TTS Cloud Sandbox SSB v0.1.0-draft | OSCAL version: 1.0.4_  
+_Cross-reference: [oscal_component_schema.json](../content/oscal_component_schema.json) | [oscal_ssp_schema.json](../content/oscal_ssp_schema.json)_

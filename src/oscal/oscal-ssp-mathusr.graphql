@@ -75,7 +75,7 @@ type ImplementedRequirements {
 
 type ControlImplementation {
   description: String
-  implemented-requirements: [ImplementedRequirements]
+  implementedRequirements: [ImplementedRequirements]
 }
 
 type SystemInventory {
@@ -95,8 +95,8 @@ type LeveragedAuthorizations {
 
 type SystemImplementation {
   remarks: String
-  system-inventory: SystemInventory
-  leveraged-authorizations: [LeveragedAuthorizations]
+  systemInventory: SystemInventory
+  leveragedAuthorizations: [LeveragedAuthorizations]
   links: [Links]
   annotations: [Annotations]
   properties: [Properties]
@@ -132,29 +132,29 @@ type Status {
 }
 
 type SecurityImpactLevel {
-  security-objective-confidentiality: String
-  security-objective-integrity: String
-  security-objective-availability: String
+  securityObjectiveConfidentiality: String
+  securityObjectiveIntegrity: String
+  securityObjectiveAvailability: String
 }
 
 type AvailabilityImpact {
   base: String
   selected: String
-  adjustment-justification: String
+  adjustmentJustification: String
   properties: [Properties]
 }
 
 type IntegrityImpact {
   base: String
   selected: String
-  adjustment-justification: String
+  adjustmentJustification: String
   properties: [Properties]
 }
 
 type ConfidentialityImpact {
   base: String
   selected: String
-  adjustment-justification: String
+  adjustmentJustification: String
   properties: [Properties]
 }
 
@@ -163,40 +163,40 @@ type InformationTypes {
   description: String
   uuid: String
   properties: [Properties]
-  availability-impact: AvailabilityImpact
-  integrity-impact: IntegrityImpact
-  confidentiality-impact: ConfidentialityImpact
+  availabilityImpact: AvailabilityImpact
+  integrityImpact: IntegrityImpact
+  confidentialityImpact: ConfidentialityImpact
 }
 
 type SystemInformation {
   links: [Links]
   annotations: [Annotations]
   properties: [Properties]
-  information-types: [InformationTypes]
+  informationTypes: [InformationTypes]
 }
 
 type SystemIds {
   id: String
-  identifier-type: String
+  identifierType: String
 }
 
 type SystemCharacteristics {
-  system-name: String
+  systemName: String
   description: String
-  security-sensitivity-level: String
-  system-name-short: String
-  date-authorized: String
+  securitySensitivityLevel: String
+  systemNameShort: String
+  dateAuthorized: String
   remarks: String
-  data-flow: DataFlow
-  network-architecture: NetworkArchitecture
+  dataFlow: DataFlow
+  networkArchitecture: NetworkArchitecture
   links: [Links]
   annotations: [Annotations]
   properties: [Properties]
-  authorization-boundary: AuthorizationBoundary
+  authorizationBoundary: AuthorizationBoundary
   status: Status
-  security-impact-level: SecurityImpactLevel
-  system-information: SystemInformation
-  system-ids: [SystemIds]
+  securityImpactLevel: SecurityImpactLevel
+  systemInformation: SystemInformation
+  systemIds: [SystemIds]
 }
 
 type ImportProfile {
@@ -213,9 +213,9 @@ type Addresses {
   type: String
   city: String
   state: String
-  postal-code: String
+  postalCode: String
   country: String
-  postal-address: [String]
+  postalAddress: [String]
 }
 
 type ExternalIds {
@@ -226,27 +226,27 @@ type ExternalIds {
 type Parties {
   uuid: String
   type: String
-  party-name: String
-  short-name: String
+  partyName: String
+  shortName: String
   remarks: String
-  location-uuids: [String]
-  member-of-organizations: [String]
-  telephone-numbers: [TelephoneNumbers]
-  email-addresses: [String]
+  locationUuids: [String]
+  memberOfOrganizations: [String]
+  telephoneNumbers: [TelephoneNumbers]
+  emailAddresses: [String]
   addresses: [Addresses]
   links: [Links]
   annotations: [Annotations]
   properties: [Properties]
-  external-ids: [ExternalIds]
+  externalIds: [ExternalIds]
 }
 
 type Address {
   type: String
   city: String
   state: String
-  postal-code: String
+  postalCode: String
   country: String
-  postal-address: [String]
+  postalAddress: [String]
 }
 
 type Locations {
@@ -257,15 +257,15 @@ type Locations {
   annotations: [Annotations]
   properties: [Properties]
   URLs: [String]
-  telephone-numbers: [TelephoneNumbers]
-  email-addresses: [String]
+  telephoneNumbers: [TelephoneNumbers]
+  emailAddresses: [String]
   address: Address
 }
 
 type Roles {
   id: String
   title: String
-  short-name: String
+  shortName: String
   desc: String
   remarks: String
   links: [Links]
@@ -276,9 +276,9 @@ type Roles {
 type RevisionHistory {
   title: String
   published: String
-  last-modified: String
+  lastModified: String
   version: String
-  oscal-version: String
+  oscalVersion: String
   remarks: String
   links: [Links]
   properties: [Properties]
@@ -286,9 +286,9 @@ type RevisionHistory {
 
 type Metadata {
   title: String
-  last-modified: String
+  lastModified: String
   version: String
-  oscal-version: String
+  oscalVersion: String
   published: String
   remarks: String
   parties: [Parties]
@@ -296,22 +296,22 @@ type Metadata {
   roles: [Roles]
   links: [Links]
   properties: [Properties]
-  document-ids: [DocumentIds]
-  revision-history: [RevisionHistory]
+  documentIds: [DocumentIds]
+  revisionHistory: [RevisionHistory]
 }
 
 type SystemSecurityPlan {
   uuid: String
-  back-matter: BackMatter
-  control-implementation: ControlImplementation
-  system-implementation: SystemImplementation
-  system-characteristics: SystemCharacteristics
-  import-profile: ImportProfile
+  backMatter: BackMatter
+  controlImplementation: ControlImplementation
+  systemImplementation: SystemImplementation
+  systemCharacteristics: SystemCharacteristics
+  importProfile: ImportProfile
   metadata: Metadata
 }
 
 type AutogeneratedMainType {
-  system-security-plan: SystemSecurityPlan
+  systemSecurityPlan: SystemSecurityPlan
 }
 
 # Types with identical fields:

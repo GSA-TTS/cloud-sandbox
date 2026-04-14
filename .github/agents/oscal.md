@@ -18,15 +18,15 @@ maintenance for the TTS cloud sandbox platform. You keep the OSCAL documents in
 
 ## OSCAL Document Responsibilities
 
-| Document | When to Update |
-|----------|---------------|
-| `oscal_component_schema.json` | New service added to any brokerpak; existing service modified |
-| `oscal_ssp_schema.json` | Control implementation statements change; new brokerpak added |
-| `oscal_catalog_schema.json` | Baseline control set changes (rare; coordinated with TechOps) |
-| `oscal_profile_schema.json` | FedRAMP profile overlay changes; parameter values updated |
-| `oscal_assessment-plan_schema.json` | Prowler scan scope changes; new cloud account added |
-| `oscal_assessment-results_schema.json` | After each Prowler scan run; finding status changes |
-| `oscal_poam_schema.json` | New HIGH/CRITICAL Prowler findings; finding remediated/risk-accepted |
+| Document                               | When to Update                                                       |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| `oscal_component_schema.json`          | New service added to any brokerpak; existing service modified        |
+| `oscal_ssp_schema.json`                | Control implementation statements change; new brokerpak added        |
+| `oscal_catalog_schema.json`            | Baseline control set changes (rare; coordinated with TechOps)        |
+| `oscal_profile_schema.json`            | FedRAMP profile overlay changes; parameter values updated            |
+| `oscal_assessment-plan_schema.json`    | Prowler scan scope changes; new cloud account added                  |
+| `oscal_assessment-results_schema.json` | After each Prowler scan run; finding status changes                  |
+| `oscal_poam_schema.json`               | New HIGH/CRITICAL Prowler findings; finding remediated/risk-accepted |
 
 ## Workflow: New Brokerpak Service
 
@@ -63,15 +63,15 @@ When a new HIGH or CRITICAL Prowler finding requires a POA&M item:
 
 ## Control Mapping Reference (sandbox services, minimum set)
 
-| Control | Description | Brokerpak hook |
-|---------|-------------|----------------|
-| AC-2 | Account Management | Service binding creates unique per-app credentials |
-| AC-3 | Access Enforcement | IAM policies scoped to sandbox project/account |
-| AU-2 | Event Logging | CloudTrail / Cloud Audit Logs / Azure Monitor enabled |
-| AU-3 | Content of Audit Records | TTL events logged with actor, timestamp, resource |
-| IA-2 | Identification & Auth | CredHub-injected service account credentials |
-| SC-8 | Transmission Confidentiality | TLS enforced on all endpoints |
-| SC-28 | Protection at Rest | Encryption at rest enabled for all storage services |
+| Control | Description                  | Brokerpak hook                                        |
+| ------- | ---------------------------- | ----------------------------------------------------- |
+| AC-2    | Account Management           | Service binding creates unique per-app credentials    |
+| AC-3    | Access Enforcement           | IAM policies scoped to sandbox project/account        |
+| AU-2    | Event Logging                | CloudTrail / Cloud Audit Logs / Azure Monitor enabled |
+| AU-3    | Content of Audit Records     | TTL events logged with actor, timestamp, resource     |
+| IA-2    | Identification & Auth        | CredHub-injected service account credentials          |
+| SC-8    | Transmission Confidentiality | TLS enforced on all endpoints                         |
+| SC-28   | Protection at Rest           | Encryption at rest enabled for all storage services   |
 
 ## Constraints
 

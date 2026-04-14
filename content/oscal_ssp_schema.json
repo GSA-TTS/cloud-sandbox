@@ -178,9 +178,7 @@
           "title": "GSA Headquarters \u2014 1800 F St NW (SSP \u00a79.1 Table 9-1 Primary Organization)",
           "address": {
             "type": "work",
-            "addr-lines": [
-              "1800 F St NW"
-            ],
+            "addr-lines": ["1800 F St NW"],
             "city": "Washington",
             "state": "DC",
             "postal-code": "20405",
@@ -193,9 +191,7 @@
           "title": "cloud.gov Primary \u2014 AWS GovCloud us-gov-west-1 (SSP \u00a79.1 Primary Data Center)",
           "address": {
             "type": "work",
-            "addr-lines": [
-              "AWS GovCloud us-gov-west-1 (Oregon)"
-            ],
+            "addr-lines": ["AWS GovCloud us-gov-west-1 (Oregon)"],
             "city": "Portland",
             "state": "OR",
             "country": "US"
@@ -214,9 +210,7 @@
           "title": "AWS Backend \u2014 us-east-1 (SSP \u00a79.1 SSB Managed Boundary / Secondary)",
           "address": {
             "type": "work",
-            "addr-lines": [
-              "AWS us-east-1 (Northern Virginia)"
-            ],
+            "addr-lines": ["AWS us-east-1 (Northern Virginia)"],
             "city": "Ashburn",
             "state": "VA",
             "country": "US"
@@ -243,12 +237,8 @@
               "rel": "homepage"
             }
           ],
-          "email-addresses": [
-            "tts-tech-operations@gsa.gov"
-          ],
-          "location-uuids": [
-            "27b78960-59ef-4619-82b0-ae20b9c709ac"
-          ],
+          "email-addresses": ["tts-tech-operations@gsa.gov"],
+          "location-uuids": ["27b78960-59ef-4619-82b0-ae20b9c709ac"],
           "remarks": "System owner organization. TTS IAE (formerly 18F) Infrastructure team is the responsible team for the TTS Cloud Sandbox SSB. GSA headquarters: 1800 F St NW, Washington DC 20405."
         },
         {
@@ -262,15 +252,11 @@
               "rel": "homepage"
             }
           ],
-          "email-addresses": [
-            "info@fedramp.gov"
-          ],
+          "email-addresses": ["info@fedramp.gov"],
           "addresses": [
             {
               "type": "work",
-              "addr-lines": [
-                "1800 F St. NW"
-              ],
+              "addr-lines": ["1800 F St. NW"],
               "city": "Washington",
               "state": "DC",
               "postal-code": "20006",
@@ -299,9 +285,7 @@
               "rel": "fedramp-ato"
             }
           ],
-          "email-addresses": [
-            "cloud-gov-inquiries@gsa.gov"
-          ],
+          "email-addresses": ["cloud-gov-inquiries@gsa.gov"],
           "remarks": "cloud.gov holds FedRAMP Moderate P-ATO FR1920000001 (JAB). Inheritable controls bulk-inherited by TTS Cloud Sandbox SSB. Responsibility matrix at https://cloud.gov/docs/technology/responsibility-matrix/."
         },
         {
@@ -315,9 +299,7 @@
               "rel": "homepage"
             }
           ],
-          "email-addresses": [
-            "government@github.com"
-          ],
+          "email-addresses": ["government@github.com"],
           "remarks": "GitHub.com (GitHub Enterprise Cloud, GSA org GSA-TTS) provides source control, CI/CD (GitHub Actions), and Dependabot vulnerability scanning for the TTS Cloud Sandbox SSB. Per SSP \u00a710.7.1 and \u00a710.7.9. GSA uses GitHub Enterprise which is FedRAMP Authorized."
         },
         {
@@ -334,20 +316,14 @@
               "value": "GSA TTS, 1800 F St NW, Washington DC 20405"
             }
           ],
-          "email-addresses": [
-            "tts-tech-operations@gsa.gov"
-          ],
+          "email-addresses": ["tts-tech-operations@gsa.gov"],
           "telephone-numbers": [
             {
               "number": "2023190000"
             }
           ],
-          "location-uuids": [
-            "27b78960-59ef-4619-82b0-ae20b9c709ac"
-          ],
-          "member-of-organizations": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "location-uuids": ["27b78960-59ef-4619-82b0-ae20b9c709ac"],
+          "member-of-organizations": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "SSP \u00a73 System Owner. Reference Apr 2021 SSP names Hyon Kim as System Owner. Update to current incumbent before ATO submission. Responsibilities per SSP \u00a73: ensuring security controls, obtaining resources, consulting ISSM/ISSO, participating in A&A."
         },
         {
@@ -360,15 +336,9 @@
               "value": "CISO / Authorizing Official, GSA OCISO"
             }
           ],
-          "email-addresses": [
-            "gsa.ciso@gsa.gov"
-          ],
-          "location-uuids": [
-            "27b78960-59ef-4619-82b0-ae20b9c709ac"
-          ],
-          "member-of-organizations": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "email-addresses": ["gsa.ciso@gsa.gov"],
+          "location-uuids": ["27b78960-59ef-4619-82b0-ae20b9c709ac"],
+          "member-of-organizations": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "SSP \u00a74 Authorizing Official. The GSA CISO (OCISO) reviews the SSP per GSA CIO-IT Security-06-30 and grants the Authority to Operate. AO may delegate to the System Owner for agency-level ATOs."
         },
         {
@@ -381,12 +351,8 @@
               "value": "Technical POC \u2014 TTS Cloud Sandbox DevOps/Engineering Lead"
             }
           ],
-          "email-addresses": [
-            "tts-tech-operations@gsa.gov"
-          ],
-          "member-of-organizations": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "email-addresses": ["tts-tech-operations@gsa.gov"],
+          "member-of-organizations": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "SSP \u00a75 Other Designated Contacts. Possesses in-depth knowledge of the Cloud Sandbox SSB deployment, brokerpaks, and cloud.gov CF operations. Responsible for day-to-day operations, deployment, and technical troubleshooting."
         },
         {
@@ -399,15 +365,9 @@
               "value": "ISSO \u2014 TTS Cloud Sandbox SSB"
             }
           ],
-          "email-addresses": [
-            "tts-tech-operations@gsa.gov"
-          ],
-          "location-uuids": [
-            "27b78960-59ef-4619-82b0-ae20b9c709ac"
-          ],
-          "member-of-organizations": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "email-addresses": ["tts-tech-operations@gsa.gov"],
+          "location-uuids": ["27b78960-59ef-4619-82b0-ae20b9c709ac"],
+          "member-of-organizations": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "SSP \u00a76 ISSO. Reference Apr 2021 SSP names Lynnette Jackson. Update to current. Responsibilities per SSP \u00a76: adequate security implementation; system operated per policy; controls in place and operating as intended; advising System Owner of risks; maintaining A&A documentation per GSA CIO-IT Security-06-30."
         },
         {
@@ -420,15 +380,9 @@
               "value": "ISSM \u2014 GSA OCISO, Office of the Chief Information Security Officer"
             }
           ],
-          "email-addresses": [
-            "gsa.ciso@gsa.gov"
-          ],
-          "location-uuids": [
-            "27b78960-59ef-4619-82b0-ae20b9c709ac"
-          ],
-          "member-of-organizations": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "email-addresses": ["gsa.ciso@gsa.gov"],
+          "location-uuids": ["27b78960-59ef-4619-82b0-ae20b9c709ac"],
+          "member-of-organizations": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "SSP \u00a76 ISSM. Reference Apr 2021 SSP names Ryan Palmer. Current GSA OCISO ISSM must sign the SSP per the Scope section. Responsible for managing enterprise risk, reviewing SSP for completeness, and approving per GSA IT Security Procedural Guide 06-30."
         },
         {
@@ -441,100 +395,67 @@
               "value": "Privacy Officer, GSA Office of the Chief Privacy Officer"
             }
           ],
-          "email-addresses": [
-            "gsa-privacy@gsa.gov"
-          ],
-          "member-of-organizations": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ],
+          "email-addresses": ["gsa-privacy@gsa.gov"],
+          "member-of-organizations": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"],
           "remarks": "SSP \u00a714 Privacy POC. GSA Privacy Office is responsible for PTA/PIA review per AP-1/AP-2. The TTS Cloud Sandbox SSB does NOT collect PII (AP-1 determination: no PII collected \u2014 system processes only infrastructure operational data). Privacy review required annually per GSA policy."
         }
       ],
       "responsible-parties": [
         {
           "role-id": "cloud-service-provider",
-          "party-uuids": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ]
+          "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"]
         },
         {
           "role-id": "prepared-by",
-          "party-uuids": [
-            "p0000001-sys-owner-gsa-tts00001"
-          ]
+          "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
         },
         {
           "role-id": "prepared-for",
-          "party-uuids": [
-            "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-          ]
+          "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"]
         },
         {
           "role-id": "content-approver",
-          "party-uuids": [
-            "p0000001-sys-owner-gsa-tts00001",
-            "p0000004-isso-gsa-tts00001"
-          ]
+          "party-uuids": ["p0000001-sys-owner-gsa-tts00001", "p0000004-isso-gsa-tts00001"]
         },
         {
           "role-id": "system-owner",
-          "party-uuids": [
-            "p0000001-sys-owner-gsa-tts00001"
-          ]
+          "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
         },
         {
           "role-id": "authorizing-official",
-          "party-uuids": [
-            "p0000002-ao-gsacio-00000001"
-          ]
+          "party-uuids": ["p0000002-ao-gsacio-00000001"]
         },
         {
           "role-id": "system-poc-management",
-          "party-uuids": [
-            "p0000001-sys-owner-gsa-tts00001"
-          ]
+          "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
         },
         {
           "role-id": "system-poc-technical",
-          "party-uuids": [
-            "p0000003-poc-technical-tts001"
-          ]
+          "party-uuids": ["p0000003-poc-technical-tts001"]
         },
         {
           "role-id": "system-poc-other",
-          "party-uuids": [
-            "p0000003-poc-technical-tts001"
-          ]
+          "party-uuids": ["p0000003-poc-technical-tts001"]
         },
         {
           "role-id": "information-system-security-officer",
-          "party-uuids": [
-            "p0000004-isso-gsa-tts00001"
-          ]
+          "party-uuids": ["p0000004-isso-gsa-tts00001"]
         },
         {
           "role-id": "authorizing-official-poc",
-          "party-uuids": [
-            "p0000002-ao-gsacio-00000001"
-          ]
+          "party-uuids": ["p0000002-ao-gsacio-00000001"]
         },
         {
           "role-id": "privacy-poc",
-          "party-uuids": [
-            "p0000006-privacy-gsa-0000001"
-          ]
+          "party-uuids": ["p0000006-privacy-gsa-0000001"]
         },
         {
           "role-id": "fedramp-pmo",
-          "party-uuids": [
-            "77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"
-          ]
+          "party-uuids": ["77e0e2c8-2560-4fe9-ac78-c3ff4ffc9f6d"]
         },
         {
           "role-id": "fedramp-jab",
-          "party-uuids": [
-            "49017ec3-9f51-4dbd-9253-858c2b1295fd"
-          ]
+          "party-uuids": ["49017ec3-9f51-4dbd-9253-858c2b1295fd"]
         }
       ],
       "remarks": "This OSCAL-based FedRAMP SSP Template can be used for the FedRAMP Low, Moderate, and High baselines.\n\nGuidance for OSCAL-based FedRAMP Tailored Low Impact - Software as a Service (LI-SaaS) content has not yet been developed."
@@ -609,9 +530,7 @@
             "categorizations": [
               {
                 "system": "https://doi.org/10.6028/NIST.SP.800-60v2r1",
-                "information-type-ids": [
-                  "C.3.5.1"
-                ]
+                "information-type-ids": ["C.3.5.1"]
               }
             ],
             "confidentiality-impact": {
@@ -637,9 +556,7 @@
             "categorizations": [
               {
                 "system": "https://doi.org/10.6028/NIST.SP.800-60v2r1",
-                "information-type-ids": [
-                  "C.3.5.8"
-                ]
+                "information-type-ids": ["C.3.5.8"]
               }
             ],
             "confidentiality-impact": {
@@ -665,9 +582,7 @@
             "categorizations": [
               {
                 "system": "https://doi.org/10.6028/NIST.SP.800-60v2r1",
-                "information-type-ids": [
-                  "C.3.5.7"
-                ]
+                "information-type-ids": ["C.3.5.7"]
               }
             ],
             "confidentiality-impact": {
@@ -837,9 +752,7 @@
               "value": "internal"
             }
           ],
-          "role-ids": [
-            "system-poc-technical"
-          ],
+          "role-ids": ["system-poc-technical"],
           "authorized-privileges": [
             {
               "title": "Sandbox Service Lifecycle",
@@ -879,9 +792,7 @@
               "value": "internal"
             }
           ],
-          "role-ids": [
-            "system-poc-management"
-          ],
+          "role-ids": ["system-poc-management"],
           "authorized-privileges": [
             {
               "title": "Broker and Catalog Governance",
@@ -921,9 +832,7 @@
               "value": "internal"
             }
           ],
-          "role-ids": [
-            "information-system-security-officer"
-          ],
+          "role-ids": ["information-system-security-officer"],
           "authorized-privileges": [
             {
               "title": "Security Review Access",
@@ -962,9 +871,7 @@
               "value": "internal"
             }
           ],
-          "role-ids": [
-            "system-poc-technical"
-          ],
+          "role-ids": ["system-poc-technical"],
           "authorized-privileges": [
             {
               "title": "Automated Deployment",
@@ -992,9 +899,7 @@
           "responsible-roles": [
             {
               "role-id": "system-owner",
-              "party-uuids": [
-                "p0000001-sys-owner-gsa-tts00001"
-              ]
+              "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
             }
           ]
         },
@@ -1046,15 +951,11 @@
           "responsible-roles": [
             {
               "role-id": "system-owner",
-              "party-uuids": [
-                "p0000001-sys-owner-gsa-tts00001"
-              ]
+              "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
             },
             {
               "role-id": "asset-administrator",
-              "party-uuids": [
-                "p0000003-poc-technical-tts001"
-              ]
+              "party-uuids": ["p0000003-poc-technical-tts001"]
             }
           ],
           "remarks": "SSP \u00a710.7.7: All secrets (AWS_ACCESS_KEY_ID, SECURITY_USER_NAME, DB_HOST/USER/PASS) injected via CF environment variables at startup. Migration to CredHub variable bindings planned per SSP \u00a710.7.7 Secret and Key Management pattern."
@@ -1085,9 +986,7 @@
           "responsible-roles": [
             {
               "role-id": "system-owner",
-              "party-uuids": [
-                "p0000001-sys-owner-gsa-tts00001"
-              ]
+              "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
             }
           ]
         },
@@ -1117,9 +1016,7 @@
           "responsible-roles": [
             {
               "role-id": "system-owner",
-              "party-uuids": [
-                "p0000001-sys-owner-gsa-tts00001"
-              ]
+              "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
             }
           ]
         },
@@ -1160,15 +1057,11 @@
           "responsible-roles": [
             {
               "role-id": "asset-owner",
-              "party-uuids": [
-                "p0000001-sys-owner-gsa-tts00001"
-              ]
+              "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]
             },
             {
               "role-id": "asset-administrator",
-              "party-uuids": [
-                "cg000001-0000-4000-8000-cloudgov0001"
-              ]
+              "party-uuids": ["cg000001-0000-4000-8000-cloudgov0001"]
             }
           ],
           "remarks": "SSP \u00a710.5 Database Data Nature: The database holds a row with state of each service the SSB manages. The SSB creates a row when provisioned, updates on update, and deletes on deprovision. Data may include credentials clients need to access the provisioned instance. Service back-end credentials used for provisioning are ONLY in the application environment \u2014 NEVER persisted to the database (per SSP \u00a710.5)."
@@ -1213,9 +1106,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "cg000001-0000-4000-8000-cloudgov0001"
-              ]
+              "party-uuids": ["cg000001-0000-4000-8000-cloudgov0001"]
             }
           ]
         },
@@ -1269,9 +1160,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "cg000001-0000-4000-8000-cloudgov0001"
-              ]
+              "party-uuids": ["cg000001-0000-4000-8000-cloudgov0001"]
             }
           ]
         },
@@ -1314,9 +1203,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "cg000001-0000-4000-8000-cloudgov0001"
-              ]
+              "party-uuids": ["cg000001-0000-4000-8000-cloudgov0001"]
             }
           ]
         },
@@ -1352,9 +1239,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "cg000001-0000-4000-8000-cloudgov0001"
-              ]
+              "party-uuids": ["cg000001-0000-4000-8000-cloudgov0001"]
             }
           ]
         },
@@ -1409,9 +1294,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "cg000001-0000-4000-8000-cloudgov0001"
-              ]
+              "party-uuids": ["cg000001-0000-4000-8000-cloudgov0001"]
             }
           ]
         },
@@ -1551,15 +1434,11 @@
           "responsible-roles": [
             {
               "role-id": "isa-poc-remote",
-              "party-uuids": [
-                "p0000007-ica-github-poc001"
-              ]
+              "party-uuids": ["p0000007-ica-github-poc001"]
             },
             {
               "role-id": "isa-poc-local",
-              "party-uuids": [
-                "p0000003-poc-technical-tts001"
-              ]
+              "party-uuids": ["p0000003-poc-technical-tts001"]
             }
           ],
           "remarks": "SSP \u00a710.2 External Services Table 10-2.1. No ISA required for SaaS tools \u2014 GSA uses GitHub Enterprise Cloud. Authentication to GitHub uses GSA-managed OIDC + TOTP 2FA per SSP \u00a79.4 (Authenticate with GitHub.com). GitHub Dependabot provides vulnerability scanning (replaces Snyk from reference SSP per open-questions.md)."
@@ -1606,9 +1485,7 @@
           "responsible-roles": [
             {
               "role-id": "assessor",
-              "party-uuids": [
-                "p0000004-isso-gsa-tts00001"
-              ]
+              "party-uuids": ["p0000004-isso-gsa-tts00001"]
             }
           ]
         },
@@ -1658,9 +1535,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-              ]
+              "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"]
             }
           ]
         },
@@ -1707,9 +1582,7 @@
           "responsible-roles": [
             {
               "role-id": "provider",
-              "party-uuids": [
-                "6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"
-              ]
+              "party-uuids": ["6b286b5d-8f07-4fa7-8847-1dd0d88f73fb"]
             }
           ]
         },
@@ -1826,15 +1699,11 @@
           "responsible-parties": [
             {
               "role-id": "asset-owner",
-              "party-uuids": [
-                "db234cb7-1776-425c-9ac4-b067c1723011"
-              ]
+              "party-uuids": ["db234cb7-1776-425c-9ac4-b067c1723011"]
             },
             {
               "role-id": "asset-administrator",
-              "party-uuids": [
-                "b306f5af-b93a-4a7f-a2b2-37a44fc92a79"
-              ]
+              "party-uuids": ["b306f5af-b93a-4a7f-a2b2-37a44fc92a79"]
             }
           ],
           "implemented-components": [
@@ -1911,15 +1780,11 @@
           "responsible-parties": [
             {
               "role-id": "asset-owner",
-              "party-uuids": [
-                "3360e343-9860-4bda-9dfc-ff427c3dfab6"
-              ]
+              "party-uuids": ["3360e343-9860-4bda-9dfc-ff427c3dfab6"]
             },
             {
               "role-id": "asset-administrator",
-              "party-uuids": [
-                "b306f5af-b93a-4a7f-a2b2-37a44fc92a79"
-              ]
+              "party-uuids": ["b306f5af-b93a-4a7f-a2b2-37a44fc92a79"]
             }
           ],
           "implemented-components": [

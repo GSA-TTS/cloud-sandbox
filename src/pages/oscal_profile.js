@@ -1,9 +1,7 @@
-import React from 'react'
-import raw from '../../content/oscal_profile_schema.json'
-import OscalPage from '../components/oscal-page'
+import React from "react";
+import raw from "../../content/oscal_profile_schema.json";
+import OscalPage from "../components/oscal-page";
 
-const OscalProfile = () => (
-  <OscalPage model={raw['profile']} modelLabel="Profile" />
-)
+const OscalProfile = () => <OscalPage model={raw["profile"]} modelLabel="Profile" />;
 
-export default OscalProfile
+export default OscalProfile;

@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
-# Scans staged changes for secrets using gitleaks before every commit.
-# Also verifies that GPG commit signing is enabled.
-# Requires: gitleaks >= 8.0  (brew install gitleaks)
-#           gpg               (brew install gnupg)
+# Pre-commit hook: validates secrets, GPG signing, and OpenTofu formatting.
+# Requirements:
+#   gitleaks >= 8.0        (brew install gitleaks)
+#   gpg                    (brew install gnupg)
+#   oxfmt                  (pnpm add -D oxfmt)
 
 # ── Check GPG signing is configured ──────────────────────────────────────────
 _sign=$(git config --get commit.gpgsign 2>/dev/null)
@@ -63,3 +64,11 @@ else
   echo ""
   exit 1
 fi
+
+# ── OpenTofu code formatting check (optional) ──────────────────────────────────────────────
+# Note: All HCL/TF files are in submodules (excluded from pre-commit).
+# Developers can manually check formatting in submodules with:
+#   pnpm run oxfmt:format    (within each submodule)
+#   pnpm run oxfmt:validate  (within each submodule)
+echo "  ℹ OpenTofu formatting: submodules are excluded from pre-commit checks."
+echo "    (All HCL/TF files are in submodules; check manually if needed.)"

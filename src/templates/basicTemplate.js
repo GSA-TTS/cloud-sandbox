@@ -1,14 +1,14 @@
-import React from "react"
-import { Link } from "gatsby"
-const basicTemplate = props => {
-  const { pageContext } = props
-  const { pageContent, links } = pageContext
+import React from "react";
+import { Link } from "gatsby";
+const basicTemplate = (props) => {
+  const { pageContext } = props;
+  const { pageContent, links } = pageContext;
 
   return (
     <div style={{ maxWidth: `960px`, margin: `1.45rem` }}>
       <ul>
         {pageContent.map((data, index) => {
-          return <li key={`content_item_${index}`}>{data.title}</li>
+          return <li key={`content_item_${index}`}>{data.title}</li>;
         })}
       </ul>
       <ul>
@@ -17,10 +17,10 @@ const basicTemplate = props => {
             <li key={`link_${index}`}>
               <Link to={item.to}>{item.to}</Link>
             </li>
-          )
+          );
         })}
       </ul>
     </div>
-  )
-}
-export default basicTemplate
+  );
+};
+export default basicTemplate;

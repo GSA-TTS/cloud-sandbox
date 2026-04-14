@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /*
   Homepage tagline — one-liner on the left, expanded detail on the right.
@@ -15,9 +15,9 @@ const Tagline = () => (
       <div className="tablet:grid-col-8 usa-prose">
         <p>
           The TTS sandbox platform uses the Cloud Foundry Cloud Service Broker (CSB) and
-          OpenTofu-backed brokerpaks to give engineers single-command access to pre-approved
-          AWS, GCP, and Azure services. Every instance carries a built-in 8-hour TTL,
-          enforced tagging, and a hard $500/month budget ceiling.
+          OpenTofu-backed brokerpaks to give engineers single-command access to pre-approved AWS,
+          GCP, and Azure services. Every instance carries a built-in 8-hour TTL, enforced tagging,
+          and a hard $500/month budget ceiling.
         </p>
         <p>
           Security controls for every provisioned resource are captured as OSCAL component

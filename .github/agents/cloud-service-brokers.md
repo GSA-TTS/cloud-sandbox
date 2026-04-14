@@ -21,40 +21,43 @@ You are an expert in Cloud Foundry Cloud Service Broker (CSB) lifecycle manageme
 
 ## Deployment State (as of April 2026)
 
-| Broker | CF App | Status | Plans |
-|--------|--------|--------|-------|
-| `csb-aws-sandbox` | `csb-aws` | ✅ Registered · stopped (restart: `pnpm run broker:start:aws`) | 5 sandbox-8h |
-| `csb-gcp-sandbox` | `csb-gcp` | ✅ Registered · stopped (restart: `pnpm run broker:start:gcp`) | 3 sandbox-8h |
-| `csb-azure-sandbox` | `csb-azure` | ⏳ Not yet deployed (requires `scripts/envs/azure.env`) | — |
+| Broker              | CF App      | Status                                                         | Plans        |
+| ------------------- | ----------- | -------------------------------------------------------------- | ------------ |
+| `csb-aws-sandbox`   | `csb-aws`   | ✅ Registered · stopped (restart: `pnpm run broker:start:aws`) | 5 sandbox-8h |
+| `csb-gcp-sandbox`   | `csb-gcp`   | ✅ Registered · stopped (restart: `pnpm run broker:start:gcp`) | 3 sandbox-8h |
+| `csb-azure-sandbox` | `csb-azure` | ⏳ Not yet deployed (requires `scripts/envs/azure.env`)        | —            |
 
 > Brokers are stopped to save resources. The broker registration (service catalog) persists in CF even while the app is stopped. **Restart before provisioning any service.**
 
 ## Approved Service Catalog
 
 ### AWS (`csb-aws-sandbox`)
-| Service | Plan | Status |
-|---------|------|--------|
-| `csb-aws-s3-bucket` | `sandbox-8h` | ✅ Available |
+
+| Service              | Plan         | Status       |
+| -------------------- | ------------ | ------------ |
+| `csb-aws-s3-bucket`  | `sandbox-8h` | ✅ Available |
 | `csb-aws-postgresql` | `sandbox-8h` | ✅ Available |
-| `csb-aws-mysql` | `sandbox-8h` | ✅ Available |
-| `csb-aws-redis` | `sandbox-8h` | ✅ Available |
-| `csb-aws-sqs` | `sandbox-8h` | ✅ Available |
+| `csb-aws-mysql`      | `sandbox-8h` | ✅ Available |
+| `csb-aws-redis`      | `sandbox-8h` | ✅ Available |
+| `csb-aws-sqs`        | `sandbox-8h` | ✅ Available |
 
 ### GCP (`csb-gcp-sandbox`)
-| Service | Plan | Status |
-|---------|------|--------|
+
+| Service                     | Plan         | Status       |
+| --------------------------- | ------------ | ------------ |
 | `csb-google-storage-bucket` | `sandbox-8h` | ✅ Available |
-| `csb-google-postgres` | `sandbox-8h` | ✅ Available |
-| `csb-google-mysql` | `sandbox-8h` | ✅ Available |
+| `csb-google-postgres`       | `sandbox-8h` | ✅ Available |
+| `csb-google-mysql`          | `sandbox-8h` | ✅ Available |
 
 ### Azure (`csb-azure-sandbox`) — not yet deployed
-| Service | Plan |
-|---------|------|
-| `csb-azure-postgresql` | `sandbox-8h` |
-| `csb-azure-mssql` | `sandbox-8h` |
-| `csb-azure-redis` | `sandbox-8h` |
+
+| Service                     | Plan         |
+| --------------------------- | ------------ |
+| `csb-azure-postgresql`      | `sandbox-8h` |
+| `csb-azure-mssql`           | `sandbox-8h` |
+| `csb-azure-redis`           | `sandbox-8h` |
 | `csb-azure-storage-account` | `sandbox-8h` |
-| `csb-azure-eventhubs` | `sandbox-8h` |
+| `csb-azure-eventhubs`       | `sandbox-8h` |
 
 ## Broker Start / Stop Workflow
 
@@ -184,19 +187,19 @@ For Azure: set `AZURE_SUBSCRIPTION_ID` and `AZURE_TENANT_ID` in your shell, then
 
 ## Required Credentials per CSP
 
-| Variable | AWS | GCP | Azure |
-|----------|-----|-----|-------|
-| `SECURITY_USER_NAME` | ✓ | ✓ | ✓ |
-| `SECURITY_USER_PASSWORD` | ✓ | ✓ | ✓ |
-| `AWS_ACCESS_KEY_ID` | ✓ | — | — |
-| `AWS_SECRET_ACCESS_KEY` | ✓ | — | — |
-| `AWS_PAS_VPC_ID` | ✓ | — | — |
-| `GOOGLE_CREDENTIALS` | — | ✓ (SA JSON) | — |
-| `GOOGLE_PROJECT` | — | ✓ | — |
-| `ARM_TENANT_ID` | — | — | ✓ |
-| `ARM_SUBSCRIPTION_ID` | — | — | ✓ |
-| `ARM_CLIENT_ID` | — | — | ✓ |
-| `ARM_CLIENT_SECRET` | — | — | ✓ |
+| Variable                 | AWS | GCP         | Azure |
+| ------------------------ | --- | ----------- | ----- |
+| `SECURITY_USER_NAME`     | ✓   | ✓           | ✓     |
+| `SECURITY_USER_PASSWORD` | ✓   | ✓           | ✓     |
+| `AWS_ACCESS_KEY_ID`      | ✓   | —           | —     |
+| `AWS_SECRET_ACCESS_KEY`  | ✓   | —           | —     |
+| `AWS_PAS_VPC_ID`         | ✓   | —           | —     |
+| `GOOGLE_CREDENTIALS`     | —   | ✓ (SA JSON) | —     |
+| `GOOGLE_PROJECT`         | —   | ✓           | —     |
+| `ARM_TENANT_ID`          | —   | —           | ✓     |
+| `ARM_SUBSCRIPTION_ID`    | —   | —           | ✓     |
+| `ARM_CLIENT_ID`          | —   | —           | ✓     |
+| `ARM_CLIENT_SECRET`      | —   | —           | ✓     |
 
 Credentials are sourced from `scripts/envs/<provider>.env` at deploy time. Use CredHub variable bindings for production hardening.
 
@@ -210,21 +213,20 @@ pnpm run broker:teardown:azure
 
 ### Required Credentials per CSP
 
-| Variable | AWS | GCP | Azure |
-|----------|-----|-----|-------|
-| `SECURITY_USER_NAME` | ✓ | ✓ | ✓ |
-| `SECURITY_USER_PASSWORD` | ✓ | ✓ | ✓ |
-| `AWS_ACCESS_KEY_ID` | ✓ | — | — |
-| `AWS_SECRET_ACCESS_KEY` | ✓ | — | — |
-| `AWS_PAS_VPC_ID` | ✓ | — | — |
-| `GOOGLE_CREDENTIALS` | — | ✓ (JSON) | — |
-| `GOOGLE_PROJECT` | — | ✓ | — |
-| `ARM_TENANT_ID` | — | — | ✓ |
-| `ARM_SUBSCRIPTION_ID` | — | — | ✓ |
-| `ARM_CLIENT_ID` | — | — | ✓ |
-| `ARM_CLIENT_SECRET` | — | — | ✓ |
+| Variable                 | AWS | GCP      | Azure |
+| ------------------------ | --- | -------- | ----- |
+| `SECURITY_USER_NAME`     | ✓   | ✓        | ✓     |
+| `SECURITY_USER_PASSWORD` | ✓   | ✓        | ✓     |
+| `AWS_ACCESS_KEY_ID`      | ✓   | —        | —     |
+| `AWS_SECRET_ACCESS_KEY`  | ✓   | —        | —     |
+| `AWS_PAS_VPC_ID`         | ✓   | —        | —     |
+| `GOOGLE_CREDENTIALS`     | —   | ✓ (JSON) | —     |
+| `GOOGLE_PROJECT`         | —   | ✓        | —     |
+| `ARM_TENANT_ID`          | —   | —        | ✓     |
+| `ARM_SUBSCRIPTION_ID`    | —   | —        | ✓     |
+| `ARM_CLIENT_ID`          | —   | —        | ✓     |
+| `ARM_CLIENT_SECRET`      | —   | —        | ✓     |
 
 All credentials are sourced from `scripts/envs/<provider>.env` and injected into the
 CF manifest at deploy time. They are NOT stored in the repo or CF environment long-term.
 Use CredHub variable bindings for production hardening.
-

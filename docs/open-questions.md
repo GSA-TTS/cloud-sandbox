@@ -42,15 +42,14 @@ TBD list all available tagging points and configuration options to override or a
 
 1. **Renewal enforcement** — The policy allows one 4-hour renewal per instance. Where is renewal state tracked — in the CSB backing database, a separate table, or CF service instance metadata? What prevents a second `cf update-service -c '{"extend_hours":4}'` call?
 
-List all available options for tracking renewal state and enforcing the one-renewal policy. 
+List all available options for tracking renewal state and enforcing the one-renewal policy.
 
 1.  **Notification channels** — T-1h warnings should go to the `Owner` tag value. Does `Owner` contain a GSA email address that Cloud Notify / Slack can reach? Is there an existing Slack webhook or do we need to stand one up?
-
 
 Slack, email, SMS, JS alerts should all be supported
 
 2.  **Orphan resource detection** — What happens if a CF app or service is deleted directly (e.g., `cf delete-service -f`) before the TTL controller runs? Will the CSB's OpenTofu destroy still execute? Is there a reconciliation loop?
-   
+
 All orphaned resources should be destroyed with no persistent or ephemeral resources left behind. If the option to persist state over sessions should be documented in exterme cases using static storage like S3 or GCS buckets to track state and ensure orphaned resources are cleaned up.
 
 ---
@@ -68,13 +67,12 @@ Yes individuals should have a budget, and if they run out they will need to budg
 TBD
 
 1.  **Per-user cost tracking** — Should the `Owner` tag be used to break down spending per engineer? Is there a target dashboard (Grafana, spend transparency, internal tool)?
-   
+
 Yes all resources provisioned should 100% be tagged with the `Owner` tag and that should be used to break down spending per engineer. This should be visible in the billing dashboards. 'Project' tags should be more important to break down spending by project or team. but both deminisions should be available in the billing dashboards.
 
 1.  **Anomaly spike threshold** — "3x average hourly cost" is the anomaly trigger. What is the baseline measurement window (rolling 7-day average? billing-period average?)? Who defines and tunes this threshold?
-   
 
-   Yes we should have some form of anomaly detection and alerting for cost spikes, the threshold and tuning should be owned by the team responsible for monitoring and responding to incidents.
+Yes we should have some form of anomaly detection and alerting for cost spikes, the threshold and tuning should be owned by the team responsible for monitoring and responding to incidents.
 
 ---
 

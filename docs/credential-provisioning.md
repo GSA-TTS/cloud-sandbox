@@ -488,13 +488,14 @@ cf marketplace -e csb-aws-sandbox
 
 ## Credential rotation
 
-| Provider | Rotation command | Action after rotation |
-|----------|------------------|-----------------------|
-| AWS | `aws iam create-access-key --user-name csb-sandbox-broker` then `aws iam delete-access-key` | Update `aws.env`, redeploy via `pnpm run broker:deploy:aws` |
-| Azure | `az ad sp credential reset --id <CLIENT_ID>` | Update `azure.env`, redeploy |
-| GCP | `gcloud iam service-accounts keys create` then delete old key | Update `gcp.env`, redeploy |
+| Provider | Rotation command                                                                            | Action after rotation                                       |
+| -------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| AWS      | `aws iam create-access-key --user-name csb-sandbox-broker` then `aws iam delete-access-key` | Update `aws.env`, redeploy via `pnpm run broker:deploy:aws` |
+| Azure    | `az ad sp credential reset --id <CLIENT_ID>`                                                | Update `azure.env`, redeploy                                |
+| GCP      | `gcloud iam service-accounts keys create` then delete old key                               | Update `gcp.env`, redeploy                                  |
 
 Rotate credentials whenever:
+
 - A team member with access departs
 - A credential is suspected of compromise
 - Scheduled rotation interval (90 days per GSA CIO-IT Security-01-07) is reached

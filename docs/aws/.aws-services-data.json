@@ -8,9 +8,7 @@
       "The use of this service shall abide to GSA requirements for security of data in transit and at rest ",
       "The use of this requires enablement of logging associated with this service."
     ],
-    "risks": [
-      "Interception of data in transit"
-    ],
+    "risks": ["Interception of data in transit"],
     "integrations": [],
     "non_aws_integrations": [],
     "iam_permissions": [],
@@ -19,14 +17,8 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "API Gateway Security",
-        "https://aws.amazon.com/api-gateway/faqs/#security"
-      ],
-      [
-        "API Gateway",
-        "https://aws.amazon.com/api-gateway/faqs/"
-      ]
+      ["API Gateway Security", "https://aws.amazon.com/api-gateway/faqs/#security"],
+      ["API Gateway", "https://aws.amazon.com/api-gateway/faqs/"]
     ]
   },
   "AWS CodeBuild.md": {
@@ -39,9 +31,7 @@
       "CodeBuild Artifacts must be stored on an encrypted S3 bucket",
       "CodePipeline must be used in accordance with GSA\u2019s [requirements](https://docs.google.com/document/d"
     ],
-    "risks": [
-      "Its unknown where AWS keeps Job History"
-    ],
+    "risks": ["Its unknown where AWS keeps Job History"],
     "integrations": [],
     "non_aws_integrations": [],
     "iam_permissions": [],
@@ -58,10 +48,7 @@
         "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html",
         "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html"
       ],
-      [
-        "AWS CodeBuild",
-        "https://aws.amazon.com/codebuild/?nc2=h_m1"
-      ]
+      ["AWS CodeBuild", "https://aws.amazon.com/codebuild/?nc2=h_m1"]
     ]
   },
   "AWS CodeCommit.md": {
@@ -96,10 +83,7 @@
         "http://docs.aws.amazon.com/codecommit/latest/userguide/codecommit-user.pdf\\#encryption",
         "http://docs.aws.amazon.com/codecommit/latest/userguide/codecommit-user.pdf#encryption"
       ],
-      [
-        "AWS CodeCommit",
-        "https://aws.amazon.com/codecommit/"
-      ]
+      ["AWS CodeCommit", "https://aws.amazon.com/codecommit/"]
     ]
   },
   "AWS CodePipeline.md": {
@@ -146,22 +130,13 @@
         "configured",
         "https://aws.amazon.com/blogs/devops/building-a-cross-regioncross-account-code-deployment-solution-on-aws/"
       ],
-      [
-        "AWS CodePipeline",
-        "https://aws.amazon.com/codepipeline/"
-      ],
+      ["AWS CodePipeline", "https://aws.amazon.com/codepipeline/"],
       [
         "caveats",
         "https://docs.google.com/document/d/1rY75rQCAAt0NcEhKTvWxnLfALit2DDG84eqo0rJEbHI/edit"
       ],
-      [
-        "Fed Ramped?",
-        "https://aws.amazon.com/compliance/services-in-scope/"
-      ],
-      [
-        "https://aws.amazon.com/codepipeline/faqs/",
-        "https://aws.amazon.com/codepipeline/faqs/"
-      ],
+      ["Fed Ramped?", "https://aws.amazon.com/compliance/services-in-scope/"],
+      ["https://aws.amazon.com/codepipeline/faqs/", "https://aws.amazon.com/codepipeline/faqs/"],
       [
         "https://docs.aws.amazon.com/codestar/latest/APIReference/Welcome.html",
         "https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html"
@@ -208,10 +183,7 @@
         "CodeCommit",
         "https://docs.google.com/document/d/1rY75rQCAAt0NcEhKTvWxnLfALit2DDG84eqo0rJEbHI/edit"
       ],
-      [
-        "https://aws.amazon.com/codestar/faqs/",
-        "https://aws.amazon.com/codestar/faqs/"
-      ],
+      ["https://aws.amazon.com/codestar/faqs/", "https://aws.amazon.com/codestar/faqs/"],
       [
         "CodePipeline",
         "https://docs.google.com/document/d/13ppp4CaUEImm22TEemvh5ssOg9HrNPNXoXmLQ6Sg7ng/edit"
@@ -220,10 +192,7 @@
         "CodeBuild",
         "https://docs.google.com/document/d/1zhNqjREyquUEbEnRCBLlYF9FAPRmK0zNrtgTAGxU2n4/edit"
       ],
-      [
-        "AWS CodeStar",
-        "https://aws.amazon.com/codestar/"
-      ]
+      ["AWS CodeStar", "https://aws.amazon.com/codestar/"]
     ]
   },
   "AWS ElasticSearch.md": {
@@ -252,10 +221,7 @@
         "https://aws.amazon.com/elasticsearch-service/faqs/",
         "https://aws.amazon.com/elasticsearch-service/faqs/"
       ],
-      [
-        "AWS ElasticSearch Service",
-        "https://aws.amazon.com/elasticsearch-service/"
-      ],
+      ["AWS ElasticSearch Service", "https://aws.amazon.com/elasticsearch-service/"],
       [
         "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html",
         "https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html"
@@ -316,14 +282,8 @@
         "https://aws.amazon.com/about-aws/whats-new/2022/10/amazon-quicksight-customer-managed-keys-spice-data-encryption/",
         "https://aws.amazon.com/about-aws/whats-new/2022/10/amazon-quicksight-customer-managed-keys-spice-data-encryption/"
       ],
-      [
-        "UPDATE",
-        "https://docs.aws.amazon.com/quicksight/latest/user/key-management.html"
-      ],
-      [
-        "AWS QuickSight",
-        "http://docs.aws.amazon.com/quicksight/latest/user/welcome.html"
-      ],
+      ["UPDATE", "https://docs.aws.amazon.com/quicksight/latest/user/key-management.html"],
+      ["AWS QuickSight", "http://docs.aws.amazon.com/quicksight/latest/user/welcome.html"],
       [
         "https://community.amazonquicksight.com/t/new-amazon-quicksight-spice-customer-managed-keys-cmk-feature/7991",
         "https://community.amazonquicksight.com/t/new-amazon-quicksight-spice-customer-managed-keys-cmk-feature/7991"
@@ -344,9 +304,7 @@
     "fedramp_status": "Not approved / Not reviewed**",
     "recommendation": ":**",
     "use_caveats": [],
-    "risks": [
-      "Email could fall back to plain text."
-    ],
+    "risks": ["Email could fall back to plain text."],
     "integrations": [],
     "non_aws_integrations": [],
     "iam_permissions": [],
@@ -355,30 +313,15 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "SES Resources",
-        "https://aws.amazon.com/ses/developer-resources/"
-      ],
-      [
-        "AWS SDKs",
-        "https://aws.amazon.com/tools/#sdk"
-      ],
-      [
-        "SES Overview",
-        "https://aws.amazon.com/ses/?nc2=h_m1"
-      ],
-      [
-        "Use Caveats",
-        "#n/a"
-      ],
+      ["SES Resources", "https://aws.amazon.com/ses/developer-resources/"],
+      ["AWS SDKs", "https://aws.amazon.com/tools/#sdk"],
+      ["SES Overview", "https://aws.amazon.com/ses/?nc2=h_m1"],
+      ["Use Caveats", "#n/a"],
       [
         "https://docs.aws.amazon.com/ses/latest/APIReference/API\\_ReceiptRule.html",
         "https://docs.aws.amazon.com/ses/latest/APIReference/API_ReceiptRule.html"
       ],
-      [
-        "SMTP interface",
-        "https://aws.amazon.com/ses/what-is-smtp/"
-      ]
+      ["SMTP interface", "https://aws.amazon.com/ses/what-is-smtp/"]
     ]
   },
   "AWS Service - Aurora.docx (1).md": {
@@ -400,34 +343,14 @@
     "encryption_in_transit": [],
     "encryption_at_rest": [],
     "features": [],
-    "supported_services": [
-      "//aws"
-    ],
+    "supported_services": ["//aws"],
     "links": [
-      [
-        "Use Caveats",
-        "#use-caveats:"
-      ],
-      [
-        "AWS Aurora \u2013 Security Cont.",
-        "https://aws.amazon.com/rds/aurora/faqs/"
-      ],
-      [
-        "AWS Aurora",
-        "https://aws.amazon.com/rds/aurora/?nc2=h_m1"
-      ],
-      [
-        "relational database",
-        "https://aws.amazon.com/relational-database/"
-      ],
-      [
-        "here",
-        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
-      ],
-      [
-        "AWS Database Migration Service",
-        "https://aws.amazon.com/dms/"
-      ],
+      ["Use Caveats", "#use-caveats:"],
+      ["AWS Aurora \u2013 Security Cont.", "https://aws.amazon.com/rds/aurora/faqs/"],
+      ["AWS Aurora", "https://aws.amazon.com/rds/aurora/?nc2=h_m1"],
+      ["relational database", "https://aws.amazon.com/relational-database/"],
+      ["here", "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"],
+      ["AWS Database Migration Service", "https://aws.amazon.com/dms/"],
       [
         "here",
         "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Overview.html#Aurora.Overview.Security.SSL"
@@ -436,10 +359,7 @@
         "AWS Aurora \\- Security",
         "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.html"
       ],
-      [
-        "AWS Identity and Access Management",
-        "https://aws.amazon.com/iam/"
-      ]
+      ["AWS Identity and Access Management", "https://aws.amazon.com/iam/"]
     ]
   },
   "AWS Service - Aurora.docx.md": {
@@ -461,34 +381,14 @@
     "encryption_in_transit": [],
     "encryption_at_rest": [],
     "features": [],
-    "supported_services": [
-      "//aws"
-    ],
+    "supported_services": ["//aws"],
     "links": [
-      [
-        "Use Caveats",
-        "#use-caveats:"
-      ],
-      [
-        "AWS Aurora \u2013 Security Cont.",
-        "https://aws.amazon.com/rds/aurora/faqs/"
-      ],
-      [
-        "AWS Aurora",
-        "https://aws.amazon.com/rds/aurora/?nc2=h_m1"
-      ],
-      [
-        "relational database",
-        "https://aws.amazon.com/relational-database/"
-      ],
-      [
-        "here",
-        "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
-      ],
-      [
-        "AWS Database Migration Service",
-        "https://aws.amazon.com/dms/"
-      ],
+      ["Use Caveats", "#use-caveats:"],
+      ["AWS Aurora \u2013 Security Cont.", "https://aws.amazon.com/rds/aurora/faqs/"],
+      ["AWS Aurora", "https://aws.amazon.com/rds/aurora/?nc2=h_m1"],
+      ["relational database", "https://aws.amazon.com/relational-database/"],
+      ["here", "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"],
+      ["AWS Database Migration Service", "https://aws.amazon.com/dms/"],
       [
         "here",
         "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Aurora.Overview.html#Aurora.Overview.Security.SSL"
@@ -497,10 +397,7 @@
         "AWS Aurora \\- Security",
         "http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.html"
       ],
-      [
-        "AWS Identity and Access Management",
-        "https://aws.amazon.com/iam/"
-      ]
+      ["AWS Identity and Access Management", "https://aws.amazon.com/iam/"]
     ]
   },
   "AWS Service - EC2 Systems Manager Parameter Store.md": {
@@ -529,14 +426,8 @@
         "AWS EC2 Systems Manager Parameter Store",
         "http://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html"
       ],
-      [
-        "SSM API set",
-        "http://docs.aws.amazon.com/cli/latest/reference/ssm/"
-      ],
-      [
-        "Use Caveats",
-        "#use-caveats:"
-      ],
+      ["SSM API set", "http://docs.aws.amazon.com/cli/latest/reference/ssm/"],
+      ["Use Caveats", "#use-caveats:"],
       [
         "defined",
         "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
@@ -552,9 +443,7 @@
       "The use of this service should be performed using IAM Roles and AWS Resource Policies instead of emb",
       "External calls to this service should be performed securely and the code or process that triggers it"
     ],
-    "risks": [
-      "Permits the invocation of code on behalf of a user or group."
-    ],
+    "risks": ["Permits the invocation of code on behalf of a user or group."],
     "integrations": [],
     "non_aws_integrations": [],
     "iam_permissions": [],
@@ -563,14 +452,8 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "https://aws.amazon.com/lambda/faqs/\\#edge",
-        "https://aws.amazon.com/lambda/faqs/#edge"
-      ],
-      [
-        "Lambda \\- Security",
-        "https://aws.amazon.com/lambda/faqs/#scalability"
-      ],
+      ["https://aws.amazon.com/lambda/faqs/\\#edge", "https://aws.amazon.com/lambda/faqs/#edge"],
+      ["Lambda \\- Security", "https://aws.amazon.com/lambda/faqs/#scalability"],
       [
         "http://docs.aws.amazon.com/lambda/latest/dg/best-practices.html",
         "http://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
@@ -579,10 +462,7 @@
         "requirements",
         "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html"
       ],
-      [
-        "AWS Service\\_Name",
-        "http://aws.com"
-      ]
+      ["AWS Service\\_Name", "http://aws.com"]
     ]
   },
   "AWS Service - Resource Access Manager.md": {
@@ -609,14 +489,8 @@
         "RejectResourceShareInvitation",
         "https://docs.aws.amazon.com/ram/latest/APIReference/API_RejectResourceShareInvitation.html"
       ],
-      [
-        "https://aws.amazon.com/ram/",
-        "https://aws.amazon.com/ram/"
-      ],
-      [
-        "AWS Resource Access Manager",
-        "https://aws.amazon.com/ram/"
-      ],
+      ["https://aws.amazon.com/ram/", "https://aws.amazon.com/ram/"],
+      ["AWS Resource Access Manager", "https://aws.amazon.com/ram/"],
       [
         "ListResources",
         "https://docs.aws.amazon.com/ram/latest/APIReference/API_ListResources.html"
@@ -680,10 +554,7 @@
         "https://aws.amazon.com/secrets-manager/faqs/\\#",
         "https://aws.amazon.com/secrets-manager/faqs/#"
       ],
-      [
-        "Use Caveats",
-        "#heading=h.gjdgxs"
-      ],
+      ["Use Caveats", "#heading=h.gjdgxs"],
       [
         "https://docs.aws.amazon.com/secretsmanager/latest/userguide/monitoring.html",
         "https://docs.aws.amazon.com/secretsmanager/latest/userguide/monitoring.html"
@@ -696,18 +567,12 @@
         "https://aws.amazon.com/about-aws/whats-new/2018/06/secrets-manager-hipaa-announcement/",
         "https://aws.amazon.com/about-aws/whats-new/2018/06/secrets-manager-hipaa-announcement/"
       ],
-      [
-        "https://aws.amazon.com/secrets-manager/",
-        "https://aws.amazon.com/secrets-manager/"
-      ],
+      ["https://aws.amazon.com/secrets-manager/", "https://aws.amazon.com/secrets-manager/"],
       [
         "https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access.html",
         "https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access.html"
       ],
-      [
-        "Secrets Manager",
-        "https://aws.amazon.com/secrets-manager/"
-      ],
+      ["Secrets Manager", "https://aws.amazon.com/secrets-manager/"],
       [
         "defined",
         "https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit"
@@ -734,10 +599,7 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "Use Caveats",
-        "#use-caveats:"
-      ],
+      ["Use Caveats", "#use-caveats:"],
       [
         "AWS SnowBall Edge \\- Security",
         "http://docs.aws.amazon.com/snowball/latest/ug/security.html"
@@ -772,14 +634,8 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "AWS Storage Gateway \\- Security",
-        "https://aws.amazon.com/storagegateway/faqs/"
-      ],
-      [
-        "Use Caveats",
-        "#use-caveats:"
-      ],
+      ["AWS Storage Gateway \\- Security", "https://aws.amazon.com/storagegateway/faqs/"],
+      ["Use Caveats", "#use-caveats:"],
       [
         "AWS Storage Gateway",
         "http://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html"
@@ -809,10 +665,7 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "BatchGetTraces",
-        "https://docs.aws.amazon.com/xray/latest/api/API_BatchGetTraces.html"
-      ],
+      ["BatchGetTraces", "https://docs.aws.amazon.com/xray/latest/api/API_BatchGetTraces.html"],
       [
         "GetTimeSeriesServiceStatistics",
         "https://docs.aws.amazon.com/xray/latest/api/API_GetTimeSeriesServiceStatistics.html"
@@ -825,26 +678,14 @@
         "sampling-rule\\*",
         "https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsx-ray.html#awsx-ray-sampling-rule"
       ],
-      [
-        "GetInsightEvents",
-        "https://docs.aws.amazon.com/xray/latest/api/API_GetInsightEvents.html"
-      ],
-      [
-        "GetSamplingRules",
-        "https://docs.aws.amazon.com/xray/latest/api/API_GetSamplingRules.html"
-      ],
-      [
-        "AWS XRAY",
-        "https://aws.amazon.com/xray/"
-      ],
+      ["GetInsightEvents", "https://docs.aws.amazon.com/xray/latest/api/API_GetInsightEvents.html"],
+      ["GetSamplingRules", "https://docs.aws.amazon.com/xray/latest/api/API_GetSamplingRules.html"],
+      ["AWS XRAY", "https://aws.amazon.com/xray/"],
       [
         "GetInsightSummaries",
         "https://docs.aws.amazon.com/xray/latest/api/API_GetInsightSummaries.html"
       ],
-      [
-        "https://aws.amazon.com/ram/",
-        "https://aws.amazon.com/ram/"
-      ],
+      ["https://aws.amazon.com/ram/", "https://aws.amazon.com/ram/"],
       [
         "DeleteSamplingRule",
         "https://docs.aws.amazon.com/xray/latest/api/API_DeleteSamplingRule.html"
@@ -907,18 +748,12 @@
         "https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html",
         "https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html"
       ],
-      [
-        "Amazon Personalize",
-        "https://aws.amazon.com/personalize/"
-      ],
+      ["Amazon Personalize", "https://aws.amazon.com/personalize/"],
       [
         "dynamic audience segment",
         "https://aws.amazon.com/pinpoint/features/engagement-management/audience-management/"
       ],
-      [
-        "Amazon Comprehend",
-        "https://aws.amazon.com/comprehend/"
-      ],
+      ["Amazon Comprehend", "https://aws.amazon.com/comprehend/"],
       [
         "on-demand messages",
         "https://aws.amazon.com/pinpoint/features/engagement-management/transactional-messages/"
@@ -927,18 +762,9 @@
         "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html",
         "https://docs.aws.amazon.com/streams/latest/dev/getting-started-with-sse.html"
       ],
-      [
-        "https://aws.amazon.com/pinpoint/",
-        "https://aws.amazon.com/pinpoint/"
-      ],
-      [
-        "real-time data",
-        "https://aws.amazon.com/pinpoint/features/analytics/"
-      ],
-      [
-        "Amazon QuickSight",
-        "https://aws.amazon.com/quicksight/"
-      ],
+      ["https://aws.amazon.com/pinpoint/", "https://aws.amazon.com/pinpoint/"],
+      ["real-time data", "https://aws.amazon.com/pinpoint/features/analytics/"],
+      ["Amazon QuickSight", "https://aws.amazon.com/quicksight/"],
       [
         "https://aws.amazon.com/about-aws/whats-new/2017/07/amazon-kinesis-streams-introduces-server-side-encryption/).",
         "https://aws.amazon.com/about-aws/whats-new/2017/07/amazon-kinesis-streams-introduces-server-side-encryption/\\"
@@ -1037,10 +863,7 @@
         "ElastiCache Memcache Documentation",
         "https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/WhatIs.html"
       ],
-      [
-        "Redis Auth",
-        "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html"
-      ]
+      ["Redis Auth", "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html"]
     ]
   },
   "Glacier.md": {
@@ -1083,10 +906,7 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "AWS GuardDuty",
-        "https://aws.amazon.com/guardduty/"
-      ],
+      ["AWS GuardDuty", "https://aws.amazon.com/guardduty/"],
       [
         "GuardDuty Overview:",
         "https://aws.amazon.com/blogs/aws/amazon-guardduty-continuous-security-monitoring-threat-detection/"
@@ -1095,18 +915,12 @@
         "Why to Access GuardDuty:",
         "http://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
       ],
-      [
-        "How AWS GuardDuty Works:",
-        "https://aws.amazon.com/guardduty/"
-      ],
+      ["How AWS GuardDuty Works:", "https://aws.amazon.com/guardduty/"],
       [
         "AWS GuardDuty User Guide:",
         "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
       ],
-      [
-        "AWS GuardDuty FAQ",
-        "https://aws.amazon.com/guardduty/faqs/"
-      ]
+      ["AWS GuardDuty FAQ", "https://aws.amazon.com/guardduty/faqs/"]
     ]
   },
   "ISE AWS Amazon Managed Streaming for Apache Kafka (Amazon MSK).md": {
@@ -1129,18 +943,12 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "AWS Kafka",
-        "https://console.aws.amazon.com/msk"
-      ],
+      ["AWS Kafka", "https://console.aws.amazon.com/msk"],
       [
         "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html",
         "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
       ],
-      [
-        "use caveats",
-        "#use-caveats:"
-      ]
+      ["use caveats", "#use-caveats:"]
     ]
   },
   "ISE AWS Bedrock.md": {
@@ -1164,10 +972,7 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "Yes",
-        "https://ea.gsa.gov/#!/itstandards/1876%20"
-      ],
+      ["Yes", "https://ea.gsa.gov/#!/itstandards/1876%20"],
       [
         "AWS Community",
         "https://community.aws/content/2ibjw3otz5LFNJsARUtx9LkjjxG/deep-dive-within-amazon-bedrock-security-architecture?utm_source=chatgpt.com"
@@ -1176,18 +981,9 @@
         "Amazon Web Services",
         "https://aws.amazon.com/blogs/security/securing-the-rag-ingestion-pipeline-filtering-mechanisms/?utm_source=chatgpt.com"
       ],
-      [
-        "Amazon Bedrock FAQ",
-        "https://aws.amazon.com/bedrock/faqs/"
-      ],
-      [
-        "review",
-        "https://feedback.gsa.gov/jfe/form/SV_5tgn61GaufYZOlg"
-      ],
-      [
-        "Amazon Bedrock Developer Guide",
-        "https://docs.aws.amazon.com/bedrock/latest/userguide/"
-      ],
+      ["Amazon Bedrock FAQ", "https://aws.amazon.com/bedrock/faqs/"],
+      ["review", "https://feedback.gsa.gov/jfe/form/SV_5tgn61GaufYZOlg"],
+      ["Amazon Bedrock Developer Guide", "https://docs.aws.amazon.com/bedrock/latest/userguide/"],
       [
         "here",
         "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-amazonsagemakerfullaccess-policy"
@@ -1200,10 +996,7 @@
         "https://docs.aws.amazon.com/general/latest/gr/bedrock.html",
         "https://docs.aws.amazon.com/general/latest/gr/bedrock.html"
       ],
-      [
-        "Seceng@gsa.gov",
-        "mailto:Seceng@gsa.gov"
-      ]
+      ["Seceng@gsa.gov", "mailto:Seceng@gsa.gov"]
     ]
   },
   "ISE AWS ECR Review .md": {
@@ -1227,26 +1020,14 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "User Guide",
-        "http://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-ug.pdf"
-      ],
+      ["User Guide", "http://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-ug.pdf"],
       [
         "GSA\u2019s policy",
         "https://docs.google.com/document/d/1zXpKoMd8qJx3ALULNRgnJL3GwLojAiqCXW8LxRbU5ZA/edit"
       ],
-      [
-        "ECR Frequently Asked Questions",
-        "https://aws.amazon.com/ecr/faqs/"
-      ],
-      [
-        "Service Overview",
-        "https://aws.amazon.com/ecr/"
-      ],
-      [
-        "AWS Service\\_Name",
-        "http://aws.com"
-      ]
+      ["ECR Frequently Asked Questions", "https://aws.amazon.com/ecr/faqs/"],
+      ["Service Overview", "https://aws.amazon.com/ecr/"],
+      ["AWS Service\\_Name", "http://aws.com"]
     ]
   },
   "ISE AWS ECS and Fargate Service Review.md": {
@@ -1275,26 +1056,17 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "FedRAMPed?",
-        "https://aws.amazon.com/compliance/services-in-scope/"
-      ],
+      ["FedRAMPed?", "https://aws.amazon.com/compliance/services-in-scope/"],
       [
         "here",
         "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_managed_policies.html"
       ],
-      [
-        "https://aws.amazon.com/ecs/faqs/",
-        "https://aws.amazon.com/ecs/faqs/"
-      ],
+      ["https://aws.amazon.com/ecs/faqs/", "https://aws.amazon.com/ecs/faqs/"],
       [
         "GSA\u2019s policy",
         "https://docs.google.com/document/d/1zXpKoMd8qJx3ALULNRgnJL3GwLojAiqCXW8LxRbU5ZA/edit"
       ],
-      [
-        "AWS ECS",
-        "https://aws.amazon.com/ecs/"
-      ],
+      ["AWS ECS", "https://aws.amazon.com/ecs/"],
       [
         "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
         "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
@@ -1323,26 +1095,14 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "AWS EKS",
-        "https://aws.amazon.com/eks/"
-      ],
-      [
-        "FAQ",
-        "https://aws.amazon.com/eks/faq/"
-      ],
+      ["AWS EKS", "https://aws.amazon.com/eks/"],
+      ["FAQ", "https://aws.amazon.com/eks/faq/"],
       [
         "GSA\u2019s policy",
         "https://docs.google.com/document/d/1zXpKoMd8qJx3ALULNRgnJL3GwLojAiqCXW8LxRbU5ZA/edit"
       ],
-      [
-        "User Guide",
-        "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
-      ],
-      [
-        "Amazon Elastic Container Service for Kubernetes",
-        "https://aws.amazon.com/eks/"
-      ]
+      ["User Guide", "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"],
+      ["Amazon Elastic Container Service for Kubernetes", "https://aws.amazon.com/eks/"]
     ]
   },
   "ISE AWS Elastic File Service (EFS) v2.md": {
@@ -1370,18 +1130,12 @@
         "https://aws.amazon.com/efs/details/\\#security",
         "https://aws.amazon.com/efs/details/#security"
       ],
-      [
-        "https://aws.amazon.com/efs/",
-        "https://aws.amazon.com/efs/"
-      ],
+      ["https://aws.amazon.com/efs/", "https://aws.amazon.com/efs/"],
       [
         "https://docs.aws.amazon.com/efs/latest/ug/security-considerations.html",
         "https://docs.aws.amazon.com/efs/latest/ug/security-considerations.html"
       ],
-      [
-        "AWS Elastic File System (EFS)",
-        "https://aws.amazon.com/efs/"
-      ],
+      ["AWS Elastic File System (EFS)", "https://aws.amazon.com/efs/"],
       [
         "https://docs.aws.amazon.com/efs/latest/ug/encryption.html",
         "https://docs.aws.amazon.com/efs/latest/ug/encryption.html"
@@ -1418,14 +1172,8 @@
         "https://aws.amazon.com/firewall-manager/faqs/",
         "https://aws.amazon.com/firewall-manager/faqs/"
       ],
-      [
-        "https://aws.amazon.com/firewall-manager/",
-        "https://aws.amazon.com/firewall-manager/"
-      ],
-      [
-        "AWS Firewall Manager",
-        "https://aws.amazon.com/firewall-manager/"
-      ],
+      ["https://aws.amazon.com/firewall-manager/", "https://aws.amazon.com/firewall-manager/"],
+      ["AWS Firewall Manager", "https://aws.amazon.com/firewall-manager/"],
       [
         "https://aws.amazon.com/firewall-manager/features/",
         "https://aws.amazon.com/firewall-manager/features/"
@@ -1451,9 +1199,7 @@
       "Least privileged IAM policies need to be enforced.",
       "Cannot use use AWS IOT"
     ],
-    "risks": [
-      "Records are not encrypted in transit or rest by default."
-    ],
+    "risks": ["Records are not encrypted in transit or rest by default."],
     "integrations": [
       {
         "Service Name": "AWS Kinesis Datastream",
@@ -1578,22 +1324,13 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "AWS Kinesis Data FireHose",
-        "https://aws.amazon.com/kinesis/data-firehose/?nc=sn&loc=1%20"
-      ],
+      ["AWS Kinesis Data FireHose", "https://aws.amazon.com/kinesis/data-firehose/?nc=sn&loc=1%20"],
       [
         "https://www.splunk.com/blog/2017/11/29/ready-set-stream-with-the-kinesis-firehose-and-splunk-integration.html",
         "https://www.splunk.com/blog/2017/11/29/ready-set-stream-with-the-kinesis-firehose-and-splunk-integration.html"
       ],
-      [
-        "configured",
-        "https://docs.aws.amazon.com/streams/latest/dev/what-is-sse.html"
-      ],
-      [
-        "Overview",
-        "https://aws.amazon.com/kinesis/data-firehose/"
-      ],
+      ["configured", "https://docs.aws.amazon.com/streams/latest/dev/what-is-sse.html"],
+      ["Overview", "https://aws.amazon.com/kinesis/data-firehose/"],
       [
         "Developer Guide",
         "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
@@ -1614,10 +1351,7 @@
         "https://aws.amazon.com/compliance/services-in-scope/",
         "https://aws.amazon.com/compliance/services-in-scope/"
       ],
-      [
-        "FAQ",
-        "https://aws.amazon.com/kinesis/data-firehose/faqs/?nc=sn&loc=5"
-      ]
+      ["FAQ", "https://aws.amazon.com/kinesis/data-firehose/faqs/?nc=sn&loc=5"]
     ]
   },
   "ISE AWS SageMaker.md": {
@@ -1644,18 +1378,9 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "Yes",
-        "https://ea.gsa.gov/#!/itstandards/1876%20"
-      ],
-      [
-        "implement",
-        "https://docs.aws.amazon.com/sagemaker/latest/dg/train-vpc.html"
-      ],
-      [
-        "AWS SageMaker",
-        "https://aws.amazon.com/sagemaker"
-      ],
+      ["Yes", "https://ea.gsa.gov/#!/itstandards/1876%20"],
+      ["implement", "https://docs.aws.amazon.com/sagemaker/latest/dg/train-vpc.html"],
+      ["AWS SageMaker", "https://aws.amazon.com/sagemaker"],
       [
         "here",
         "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-amazonsagemakerfullaccess-policy"
@@ -1697,10 +1422,7 @@
         "https://aws.amazon.com/certificate-manager/faqs/",
         "https://aws.amazon.com/certificate-manager/faqs/"
       ],
-      [
-        "AWS Certificate Manager (ACM)",
-        "https://aws.amazon.com/certificate-manager/"
-      ],
+      ["AWS Certificate Manager (ACM)", "https://aws.amazon.com/certificate-manager/"],
       [
         "https://aws.amazon.com/certificate-manager/?nc=sn\\&loc=0",
         "https://aws.amazon.com/certificate-manager/?nc=sn&loc=0"
@@ -1722,46 +1444,28 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "FRED AGYEPONG YEBOAH - IST-C",
-        "mailto:fred.agyepongyeboah@gsa.gov"
-      ],
+      ["FRED AGYEPONG YEBOAH - IST-C", "mailto:fred.agyepongyeboah@gsa.gov"],
       [
         "https://docs.aws.amazon.com/systems-manager/latest/userguide/security-best-practices.html",
         "https://docs.aws.amazon.com/systems-manager/latest/userguide/security-best-practices.html"
       ],
-      [
-        "Mossadeq Zia - ISE",
-        "mailto:mossadeq.zia@gsa.gov"
-      ],
+      ["Mossadeq Zia - ISE", "mailto:mossadeq.zia@gsa.gov"],
       [
         "https://docs.aws.amazon.com/pdfs/incident-manager/latest/APIReference/incident-manager-api.pdf\\#Welcome",
         "https://docs.aws.amazon.com/pdfs/incident-manager/latest/APIReference/incident-manager-api.pdf#Welcome"
       ],
-      [
-        "Nicholas Willey - Q2AABF",
-        "mailto:nicholas.willey@gsa.gov"
-      ],
+      ["Nicholas Willey - Q2AABF", "mailto:nicholas.willey@gsa.gov"],
       [
         "Incident Response and Collaboration with AWS | AWS Events",
         "https://youtu.be/-L49l6cBE6k?si=EMy050XwljFHc9rE"
       ],
-      [
-        "Douglas Sillex - ISE",
-        "mailto:douglas.sillex@gsa.gov"
-      ],
-      [
-        "Parimala Rao - IS",
-        "mailto:parimala.rao@gsa.gov"
-      ],
+      ["Douglas Sillex - ISE", "mailto:douglas.sillex@gsa.gov"],
+      ["Parimala Rao - IS", "mailto:parimala.rao@gsa.gov"],
       [
         "https://docs.google.com/document/d/1jfxtzuVB4wanohRX-P8dAS8MAQKNTGffdqd3zb2kix8/edit\\#heading=h.m6ip4vux6d38",
         "https://docs.google.com/document/d/1jfxtzuVB4wanohRX-P8dAS8MAQKNTGffdqd3zb2kix8/edit#heading=h.m6ip4vux6d38"
       ],
-      [
-        "Bo Berlas - IS",
-        "mailto:bo.berlas@gsa.gov"
-      ]
+      ["Bo Berlas - IS", "mailto:bo.berlas@gsa.gov"]
     ]
   },
   "KMS.md": {
@@ -1779,10 +1483,7 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "AWS Re-Encrypt",
-        "http://docs.aws.amazon.com/kms/latest/APIReference/API_ReEncrypt.html"
-      ],
+      ["AWS Re-Encrypt", "http://docs.aws.amazon.com/kms/latest/APIReference/API_ReEncrypt.html"],
       [
         "GSA IT Security Procedural Guide 09-43, Key Management",
         "https://insite.gsa.gov/portal/getMediaData?mediaId=515341"
@@ -1837,10 +1538,7 @@
     "features": [],
     "supported_services": [],
     "links": [
-      [
-        "DeleteUser",
-        "https://docs.aws.amazon.com/transfer/latest/userguide/API_DeleteUser.html"
-      ],
+      ["DeleteUser", "https://docs.aws.amazon.com/transfer/latest/userguide/API_DeleteUser.html"],
       [
         "ImportSshPublicKey",
         "https://docs.aws.amazon.com/transfer/latest/userguide/API_ImportSshPublicKey.html"
@@ -1857,22 +1555,13 @@
         "What Is Amazon Elastic File System?",
         "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
       ],
-      [
-        "UpdateUser",
-        "https://docs.aws.amazon.com/transfer/latest/userguide/API_UpdateUser.html"
-      ],
+      ["UpdateUser", "https://docs.aws.amazon.com/transfer/latest/userguide/API_UpdateUser.html"],
       [
         "user\\*",
         "https://docs.aws.amazon.com/service-authorization/latest/reference/list_awstransferforsftp.html#awstransferforsftp-user"
       ],
-      [
-        "StartServer",
-        "https://docs.aws.amazon.com/transfer/latest/userguide/API_StartServer.html"
-      ],
-      [
-        "StopServer",
-        "https://docs.aws.amazon.com/transfer/latest/userguide/API_StopServer.html"
-      ],
+      ["StartServer", "https://docs.aws.amazon.com/transfer/latest/userguide/API_StartServer.html"],
+      ["StopServer", "https://docs.aws.amazon.com/transfer/latest/userguide/API_StopServer.html"],
       [
         "ListTagsForResource",
         "https://docs.aws.amazon.com/transfer/latest/userguide/API_ListTagsForResource.html"

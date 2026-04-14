@@ -16,14 +16,16 @@
           "short-name": "GSA TTS",
           "links": [{ "href": "https://tts.gsa.gov", "rel": "homepage" }],
           "email-addresses": ["tts-tech-operations@gsa.gov"],
-          "addresses": [{
-            "type": "work",
-            "addr-lines": ["1800 F St. NW"],
-            "city": "Washington",
-            "state": "DC",
-            "postal-code": "20405",
-            "country": "US"
-          }]
+          "addresses": [
+            {
+              "type": "work",
+              "addr-lines": ["1800 F St. NW"],
+              "city": "Washington",
+              "state": "DC",
+              "postal-code": "20405",
+              "country": "US"
+            }
+          ]
         },
         {
           "uuid": "aa000002-0000-0000-0000-cg000000001",
@@ -35,9 +37,17 @@
         }
       ],
       "roles": [
-        { "id": "system-owner", "title": "Information System Owner", "description": "TTS IAE Infrastructure team, responsible for the Cloud Sandbox SSB platform." },
+        {
+          "id": "system-owner",
+          "title": "Information System Owner",
+          "description": "TTS IAE Infrastructure team, responsible for the Cloud Sandbox SSB platform."
+        },
         { "id": "provider", "title": "Component Provider / Maintainer" },
-        { "id": "assessor", "title": "Security Assessor", "description": "Prowler automated assessment or 3PAO for formal assessments." }
+        {
+          "id": "assessor",
+          "title": "Security Assessor",
+          "description": "Prowler automated assessment or 3PAO for formal assessments."
+        }
       ]
     },
     "components": [
@@ -250,7 +260,10 @@
           { "name": "version", "value": "3.x" },
           { "name": "source-uri", "value": "https://github.com/prowler-cloud/prowler" },
           { "name": "scan-schedule", "value": "on-demand (GitHub Actions cron planned)" },
-          { "name": "compliance-frameworks", "value": "fedramp_moderate_revision_4, cis_aws_2.0, cis_gcp_1.3, cis_azure_2.0" }
+          {
+            "name": "compliance-frameworks",
+            "value": "fedramp_moderate_revision_4, cis_aws_2.0, cis_gcp_1.3, cis_azure_2.0"
+          }
         ],
         "responsible-roles": [
           { "role-id": "assessor", "party-uuids": ["aa000001-0000-0000-0000-gsa000000001"] }
