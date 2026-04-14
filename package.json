@@ -1,0 +1,50 @@
+{
+  "name": "pages-uswds-gatsby",
+  "description": "A cloud.gov Pages template using USWDS 2.0 + Gatsby",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "rimraf .cache public _site",
+    "build": "gatsby build",
+    "reset": "npx rimraf .git",
+    "develop": "gatsby develop",
+    "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
+    "start": "npm run develop",
+    "serve": "gatsby serve",
+    "pages": "npm run pages:build && npm run pages:copy",
+    "pages:build": "gatsby build --prefix-paths",
+    "pages:copy": "mkdir -p _site && rm -rf _site/* && cp -r public/* _site/"
+  },
+  "dependencies": {
+    "gatsby": "^5.13.7",
+    "gatsby-awesome-pagination": "^0.3.8",
+    "gatsby-plugin-manifest": "^5.13.1",
+    "gatsby-plugin-offline": "^6.13.3",
+    "gatsby-plugin-react-helmet": "^6.13.1",
+    "gatsby-plugin-robots-txt": "^1.8.0",
+    "gatsby-plugin-sass": "^6.13.1",
+    "gatsby-plugin-sitemap": "^6.13.1",
+    "gatsby-source-filesystem": "^5.13.1",
+    "gatsby-transformer-remark": "^6.13.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-helmet": "^6.1.0",
+    "sass": "^1.79.3",
+    "uswds": "^2.13.3"
+  },
+  "devDependencies": {
+    "eslint-config-react-app": "^7.0.1",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1"
+  },
+  "engines": {
+    "node": "^20.x.x"
+  },
+  "overrides": {
+    "axios": "^1.0.0",
+    "body-parser": "^1.20.3",
+    "path-to-regexp": "^0.1.10",
+    "postcss": "^8.4.47",
+    "webpack-dev-middleware": "^5.3.3"
+  }
+}
