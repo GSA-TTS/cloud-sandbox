@@ -207,7 +207,7 @@ For each approved service, document usage caveats, configuration requirements, p
 ## AutoML Natural Language
 
 - In-house status: `FedRAMP Authorized - Moderate`
-- Conditions / notes: https://docs.google.com/document/d/1l2K_UBMcqQsWVHupsaynTb1dbdQjHAVa9pUTQ50kx_Y/edit#heading=h.usbe3we3yaez
+- Conditions / notes:
 - Required baseline configuration:
   - Use non-production sandbox plans only (no HA / multi-AZ unless explicitly approved).
   - Enforce tagging: `Project`, `Owner`, `TTLExpiry`, `CostCenter`, `Cloud`, `Environment`.
@@ -287,7 +287,7 @@ For each approved service, document usage caveats, configuration requirements, p
 ## Dialogflow Essentials
 
 - In-house status: `FedRAMP Authorized - Moderate`
-- Conditions / notes: https://docs.google.com/document/d/1ll8qLTpUZpkBJK3A9kQcRPHOF27-WI9EEJtI8cMVg8g/edit#heading=h.usbe3we3yaez
+- Conditions / notes:
 - Required baseline configuration:
   - Use non-production sandbox plans only (no HA / multi-AZ unless explicitly approved).
   - Enforce tagging: `Project`, `Owner`, `TTLExpiry`, `CostCenter`, `Cloud`, `Environment`.
