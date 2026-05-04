@@ -37,6 +37,19 @@ cf target > /dev/null 2>&1 || {
 }
 
 # ── Load env ──────────────────────────────────────────────────────────────────
+# Clear unrelated provider vars that may be left exported in a persistent shell.
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+unset AWS_BUDGET_ALERT_EMAIL
+unset GOOGLE_CREDENTIALS GOOGLE_PROJECT
+unset GCP_BUDGET_ALERT_EMAIL
+unset GSB_SERVICE_CSB_AWS_S3_BUCKET_PLANS GSB_SERVICE_CSB_AWS_POSTGRESQL_PLANS
+unset GSB_SERVICE_CSB_AWS_MYSQL_PLANS GSB_SERVICE_CSB_AWS_REDIS_PLANS
+unset GSB_SERVICE_CSB_AWS_SQS_PLANS GSB_SERVICE_CSB_AWS_BEDROCK_PLANS
+unset GSB_SERVICE_CSB_AWS_AURORA_POSTGRESQL_PLANS GSB_SERVICE_CSB_AWS_AURORA_MYSQL_PLANS
+unset GSB_SERVICE_CSB_AWS_MSSQL_PLANS GSB_SERVICE_CSB_AWS_DYNAMODB_NAMESPACE_PLANS
+unset GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS
+unset GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS GSB_SERVICE_CSB_GOOGLE_VERTEX_AI_PLANS
+
 # shellcheck source=/dev/null
 set -a; source "${ENV_FILE}"; set +a
 
@@ -44,11 +57,29 @@ set -a; source "${ENV_FILE}"; set +a
 # shellcheck source=lib/compact-json-env.sh
 source "${SCRIPT_DIR}/lib/compact-json-env.sh"
 
+require_real_value() {
+  local var_name="$1"
+  local value="${!var_name:-}"
+
+  if [[ -z "${value}" ]]; then
+    echo "ERROR: ${var_name} is not set in ${ENV_FILE}"
+    exit 1
+  fi
+
+  case "${value}" in
+    *CHANGEME*|xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx|your-*|"<"*">")
+      echo "ERROR: ${var_name} in ${ENV_FILE} is still a placeholder value"
+      exit 1
+      ;;
+  esac
+}
+
 # Validate required Azure-specific vars before proceeding
-[[ -z "${ARM_TENANT_ID:-}" ]]       && { echo "ERROR: ARM_TENANT_ID is not set in ${ENV_FILE}"; exit 1; }
-[[ -z "${ARM_SUBSCRIPTION_ID:-}" ]] && { echo "ERROR: ARM_SUBSCRIPTION_ID is not set in ${ENV_FILE}"; exit 1; }
-[[ -z "${ARM_CLIENT_ID:-}" ]]       && { echo "ERROR: ARM_CLIENT_ID is not set in ${ENV_FILE}"; exit 1; }
-[[ -z "${ARM_CLIENT_SECRET:-}" ]]   && { echo "ERROR: ARM_CLIENT_SECRET is not set in ${ENV_FILE}"; exit 1; }
+require_real_value SECURITY_USER_PASSWORD
+require_real_value ARM_TENANT_ID
+require_real_value ARM_SUBSCRIPTION_ID
+require_real_value ARM_CLIENT_ID
+require_real_value ARM_CLIENT_SECRET
 
 # ── Patch upstream provider_display_name (VMware → GSA TTS) ─────────────────
 # shellcheck source=lib/patch-provider-display-name.sh
@@ -71,7 +102,7 @@ echo "==> [3/4] Pushing CSB Azure broker to CF as '${APP_NAME:-csb-azure}'..."
 (
   export APP_NAME="${APP_NAME:-csb-azure}"
   export BROKER_NAME="${BROKER_NAME:-csb-azure-sandbox}"
-  export MANIFEST="${SUBMODULE}/cf-manifest.yml"
+  export MANIFEST="${REPO_ROOT}/scripts/manifests/azure-manifest.yml"
   export MSYQL_INSTANCE="${MYSQL_INSTANCE:-csb-sql}"
   cd "${SUBMODULE}"
   source "${SCRIPT_DIR}/lib/cf-push-broker.sh"
@@ -84,4 +115,4 @@ echo ""
 echo "✓ Azure broker '${BROKER_NAME:-csb-azure-sandbox}' is registered in this CF space."
 echo "  Provision example:"
 echo "    cf create-service csb-azure-postgresql sandbox-8h my-pg \\"
-echo "      -c '{\"project\":\"sprint-42\",\"owner\":\"you@gsa.gov\"}'"
+echo "      -c '{\"project\":\"sprint-42\",\"owner\":\"owner@example.gov\"}'"

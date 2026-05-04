@@ -1,0 +1,12 @@
+# CSB Azure Broker — sandbox manifest override
+# Memory reduced to 512M so staging can fit within the cloud.gov org quota.
+# This file is used by scripts/deploy-azure.sh via MANIFEST env var.
+---
+applications:
+  - name: ((app))
+    command: ./cloud-service-broker serve
+    memory: 512M
+    disk_quota: 2G
+    buildpacks:
+      - binary_buildpack
+    random-route: true

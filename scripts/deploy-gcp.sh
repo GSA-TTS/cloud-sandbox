@@ -37,6 +37,20 @@ cf target > /dev/null 2>&1 || {
 }
 
 # ── Load env ──────────────────────────────────────────────────────────────────
+# Clear unrelated provider vars that may be left exported in a persistent shell.
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+unset AWS_BUDGET_ALERT_EMAIL
+unset AZURE_BUDGET_CONTACT_EMAIL AZURE_BUDGET_WEBHOOK_URL
+unset ARM_LOCATION ARM_TENANT_ID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET
+unset GSB_SERVICE_CSB_AWS_S3_BUCKET_PLANS GSB_SERVICE_CSB_AWS_POSTGRESQL_PLANS
+unset GSB_SERVICE_CSB_AWS_MYSQL_PLANS GSB_SERVICE_CSB_AWS_REDIS_PLANS
+unset GSB_SERVICE_CSB_AWS_SQS_PLANS GSB_SERVICE_CSB_AWS_BEDROCK_PLANS
+unset GSB_SERVICE_CSB_AWS_AURORA_POSTGRESQL_PLANS GSB_SERVICE_CSB_AWS_AURORA_MYSQL_PLANS
+unset GSB_SERVICE_CSB_AWS_MSSQL_PLANS GSB_SERVICE_CSB_AWS_DYNAMODB_NAMESPACE_PLANS
+unset GSB_SERVICE_CSB_AZURE_MONGODB_PLANS GSB_SERVICE_CSB_AZURE_MSSQL_DB_PLANS
+unset GSB_SERVICE_CSB_AZURE_MSSQL_DB_FAILOVER_GROUP_PLANS GSB_SERVICE_CSB_AZURE_MSSQL_FOG_RUN_FAILOVER_PLANS
+unset GSB_SERVICE_CSB_AZURE_REDIS_PLANS GSB_SERVICE_CSB_AZURE_OPENAI_PLANS
+
 # shellcheck source=/dev/null
 set -a; source "${ENV_FILE}"; set +a
 
@@ -82,4 +96,4 @@ echo ""
 echo "✓ GCP broker '${BROKER_NAME:-csb-gcp-sandbox}' is registered in this CF space."
 echo "  Provision example:"
 echo "    cf create-service csb-google-cloudsql-postgres sandbox-8h my-pg \\"
-echo "      -c '{\"project\":\"sprint-42\",\"owner\":\"you@gsa.gov\"}'"
+echo "      -c '{\"project\":\"sprint-42\",\"owner\":\"owner@example.gov\"}'"
