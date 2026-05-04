@@ -302,6 +302,11 @@ the full step-by-step guide:
 | Azure    | `azd` + `az` | [Azure — brew install → service principal → azure.env](docs/credential-provisioning.md#azure----azd--az) |
 | GCP      | `gcloud`     | [GCP — brew install → service account → gcp.env](docs/credential-provisioning.md#gcp----gcloud)          |
 
+Once the brokers are deployed, see
+**[docs/local-agent-workflows.md](docs/local-agent-workflows.md)** for the
+local AI client workflow from `cf create-service` through `VCAP_SERVICES`
+consumption in Zed, CLI agents, and VS Code.
+
 ```bash
 # Quick-copy the example files, then fill in with values from the guide above
 cp scripts/envs/aws.env.example   scripts/envs/aws.env

@@ -7,6 +7,11 @@ When complete, each section ends with writing the generated credentials to
 the appropriate `scripts/envs/<provider>.env` file. **Never commit `.env` files —
 they are git-ignored.**
 
+After the broker credentials are in place and the brokers are deployed, see
+`docs/local-agent-workflows.md` for the local developer flow that provisions a
+service instance, reads the resulting `VCAP_SERVICES` binding, and wires the
+credentials into Zed, CLI agents, and VS Code.
+
 ---
 
 ## AWS — `aws-cli`
