@@ -57,6 +57,14 @@ set -a; source "${ENV_FILE}"; set +a
 # shellcheck source=lib/compact-json-env.sh
 source "${SCRIPT_DIR}/lib/compact-json-env.sh"
 
+if [[ -n "${GSB_PROVISION_DEFAULTS:-}" ]]; then
+  sanitized_defaults=$(printf '%s' "${GSB_PROVISION_DEFAULTS}" | jq -c 'del(.resource_group)')
+  if [[ "${sanitized_defaults}" != "${GSB_PROVISION_DEFAULTS}" ]]; then
+    echo "INFO: Removing global resource_group from GSB_PROVISION_DEFAULTS for Azure deploys; instance-level defaults and overrides should control Azure resource groups."
+    export GSB_PROVISION_DEFAULTS="${sanitized_defaults}"
+  fi
+fi
+
 require_real_value() {
   local var_name="$1"
   local value="${!var_name:-}"
@@ -80,6 +88,53 @@ require_real_value ARM_TENANT_ID
 require_real_value ARM_SUBSCRIPTION_ID
 require_real_value ARM_CLIENT_ID
 require_real_value ARM_CLIENT_SECRET
+
+run_azure_openai_preflight() {
+  if [[ "${AZURE_OPENAI_PREFLIGHT:-0}" != "1" ]]; then
+    return 0
+  fi
+
+  if [[ -z "${AZURE_OPENAI_PREFLIGHT_DEPLOYMENTS_JSON:-}" ]]; then
+    echo "ERROR: AZURE_OPENAI_PREFLIGHT=1 requires AZURE_OPENAI_PREFLIGHT_DEPLOYMENTS_JSON in ${ENV_FILE}" >&2
+    exit 1
+  fi
+
+  local preflight_location="${AZURE_OPENAI_PREFLIGHT_LOCATION:-${ARM_LOCATION:-}}"
+  if [[ -z "${preflight_location}" && -n "${GSB_PROVISION_DEFAULTS:-}" ]]; then
+    preflight_location="$(printf '%s' "${GSB_PROVISION_DEFAULTS}" | jq -r '.location // empty')"
+  fi
+  preflight_location="${preflight_location:-eastus}"
+
+  local preflight_args=(
+    --location "${preflight_location}"
+    --subscription "${ARM_SUBSCRIPTION_ID}"
+    --deployments-json "${AZURE_OPENAI_PREFLIGHT_DEPLOYMENTS_JSON}"
+    --sku-name "${AZURE_OPENAI_PREFLIGHT_SKU_NAME:-Standard}"
+  )
+
+  if [[ -n "${AZURE_OPENAI_PREFLIGHT_RESOURCE_GROUP:-}" ]]; then
+    preflight_args+=(--resource-group "${AZURE_OPENAI_PREFLIGHT_RESOURCE_GROUP}")
+  fi
+
+  if [[ -n "${AZURE_OPENAI_PREFLIGHT_ACCOUNT_NAME:-}" ]]; then
+    preflight_args+=(--account-name "${AZURE_OPENAI_PREFLIGHT_ACCOUNT_NAME}")
+  fi
+
+  if [[ "${AZURE_OPENAI_PREFLIGHT_PROBE_CREATE:-0}" == "1" ]]; then
+    preflight_args+=(--probe-create)
+  fi
+
+  if ! command -v az >/dev/null 2>&1; then
+    echo "ERROR: AZURE_OPENAI_PREFLIGHT=1 requires the az CLI to be installed and authenticated." >&2
+    exit 1
+  fi
+
+  echo "==> [preflight] Validating Azure OpenAI deployment matrix with Azure CLI..."
+  az account set --subscription "${ARM_SUBSCRIPTION_ID}" >/dev/null
+  "${SCRIPT_DIR}/azure-openai-preflight.sh" "${preflight_args[@]}"
+}
+
+run_azure_openai_preflight
 
 # ── Patch upstream provider_display_name (VMware → GSA TTS) ─────────────────
 # shellcheck source=lib/patch-provider-display-name.sh

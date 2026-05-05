@@ -14,7 +14,7 @@ The workflow starts the same way for every client:
 2. Create a brokered AI service instance.
 3. Bind that service to a scratch CF app.
 4. Extract the binding credentials from `VCAP_SERVICES`.
-5. Copy the provider-specific values into the local client config.
+5. Prefer the normalized binding payload, then map provider-specific values only when needed.
 
 ## Prerequisites
 
@@ -36,8 +36,10 @@ cf target -o gsa-tts-iae-lava-beds -s dev
 | Provider | Marketplace service | Primary local use |
 | --- | --- | --- |
 | AWS | `csb-aws-bedrock` | Bedrock-backed Anthropic / Titan access |
+| GCP | `csb-google-gemini` | Gemini API key access |
 | GCP | `csb-google-vertex-ai` | Gemini / Vertex AI access |
 | Azure | `csb-azure-openai` | OpenAI-compatible endpoint for local tools |
+| Azure | `csb-azure-foundry` | Preview Foundry-aligned per-model Azure OpenAI access |
 
 ## Step 1: Create a Service Instance
 
@@ -80,31 +82,44 @@ cf create-service csb-google-vertex-ai sandbox-8h local-vertex \
   -c '{"models":"[\"gemini-1.5-flash-001\",\"text-embedding-004\"]"}'
 ```
 
+### GCP Gemini API
+
+```bash
+cf create-service csb-google-gemini sandbox-8h local-gemini
+```
+
 ### Azure OpenAI
 
 ```bash
 cf create-service csb-azure-openai sandbox-8h local-openai
 ```
 
-The Azure OpenAI sandbox plan now defaults to a current chat + embeddings pair:
-`gpt-5.4-mini` (`2026-03-17`) and `text-embedding-3-small` (`1`). You should no
-longer need a deployment override for the documented local workflow.
+The Azure OpenAI catalog now defaults both `sandbox-8h` and `standard` to the
+full requested GPT deployment set: `gpt-5.5`, `gpt-5.4`, `gpt-5.4-mini`,
+`gpt-5.3-codex`, and `gpt-5.2`. `gpt-5.5` is the first deployment in the
+default payload and should be treated as the default chat target for local
+OpenAI-compatible clients. Override `deployments_json` only when the target
+subscription or region cannot support the full matrix.
 
-The Azure OpenAI catalog also exposes fixed single-model plans for:
+### Azure Foundry Preview
 
-- `gpt-5-5`
-- `gpt-5-4`
-- `gpt-5-4-mini`
-- `gpt-5-3-codex`
-- `gpt-5-2`
+```bash
+cf create-service csb-azure-foundry sandbox-8h local-foundry \
+  -c '{"foundry_hub_name":"sandbox-hub","foundry_project_name":"sandbox-project","deployment_name":"text-embedding-3-small","model_name":"text-embedding-3-small","model_version":"1","model_capacity":10}'
+```
 
-And a `standard` plan that deploys the full GPT-5 set plus embeddings by
-default.
+This service is a transitional preview of the `azure_foundry_identity` family.
+It currently provisions a backing Azure OpenAI resource with a single model
+deployment and returns the OpenAI key, endpoint, API version, deployment
+metadata, and Foundry hub/project metadata. It does not yet return a true
+Foundry RBAC-backed token or client secret.
 
 Poll until the instance is ready:
 
 ```bash
 cf service local-openai
+cf service local-foundry
+cf service local-gemini
 cf service local-vertex
 cf service local-bedrock
 ```
@@ -136,7 +151,35 @@ name. Current AI bindings now include the effective instance metadata and the
 final resource tags or labels JSON returned by the broker, plus Cloud Foundry
 provenance JSON for org, space, user, and bound app context.
 
+To print only the normalized runtime contract, use:
+
+```bash
+bash scripts/local-agent-vcap.sh --normalized scratch-app local-openai
+```
+
+The helper prefers `credentials.normalized_binding_json` when present. For older
+bindings, it synthesizes the same shape from the provider-specific credential
+fields so the local workflow can migrate without waiting for every instance to
+be rebound.
+
 ## VCAP Contract
+
+### Normalized binding payload
+
+The normalized payload is the preferred contract for local tooling and future
+app-side adapters. It has the following top-level shape:
+
+- `version`
+- `provider`
+- `provisioner_family`
+- `connection_type`
+- `endpoint`
+- `access`
+- `grant`
+- `credential`
+
+Provider-specific fields remain in `VCAP_SERVICES` for compatibility and are
+documented below.
 
 ### AWS Bedrock binding credentials
 
@@ -172,6 +215,21 @@ provenance JSON for org, space, user, and bound app context.
 - `binding_provenance_json`
 - `resource_labels_json`
 
+### GCP Gemini API binding credentials
+
+`VCAP_SERVICES["csb-google-gemini"][0].credentials` includes:
+
+- `api_key`
+- `project_id`
+- `api_endpoint`
+- `models`
+- `budget_enforcement_mode`
+- `ttl_expires_at`
+- `instance_name`
+- `binding_provenance_json`
+- `resource_labels_json`
+- `normalized_binding_json`
+
 ### Azure OpenAI binding credentials
 
 `VCAP_SERVICES["csb-azure-openai"][0].credentials` includes:
@@ -186,6 +244,36 @@ provenance JSON for org, space, user, and bound app context.
 - `instance_name`
 - `binding_provenance_json`
 - `resource_tags_json`
+
+### Azure Foundry preview binding credentials
+
+`VCAP_SERVICES["csb-azure-foundry"][0].credentials` includes:
+
+- `endpoint`
+- `api_key`
+- `api_version`
+- `deployments`
+- `implementation_state`
+- `resource_tags_json`
+- `foundry_hub_name`
+- `foundry_project_name`
+- `deployment_name`
+- `model_name`
+- `model_version`
+- `model_capacity`
+- `resource_group`
+- `location`
+- `azure_tenant_id`
+- `azure_subscription_id`
+- `budget_enforcement_mode`
+- `token_audience`
+- `ttl_expires_at`
+- `binding_provenance_json`
+- `normalized_binding_json`
+
+This preview binding now includes a usable Azure OpenAI key and a single-model
+deployment contract, but it is still transitional rather than a true Foundry
+RBAC-backed identity flow.
 
 ## Option 1: Zed
 

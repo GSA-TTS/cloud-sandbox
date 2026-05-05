@@ -33,6 +33,8 @@ yaml_quote() { python3 -c 'import json, sys; print(json.dumps(sys.argv[1]))' "$1
 add_env() { printf '%s%s: %s\n' "$value_indent" "$1" "$(yaml_quote "$2")" >> "$cfmf"; }
 
 managed_optional_env_vars=(
+  DATABRICKS_HOST
+  DATABRICKS_TOKEN
   AWS_ACCESS_KEY_ID
   AWS_SECRET_ACCESS_KEY
   GOOGLE_CREDENTIALS
@@ -63,6 +65,7 @@ managed_optional_env_vars=(
   GSB_SERVICE_CSB_AZURE_MSSQL_FOG_RUN_FAILOVER_PLANS
   GSB_SERVICE_CSB_AZURE_REDIS_PLANS
   GSB_SERVICE_CSB_AZURE_OPENAI_PLANS
+  GSB_SERVICE_CSB_DATABRICKS_MODEL_SERVING_PLANS
 )
 
 if [[ -n "$(tail -c 1 "$cfmf" 2>/dev/null || true)" ]]; then
@@ -80,6 +83,8 @@ add_env "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES" "${GSB_COMPATIBILITY_ENABLE_BET
 # Provider-specific credentials
 [[ -n "${AWS_ACCESS_KEY_ID:-}"     ]] && add_env "AWS_ACCESS_KEY_ID"       "${AWS_ACCESS_KEY_ID}"
 [[ -n "${AWS_SECRET_ACCESS_KEY:-}" ]] && add_env "AWS_SECRET_ACCESS_KEY"   "${AWS_SECRET_ACCESS_KEY}"
+[[ -n "${DATABRICKS_HOST:-}"       ]] && add_env "DATABRICKS_HOST"         "${DATABRICKS_HOST}"
+[[ -n "${DATABRICKS_TOKEN:-}"      ]] && add_env "DATABRICKS_TOKEN"        "${DATABRICKS_TOKEN}"
 add_env "AWS_BUDGET_ALERT_EMAIL" "${AWS_BUDGET_ALERT_EMAIL- }"
 [[ -n "${GOOGLE_CREDENTIALS:-}"    ]] && add_env "GOOGLE_CREDENTIALS"      "${GOOGLE_CREDENTIALS}"
 [[ -n "${GOOGLE_PROJECT:-}"        ]] && add_env "GOOGLE_PROJECT"           "${GOOGLE_PROJECT}"
@@ -114,7 +119,8 @@ for plan_var in \
   GSB_SERVICE_CSB_AZURE_MSSQL_DB_FAILOVER_GROUP_PLANS \
   GSB_SERVICE_CSB_AZURE_MSSQL_FOG_RUN_FAILOVER_PLANS \
   GSB_SERVICE_CSB_AZURE_REDIS_PLANS \
-  GSB_SERVICE_CSB_AZURE_OPENAI_PLANS; do
+  GSB_SERVICE_CSB_AZURE_OPENAI_PLANS \
+  GSB_SERVICE_CSB_DATABRICKS_MODEL_SERVING_PLANS; do
   val="${!plan_var:-}"
   [[ -n "${val}" ]] && add_env "${plan_var}" "${val}"
 done
