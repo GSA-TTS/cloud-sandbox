@@ -24,9 +24,55 @@ trap "rm -f $cfmf" EXIT
 chmod 600 "$cfmf"
 cat "${MANIFEST}" > "$cfmf"
 
-add_env() { echo "    ${1}: ${2}" >> "$cfmf"; }
+app_indent=$(sed -n 's/^\([[:space:]]*\)- name: .*/\1/p' "$cfmf" | head -n 1)
+child_indent="${app_indent}  "
+value_indent="${child_indent}  "
 
-echo "  env:" >> "$cfmf"
+yaml_quote() { python3 -c 'import json, sys; print(json.dumps(sys.argv[1]))' "$1"; }
+
+add_env() { printf '%s%s: %s\n' "$value_indent" "$1" "$(yaml_quote "$2")" >> "$cfmf"; }
+
+managed_optional_env_vars=(
+  DATABRICKS_HOST
+  DATABRICKS_TOKEN
+  AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY
+  GOOGLE_CREDENTIALS
+  GOOGLE_PROJECT
+  ARM_LOCATION
+  ARM_TENANT_ID
+  ARM_SUBSCRIPTION_ID
+  ARM_CLIENT_ID
+  ARM_CLIENT_SECRET
+  GSB_PROVISION_DEFAULTS
+  GSB_SERVICE_CSB_AWS_S3_BUCKET_PLANS
+  GSB_SERVICE_CSB_AWS_POSTGRESQL_PLANS
+  GSB_SERVICE_CSB_AWS_MYSQL_PLANS
+  GSB_SERVICE_CSB_AWS_REDIS_PLANS
+  GSB_SERVICE_CSB_AWS_SQS_PLANS
+  GSB_SERVICE_CSB_AWS_BEDROCK_PLANS
+  GSB_SERVICE_CSB_AWS_AURORA_POSTGRESQL_PLANS
+  GSB_SERVICE_CSB_AWS_AURORA_MYSQL_PLANS
+  GSB_SERVICE_CSB_AWS_MSSQL_PLANS
+  GSB_SERVICE_CSB_AWS_DYNAMODB_NAMESPACE_PLANS
+  GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS
+  GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS
+  GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS
+  GSB_SERVICE_CSB_GOOGLE_VERTEX_AI_PLANS
+  GSB_SERVICE_CSB_AZURE_MONGODB_PLANS
+  GSB_SERVICE_CSB_AZURE_MSSQL_DB_PLANS
+  GSB_SERVICE_CSB_AZURE_MSSQL_DB_FAILOVER_GROUP_PLANS
+  GSB_SERVICE_CSB_AZURE_MSSQL_FOG_RUN_FAILOVER_PLANS
+  GSB_SERVICE_CSB_AZURE_REDIS_PLANS
+  GSB_SERVICE_CSB_AZURE_OPENAI_PLANS
+  GSB_SERVICE_CSB_DATABRICKS_MODEL_SERVING_PLANS
+)
+
+if [[ -n "$(tail -c 1 "$cfmf" 2>/dev/null || true)" ]]; then
+  printf '\n' >> "$cfmf"
+fi
+
+printf '%senv:\n' "$child_indent" >> "$cfmf"
 add_env "SECURITY_USER_NAME"                    "${SECURITY_USER_NAME}"
 add_env "SECURITY_USER_PASSWORD"                "${SECURITY_USER_PASSWORD}"
 add_env "BROKERPAK_UPDATES_ENABLED"             "${BROKERPAK_UPDATES_ENABLED:-true}"
@@ -37,13 +83,20 @@ add_env "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES" "${GSB_COMPATIBILITY_ENABLE_BET
 # Provider-specific credentials
 [[ -n "${AWS_ACCESS_KEY_ID:-}"     ]] && add_env "AWS_ACCESS_KEY_ID"       "${AWS_ACCESS_KEY_ID}"
 [[ -n "${AWS_SECRET_ACCESS_KEY:-}" ]] && add_env "AWS_SECRET_ACCESS_KEY"   "${AWS_SECRET_ACCESS_KEY}"
-[[ -n "${GOOGLE_CREDENTIALS:-}"    ]] && add_env "GOOGLE_CREDENTIALS"      "$(printf '%s' "${GOOGLE_CREDENTIALS}" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')"
+[[ -n "${DATABRICKS_HOST:-}"       ]] && add_env "DATABRICKS_HOST"         "${DATABRICKS_HOST}"
+[[ -n "${DATABRICKS_TOKEN:-}"      ]] && add_env "DATABRICKS_TOKEN"        "${DATABRICKS_TOKEN}"
+add_env "AWS_BUDGET_ALERT_EMAIL" "${AWS_BUDGET_ALERT_EMAIL- }"
+[[ -n "${GOOGLE_CREDENTIALS:-}"    ]] && add_env "GOOGLE_CREDENTIALS"      "${GOOGLE_CREDENTIALS}"
 [[ -n "${GOOGLE_PROJECT:-}"        ]] && add_env "GOOGLE_PROJECT"           "${GOOGLE_PROJECT}"
+add_env "GCP_BUDGET_ALERT_EMAIL" "${GCP_BUDGET_ALERT_EMAIL- }"
+add_env "AZURE_BUDGET_CONTACT_EMAIL" "${AZURE_BUDGET_CONTACT_EMAIL- }"
+add_env "AZURE_BUDGET_WEBHOOK_URL" "${AZURE_BUDGET_WEBHOOK_URL- }"
+[[ -n "${ARM_LOCATION:-}"          ]] && add_env "ARM_LOCATION"            "${ARM_LOCATION}"
 [[ -n "${ARM_TENANT_ID:-}"         ]] && add_env "ARM_TENANT_ID"           "${ARM_TENANT_ID}"
 [[ -n "${ARM_SUBSCRIPTION_ID:-}"   ]] && add_env "ARM_SUBSCRIPTION_ID"     "${ARM_SUBSCRIPTION_ID}"
 [[ -n "${ARM_CLIENT_ID:-}"         ]] && add_env "ARM_CLIENT_ID"           "${ARM_CLIENT_ID}"
 [[ -n "${ARM_CLIENT_SECRET:-}"     ]] && add_env "ARM_CLIENT_SECRET"       "${ARM_CLIENT_SECRET}"
-[[ -n "${GSB_PROVISION_DEFAULTS:-}" ]] && add_env "GSB_PROVISION_DEFAULTS" "$(printf '%s' "${GSB_PROVISION_DEFAULTS}" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')"
+[[ -n "${GSB_PROVISION_DEFAULTS:-}" ]] && add_env "GSB_PROVISION_DEFAULTS" "${GSB_PROVISION_DEFAULTS}"
 
 # Plan overrides — only emit if non-empty
 for plan_var in \
@@ -52,20 +105,35 @@ for plan_var in \
   GSB_SERVICE_CSB_AWS_MYSQL_PLANS \
   GSB_SERVICE_CSB_AWS_REDIS_PLANS \
   GSB_SERVICE_CSB_AWS_SQS_PLANS \
+  GSB_SERVICE_CSB_AWS_BEDROCK_PLANS \
   GSB_SERVICE_CSB_AWS_AURORA_POSTGRESQL_PLANS \
   GSB_SERVICE_CSB_AWS_AURORA_MYSQL_PLANS \
   GSB_SERVICE_CSB_AWS_MSSQL_PLANS \
   GSB_SERVICE_CSB_AWS_DYNAMODB_NAMESPACE_PLANS \
   GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS \
   GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS \
-  GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS; do
+  GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS \
+  GSB_SERVICE_CSB_GOOGLE_VERTEX_AI_PLANS \
+  GSB_SERVICE_CSB_AZURE_MONGODB_PLANS \
+  GSB_SERVICE_CSB_AZURE_MSSQL_DB_PLANS \
+  GSB_SERVICE_CSB_AZURE_MSSQL_DB_FAILOVER_GROUP_PLANS \
+  GSB_SERVICE_CSB_AZURE_MSSQL_FOG_RUN_FAILOVER_PLANS \
+  GSB_SERVICE_CSB_AZURE_REDIS_PLANS \
+  GSB_SERVICE_CSB_AZURE_OPENAI_PLANS \
+  GSB_SERVICE_CSB_DATABRICKS_MODEL_SERVING_PLANS; do
   val="${!plan_var:-}"
-  [[ -n "${val}" ]] && add_env "${plan_var}" "$(printf '%s' "${val}" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')"
+  [[ -n "${val}" ]] && add_env "${plan_var}" "${val}"
 done
 
 # ── Step A: push without starting ────────────────────────────────────────────
 echo "  → cf push --no-start (manifest: $cfmf)"
 cf push --no-start -f "${cfmf}" --var app="${APP_NAME}"
+
+for managed_var in "${managed_optional_env_vars[@]}"; do
+  if [[ -z "${!managed_var:-}" ]]; then
+    cf unset-env "${APP_NAME}" "${managed_var}" >/dev/null 2>&1 || true
+  fi
+done
 
 # ── Step B: bind MySQL backing DB ─────────────────────────────────────────────
 echo "  → binding ${MYSQL_INST} to ${APP_NAME}..."
