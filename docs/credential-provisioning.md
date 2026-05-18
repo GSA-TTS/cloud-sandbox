@@ -12,6 +12,12 @@ After the broker credentials are in place and the brokers are deployed, see
 service instance, reads the resulting `VCAP_SERVICES` binding, and wires the
 credentials into Zed, CLI agents, and VS Code.
 
+Tool-specific follow-ups:
+
+- `docs/zed-auth-configuration.md`
+- `docs/opencode-auth-configuration.md`
+- `docs/vscode-auth-configuration.md`
+
 ---
 
 ## AWS — `aws-cli`
@@ -562,6 +568,46 @@ Verify:
 grep -E '^(GOOGLE_PROJECT|GOOGLE_CREDENTIALS)=' scripts/envs/gcp.env | \
   sed 's/\(GOOGLE_CREDENTIALS=\).\{0,80\}.*/\1<redacted>/'
 ```
+
+## Refresh local AI model catalogs
+
+Use the catalog refresh helper to enumerate the currently available model IDs and
+the metadata exposed by each cloud CLI, then write that data into local JSON cache
+files under `.cache/model-catalogs/`.
+
+```bash
+# Refresh all three CSP catalogs
+pnpm run catalog:refresh
+
+# Refresh one provider at a time
+pnpm run catalog:refresh:aws -- --aws-region us-east-1
+pnpm run catalog:refresh:azure -- --azure-location eastus2
+pnpm run catalog:refresh:gcp -- --gcp-project "$GCP_PROJECT"
+```
+
+Files written by default:
+
+- `.cache/model-catalogs/aws-bedrock-<region>.json`
+- `.cache/model-catalogs/azure-openai-<location>.json`
+- `.cache/model-catalogs/gcp-vertex-model-garden-<project>.json`
+- `.cache/model-catalogs/gcp-gemini-api-<project>.json`
+
+Auth behavior:
+
+- AWS: uses the current `AWS_*` environment or profile first; if absent, it falls back to `scripts/envs/aws.env`.
+- Azure: uses the active `az` session, or logs in with the `ARM_*` service-principal values from `scripts/envs/azure.env` when present.
+- GCP: prefers `scripts/envs/gcp.env` and normalizes its `GOOGLE_CREDENTIALS` value into a temporary key file for `gcloud`; otherwise, use interactive auth:
+
+```bash
+gcloud auth login --update-adc
+gcloud config set project "$GCP_PROJECT"
+gcloud auth application-default set-quota-project "$GCP_PROJECT"
+```
+
+Cache contract notes:
+
+- Each file includes a `provisioner_contract` block that lifts the model IDs or deployment objects most directly reusable by the broker plan inputs.
+- Pricing and context-window fields are populated only when the cloud CLI exposes them. When the provider CLI does not return those fields, the cache stores `null` and preserves the raw provider payload alongside the normalized record.
 
 ---
 

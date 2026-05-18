@@ -75,7 +75,7 @@ deployments_json=""
 resource_group=""
 account_name=""
 subscription=""
-sku_name="Standard"
+sku_name="GlobalStandard"
 probe_create=0
 
 while [[ $# -gt 0 ]]; do

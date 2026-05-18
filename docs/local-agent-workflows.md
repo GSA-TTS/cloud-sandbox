@@ -8,6 +8,12 @@ support today:
 2. CLI agents
 3. VS Code
 
+Dedicated per-tool references:
+
+- `docs/zed-auth-configuration.md`
+- `docs/opencode-auth-configuration.md`
+- `docs/vscode-auth-configuration.md`
+
 The workflow starts the same way for every client:
 
 1. Target the cloud.gov org and space that hosts the brokers.

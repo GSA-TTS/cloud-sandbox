@@ -103,7 +103,7 @@ run_azure_openai_preflight() {
   if [[ -z "${preflight_location}" && -n "${GSB_PROVISION_DEFAULTS:-}" ]]; then
     preflight_location="$(printf '%s' "${GSB_PROVISION_DEFAULTS}" | jq -r '.location // empty')"
   fi
-  preflight_location="${preflight_location:-eastus}"
+  preflight_location="${preflight_location:-eastus2}"
 
   local preflight_args=(
     --location "${preflight_location}"

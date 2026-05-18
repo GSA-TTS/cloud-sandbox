@@ -3,6 +3,12 @@
 This document is the shortest path from a deployed broker to usable local
 credentials.
 
+After you have the binding values, continue with:
+
+- `docs/zed-auth-configuration.md`
+- `docs/opencode-auth-configuration.md`
+- `docs/vscode-auth-configuration.md`
+
 It covers:
 
 1. Creating a service instance
