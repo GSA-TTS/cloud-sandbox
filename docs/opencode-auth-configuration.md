@@ -7,7 +7,7 @@ Validated against:
 
 - OpenCode `1.15.4`
 - `scripts/local-agent-vcap.sh`
-- Cloud Foundry org `gsa-tts-iae-lava-beds`, space `dev`
+- the active Cloud Foundry org/space target used for broker validation
 
 ## Current blockers
 
@@ -15,12 +15,12 @@ Two provider families need extra care because their broker-exposed model surface
 is not the same thing as their usable OpenCode surface:
 
 - Vertex AI: the broker binding currently exposes a grant list, but several of
-  those model IDs are not callable in project `tts-datagov`. The observed
-  failures were provider-side `Publisher Model ... was not found or your project
-  does not have access` errors, not OpenCode adapter bugs.
-- Azure Foundry preview: the current `verify-foundry-0505c` instance binds to an
-  Azure OpenAI account that has many chat-capable models in its regional catalog,
-  but the brokered instance itself only deployed `text-embedding-3-small`.
+  those model IDs are not callable in the active validation project. The
+  observed failures were provider-side `Publisher Model ... was not found or
+  your project does not have access` errors, not OpenCode adapter bugs.
+- Azure Foundry preview: the current brokered Foundry binding points at an Azure
+  OpenAI account that has many chat-capable models in its regional catalog, but
+  the brokered instance itself only deployed `text-embedding-3-small`.
   OpenCode cannot use that deployment for chat-style `run` commands.
 
 Practical implication:
@@ -36,7 +36,7 @@ Practical implication:
 
 For Vertex, the durable fix is not in OpenCode. One of these has to change:
 
-1. Request access to the missing publisher models in project `tts-datagov`.
+1. Request access to the missing publisher models in the active validation project.
 2. Update the broker's allowed model list to only advertise the validated
    callable subset.
 3. Keep using the unified launcher's filtered model set, which uses the latest
@@ -85,7 +85,7 @@ surface can now be inspected together with:
 
 ```bash
 set +u
-FOUNDRY_JSON=$(bash scripts/local-agent-vcap.sh scratch-app verify-foundry-0505c)
+FOUNDRY_JSON=$(bash scripts/local-agent-vcap.sh scratch-app <foundry-instance-name>)
 RG=$(printf '%s' "$FOUNDRY_JSON" | jq -r '.credentials.resource_group')
 ACCOUNT=$(printf '%s' "$FOUNDRY_JSON" | jq -r '.credentials.account_name')
 SUB=$(printf '%s' "$FOUNDRY_JSON" | jq -r '.credentials.azure_subscription_id')

@@ -53,7 +53,7 @@ Use these facts as the default working context unless the repo proves otherwise.
   - `csb-aws-sandbox`
   - `csb-gcp-sandbox`
   - `csb-azure-sandbox`
-- AWS provisioning currently uses account `001907687576` via `arn:aws:iam::001907687576:user/cloud-sandbox-provisioner` when sourced from `scripts/envs/aws.env`.
+- AWS provisioning uses the account and IAM principal supplied by the operator's active environment file.
 
 ### AI Service Context
 
@@ -68,7 +68,7 @@ Use these facts as the default working context unless the repo proves otherwise.
 - `tofu fmt -check` is the practical validation fallback when local `terraform fmt -check` is blocked by `tfenv` configuration.
 - Azure deploys must not force a global `resource_group` through `GSB_PROVISION_DEFAULTS`; `scripts/deploy-azure.sh` now strips that key before broker push.
 - Azure OpenAI default matrix validation is region-sensitive. `eastus2` is the safer default for the current four-model `GlobalStandard` GPT set.
-- GCP Gemini live validation required `roles/serviceusage.apiKeysAdmin` for the broker service account on project `tts-datagov`.
+- GCP Gemini live validation required `roles/serviceusage.apiKeysAdmin` for the broker service account in the active validation project.
 - AWS live provisioning still depends on IAM beyond model enumeration; Bedrock guardrail creation needs the missing AWS permission if provisioning fails after catalog reads succeed.
 
 ## Working Files And Entry Points
