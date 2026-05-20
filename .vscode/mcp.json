@@ -1,0 +1,31 @@
+{
+  "servers": {
+    "aws-api": {
+      "command": "uvx",
+      "args": [
+        "awslabs.core-mcp-server@latest"
+      ],
+      "env": {
+        "AWS_REGION": "us-east-1",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      }
+    },
+    "gcloud": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@google-cloud/gcloud-mcp"
+      ]
+    },
+    "azure-resource-manager": {
+      "type": "http",
+      "url": "https://mcp.management.azure.com"
+    },
+    "databricks": {
+      "command": "uvx",
+      "args": [
+        "databricks-mcp"
+      ]
+    }
+  }
+}

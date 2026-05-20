@@ -38,6 +38,17 @@ cf target > /dev/null 2>&1 || {
 }
 
 # ── Load env (secrets stay in memory only) ───────────────────────────────────
+# Clear unrelated provider vars that may be left exported in a persistent shell.
+unset GOOGLE_CREDENTIALS GOOGLE_PROJECT
+unset GCP_BUDGET_ALERT_EMAIL
+unset AZURE_BUDGET_CONTACT_EMAIL AZURE_BUDGET_WEBHOOK_URL
+unset ARM_LOCATION ARM_TENANT_ID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET
+unset GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS
+unset GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS GSB_SERVICE_CSB_GOOGLE_VERTEX_AI_PLANS
+unset GSB_SERVICE_CSB_AZURE_MONGODB_PLANS GSB_SERVICE_CSB_AZURE_MSSQL_DB_PLANS
+unset GSB_SERVICE_CSB_AZURE_MSSQL_DB_FAILOVER_GROUP_PLANS GSB_SERVICE_CSB_AZURE_MSSQL_FOG_RUN_FAILOVER_PLANS
+unset GSB_SERVICE_CSB_AZURE_REDIS_PLANS GSB_SERVICE_CSB_AZURE_OPENAI_PLANS
+
 # shellcheck source=/dev/null
 set -a; source "${ENV_FILE}"; set +a
 
@@ -82,4 +93,4 @@ echo "✓ AWS broker '${BROKER_NAME:-csb-aws-sandbox}' is registered in this CF 
 echo "  Run 'cf marketplace' to see available services."
 echo "  Provision example:"
 echo "    cf create-service csb-aws-postgresql sandbox-8h my-db \\"
-echo "      -c '{\"project\":\"sprint-42\",\"owner\":\"you@gsa.gov\"}'"
+echo "      -c '{\"project\":\"sprint-42\",\"owner\":\"owner@example.gov\"}'"
