@@ -17,6 +17,18 @@ ENV_FILE=scripts/envs/azure.env
 az account set --subscription "$SUBSCRIPTION_ID"
 echo "==> [1/4] Creating service principal '$SP_NAME'..."
 
+extract_json_field() {
+  local field_name="$1"
+  python3 -c 'import json, re, sys
+field = sys.argv[1]
+payload = sys.stdin.read()
+matches = re.findall(r"\{.*\}", payload, re.DOTALL)
+if not matches:
+    raise SystemExit(f"Could not find JSON payload in Azure CLI output:\n{payload}")
+data = json.loads(matches[-1])
+print(data[field])' "$field_name"
+}
+
 # Idempotent: reset if already exists
 if az ad sp show --id "http://$SP_NAME" &>/dev/null 2>&1; then
   echo "    SP already exists — resetting credentials..."
@@ -30,8 +42,8 @@ else
     --output json 2>&1)
 fi
 
-CLIENT_ID=$(echo "$SP_JSON"     | python3 -c "import sys,json; print(json.load(sys.stdin)['appId'])")
-CLIENT_SECRET=$(echo "$SP_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['password'])")
+  CLIENT_ID=$(printf '%s' "$SP_JSON" | extract_json_field appId)
+  CLIENT_SECRET=$(printf '%s' "$SP_JSON" | extract_json_field password)
 
 echo "    Client ID : $CLIENT_ID"
 echo "    Secret    : <set>"

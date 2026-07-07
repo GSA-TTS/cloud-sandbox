@@ -7,6 +7,17 @@ When complete, each section ends with writing the generated credentials to
 the appropriate `scripts/envs/<provider>.env` file. **Never commit `.env` files —
 they are git-ignored.**
 
+After the broker credentials are in place and the brokers are deployed, see
+`docs/local-agent-workflows.md` for the local developer flow that provisions a
+service instance, reads the resulting `VCAP_SERVICES` binding, and wires the
+credentials into Zed, CLI agents, and VS Code.
+
+Tool-specific follow-ups:
+
+- `docs/zed-auth-configuration.md`
+- `docs/opencode-auth-configuration.md`
+- `docs/vscode-auth-configuration.md`
+
 ---
 
 ## AWS — `aws-cli`
@@ -243,6 +254,12 @@ grep -E '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_PAS_VPC_ID|SECURITY_USER_
 
 ## Azure — `azd` + `az`
 
+When you copy `scripts/envs/azure.env.example` to `scripts/envs/azure.env`, keep
+`GSB_PROVISION_DEFAULTS` limited to shared values like `location`. Do not set a
+global `resource_group` there. Azure AI offerings now rely on per-instance
+resource-group defaults and user overrides so `csb-azure-openai` and
+`csb-azure-foundry` do not collide with a shared unmanaged resource group.
+
 `azd` (Azure Developer CLI) is used to authenticate and set the target
 subscription. The `az` CLI is used to create the service principal.
 
@@ -327,6 +344,97 @@ Verify:
 ```bash
 grep -E '^ARM_(TENANT_ID|SUBSCRIPTION_ID|CLIENT_ID|CLIENT_SECRET)=' \
   scripts/envs/azure.env
+```
+
+### 6. Preflight Azure OpenAI model deployments before provisioning
+
+Azure OpenAI model compatibility is not just `model + version`. In practice, the
+control-plane acceptance path also depends on deployment SKU and region. Use the
+preflight helper to emulate the same Azure deployment create call that OpenTofu
+will make for `csb-azure-openai`.
+
+Non-destructive metadata check:
+
+```bash
+pnpm run azure:openai:preflight -- \
+  --location eastus \
+  --deployments-json '[{"name":"gpt-5.5","model":"gpt-5.5","version":"2026-04-24","capacity":10}]'
+```
+
+If you already have a probe account in the target region, pass it explicitly and
+ask the helper to probe the create call as well:
+
+```bash
+pnpm run azure:openai:preflight -- \
+  --location eastus \
+  --resource-group csb-openai-full-0505a \
+  --account-name csb213089a5e4244179bbf59 \
+  --deployments-json '[{"name":"gpt-5.5","model":"gpt-5.5","version":"2026-04-24","capacity":10}]' \
+  --probe-create
+```
+
+What it checks:
+
+- exact `name` / `version` matches from `az cognitiveservices account list-models`
+- Azure capability keys returned for the model, including `priorityTierSkus`
+- optional live `az cognitiveservices account deployment create` probe using the
+  same `model-name`, `model-version`, `sku-name`, and `sku-capacity` shape that
+  Terraform uses
+
+Use this before changing Azure OpenAI defaults or plan overrides. It catches the
+same `InvalidResourceProperties` failures earlier, with the exact Azure CLI
+error payload.
+
+To make the Azure broker deploy fail fast on the same check, set these in
+`scripts/envs/azure.env` before running `pnpm run broker:deploy:azure`:
+
+Keep `AZURE_OPENAI_PREFLIGHT_DEPLOYMENTS_JSON` shell-quoted in the env file.
+If you omit the outer quotes, `source scripts/envs/azure.env` will strip the
+JSON quoting and the preflight will reject it as malformed.
+
+```bash
+AZURE_OPENAI_PREFLIGHT=1
+AZURE_OPENAI_PREFLIGHT_LOCATION=eastus
+AZURE_OPENAI_PREFLIGHT_DEPLOYMENTS_JSON='[{"name":"gpt-5.5","model":"gpt-5.5","version":"2026-04-24","capacity":10}]'
+AZURE_OPENAI_PREFLIGHT_SKU_NAME=Standard
+AZURE_OPENAI_PREFLIGHT_PROBE_CREATE=1
+```
+
+If you already have a probe account you want to target instead of auto-discovery,
+also set:
+
+```bash
+AZURE_OPENAI_PREFLIGHT_RESOURCE_GROUP=csb-openai-full-0505a
+AZURE_OPENAI_PREFLIGHT_ACCOUNT_NAME=csb213089a5e4244179bbf59
+```
+
+---
+
+## Databricks Model Serving
+
+Databricks serving endpoints are not the same shape as Azure OpenAI or the
+public OpenAI API.
+
+- Raw Databricks invocation URL: `https://<workspace>/serving-endpoints/<endpoint>/invocations`
+- OpenAI-compatible base URL for Codex-style clients: `https://<workspace>/serving-endpoints/<endpoint>/v1`
+
+For Codex or other OpenAI-compatible clients, use the Databricks
+`openai_base_url` returned by the broker binding, not the raw `invocation_url`
+and not the OpenAI public API base URL.
+
+The new Databricks brokerpak scaffold in this repo targets that contract: a
+brokered model-serving instance returns a binding-scoped Databricks token plus
+both URL shapes so clients can choose the correct transport.
+
+Example OpenAI-compatible client shape:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+  api_key="<databricks_pat>",
+  base_url="https://<workspace>/serving-endpoints/<endpoint>/v1",
+)
 ```
 
 ---
@@ -460,6 +568,46 @@ Verify:
 grep -E '^(GOOGLE_PROJECT|GOOGLE_CREDENTIALS)=' scripts/envs/gcp.env | \
   sed 's/\(GOOGLE_CREDENTIALS=\).\{0,80\}.*/\1<redacted>/'
 ```
+
+## Refresh local AI model catalogs
+
+Use the catalog refresh helper to enumerate the currently available model IDs and
+the metadata exposed by each cloud CLI, then write that data into local JSON cache
+files under `.cache/model-catalogs/`.
+
+```bash
+# Refresh all three CSP catalogs
+pnpm run catalog:refresh
+
+# Refresh one provider at a time
+pnpm run catalog:refresh:aws -- --aws-region us-east-1
+pnpm run catalog:refresh:azure -- --azure-location eastus2
+pnpm run catalog:refresh:gcp -- --gcp-project "$GCP_PROJECT"
+```
+
+Files written by default:
+
+- `.cache/model-catalogs/aws-bedrock-<region>.json`
+- `.cache/model-catalogs/azure-openai-<location>.json`
+- `.cache/model-catalogs/gcp-vertex-model-garden-<project>.json`
+- `.cache/model-catalogs/gcp-gemini-api-<project>.json`
+
+Auth behavior:
+
+- AWS: uses the current `AWS_*` environment or profile first; if absent, it falls back to `scripts/envs/aws.env`.
+- Azure: uses the active `az` session, or logs in with the `ARM_*` service-principal values from `scripts/envs/azure.env` when present.
+- GCP: prefers `scripts/envs/gcp.env` and normalizes its `GOOGLE_CREDENTIALS` value into a temporary key file for `gcloud`; otherwise, use interactive auth:
+
+```bash
+gcloud auth login --update-adc
+gcloud config set project "$GCP_PROJECT"
+gcloud auth application-default set-quota-project "$GCP_PROJECT"
+```
+
+Cache contract notes:
+
+- Each file includes a `provisioner_contract` block that lifts the model IDs or deployment objects most directly reusable by the broker plan inputs.
+- Pricing and context-window fields are populated only when the cloud CLI exposes them. When the provider CLI does not return those fields, the cache stores `null` and preserves the raw provider payload alongside the normalized record.
 
 ---
 
