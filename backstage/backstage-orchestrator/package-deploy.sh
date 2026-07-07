@@ -54,3 +54,4 @@ node -e "
 "
 
 echo "==> Deploy workspace is ready."
+mkdir -p deploy-workspace/.tmp deploy-workspace/.yarn-cache deploy-workspace/.npm-cache deploy-workspace/.npm-tmp
