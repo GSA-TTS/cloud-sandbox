@@ -33,11 +33,30 @@ sandbox budget ceiling mandated by TTS Infrastructure policy.
 | **FedRAMP alignment**         | Inherits cloud.gov FedRAMP Moderate controls; OSCAL-maintained per service broker           |
 | **Security baseline**         | Prowler continuous scanning of all three CSP accounts for CIS/FedRAMP hardening             |
 
+### AI Broker Quick Map
+
+This is the shortest path from a brokered service instance to the matching
+OpenCode provider prefix.
+
+| OpenCode provider | CF service | What it maps to | Typical models returned | Export these env vars from the broker binding |
+| ----------------- | ---------- | --------------- | ----------------------- | --------------------------------------------- |
+| `sandbox-bedrock` | `csb-aws-bedrock` | AWS Bedrock runtime credentials | Bedrock chat and embedding models allowed by the broker grant, such as `google.gemma-3-12b-it` and Anthropic / Meta model IDs | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` |
+| `sandbox-vertex` | `csb-google-vertex-ai` | Vertex AI service-account binding | Vertex publisher models allowed by the broker grant, such as `gemini-2.5-flash`, `gemini-2.5-pro`, and approved Claude / Gemini models | `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT`, `VERTEX_LOCATION` |
+| `sandbox-gemini` | `csb-google-gemini` | Gemini API key binding | Gemini API models, such as `gemini-2.5-flash`, `gemini-2.5-pro`, and newer Gemini / Gemma API models returned by the catalog | `GEMINI_API_KEY` |
+| `sandbox-azure-openai` | `csb-azure-openai` | Azure OpenAI endpoint + API key | Azure OpenAI deployments created by the service, currently the GPT deployment set such as `gpt-5.5`, `gpt-5.4`, `gpt-5.4-mini`, and `gpt-5.3-codex` when the region supports them | `AZURE_API_KEY`, `AZURE_API_BASE`, `AZURE_API_VERSION` |
+| `sandbox-foundry` | `csb-azure-foundry` | Azure Foundry-aligned Azure OpenAI endpoint + API key for one deployment | The single deployment configured for the instance, for example `text-embedding-3-small` today or a chat-capable GPT deployment when provisioned that way | `FOUNDRY_OPENAI_API_KEY`, `FOUNDRY_OPENAI_API_BASE`, `FOUNDRY_OPENAI_API_VERSION`, `FOUNDRY_MODEL_NAME`, `FOUNDRY_DEPLOYMENT_NAME` |
+
+Notes:
+
+- `sandbox-bedrock`, `sandbox-vertex`, and `sandbox-gemini` use the normalized binding output from `bash scripts/local-agent-vcap.sh --normalized ...`.
+- `sandbox-azure-openai` and `sandbox-foundry` are built from the Azure broker binding fields returned by `bash scripts/local-agent-vcap.sh ...`.
+- The authoritative provider wiring for the shared OpenCode session lives in [scripts/launch-opencode-broker-session.sh](/Users/johnhjediny/Documents/GitHub/cloud-sandbox/scripts/launch-opencode-broker-session.sh), and the step-by-step export commands live in [docs/service-instance-credential-commands.md](/Users/johnhjediny/Documents/GitHub/cloud-sandbox/docs/service-instance-credential-commands.md).
+
 ---
 
 ## Repository Structure
 
-```
+```text
 .
 ├── submodules/
 │   ├── csb-brokerpak-aws/     # AWS brokerpak (OpenTofu modules + service definitions)
@@ -71,7 +90,7 @@ sandbox budget ceiling mandated by TTS Infrastructure policy.
 
 ### Lifecycle State Machine
 
-```
+```text
 ACTIVE  (TTL clock running, cost telemetry active)
   |
   |-- T-1h --> WARNED  (Slack + email; one renewal available: +4h)
@@ -241,7 +260,7 @@ This repo follows a **public-GitHub / private-GitLab** split:
 | **GitHub** (`GSA-TTS/cloud-sandbox`) | Public documentation and reuse template — no secrets  |
 | **GitLab** (production mirror)       | GitLab runners, CI/CD variables, production `cf push` |
 
-```
+```text
 GitHub merge to main
         │
         ▼
@@ -301,6 +320,13 @@ the full step-by-step guide:
 | AWS      | `aws-cli`    | [AWS — brew install → IAM user → access key → aws.env](docs/credential-provisioning.md#aws----aws-cli)   |
 | Azure    | `azd` + `az` | [Azure — brew install → service principal → azure.env](docs/credential-provisioning.md#azure----azd--az) |
 | GCP      | `gcloud`     | [GCP — brew install → service account → gcp.env](docs/credential-provisioning.md#gcp----gcloud)          |
+
+Once the brokers are deployed, see
+**[docs/local-agent-workflows.md](docs/local-agent-workflows.md)** for the
+local AI client workflow from `cf create-service` through `VCAP_SERVICES`
+consumption in Zed, CLI agents, and VS Code. The preferred reader path now uses
+the additive `normalized_binding_json` runtime contract exposed by the AI
+broker bindings.
 
 ```bash
 # Quick-copy the example files, then fill in with values from the guide above

@@ -5,6 +5,11 @@
 #   gpg                    (brew install gnupg)
 #   oxfmt                  (pnpm add -D oxfmt)
 
+# Ensure common Homebrew install locations are available in non-interactive
+# shells such as Husky hooks on macOS.
+PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:$PATH"
+export PATH
+
 # ── Check GPG signing is configured ──────────────────────────────────────────
 _sign=$(git config --get commit.gpgsign 2>/dev/null)
 if [ "${_sign}" != "true" ]; then

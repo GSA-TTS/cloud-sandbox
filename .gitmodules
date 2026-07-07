@@ -10,3 +10,6 @@
 [submodule "submodules/prowler"]
 	path = submodules/prowler
 	url = https://github.com/GSA-TTS/prowler
+[submodule "submodules/csb-brokerpak-databricks"]
+	path = submodules/csb-brokerpak-databricks
+	url = https://github.com/GSA-TTS/csb-brokerpak-databricks

@@ -83,6 +83,9 @@ importers:
       js-yaml:
         specifier: latest
         version: 4.1.1
+      opencode-ai:
+        specifier: ^1.15.3
+        version: 1.15.3
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -1907,6 +1910,7 @@ packages:
 
   '@sigmacomputing/babel-plugin-lodash@3.3.5':
     resolution: {integrity: sha512-VFhaHjlNzWyBtBm3YdqOwP8GbQHK7sWzXKpSUBTLjl2Zz6/9PwCK4qXZXI5CHpDjmvbouHUDbjrZP2KU5h6VQg==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@sindresorhus/is@4.6.0':
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
@@ -2175,6 +2179,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@uploadcare/cname-prefix@6.18.4':
     resolution: {integrity: sha512-dEDkoMneA01UoJNpS7KcxxCkuP87fdWfK111Q/3nt5WO1gb6VpvZuUse9ac+A/h9iVEkaPxsO7cNsEtLxGKOpQ==}
@@ -6245,6 +6250,72 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
+  opencode-ai@1.15.3:
+    resolution: {integrity: sha512-nQQfqqRqDo4NIvc4wwLd7+jvKStlbPal6HuuJMbkpLlW6nOraI4z506+unWtP4L3KDh6mIGXTlaFCjAyiBFZlA==}
+    cpu: [arm64, x64]
+    os: [darwin, linux, win32]
+    hasBin: true
+
+  opencode-darwin-arm64@1.15.3:
+    resolution: {integrity: sha512-sok6WUDVInfUz61NgDg8tN7RxW24oe+wloVQRRHtwxyBtXqFOmRAcumwQR+Mqga3OtMAFi7GSrGARxyUaAWdWQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  opencode-darwin-x64-baseline@1.15.3:
+    resolution: {integrity: sha512-SZ/reZ9Cn/GW18QKH7wxDFvxheF2ILDgy68SZauXo5qkbQsHWPjHILrJFdgd5zJdX8cTa9NBMhjiB4yns+QtBA==}
+    cpu: [x64]
+    os: [darwin]
+
+  opencode-darwin-x64@1.15.3:
+    resolution: {integrity: sha512-36nGgyl/XOMDVw2FFAnnwpa5vM23rxfzQ4GSyJkXPph7EatE1TWjdemkiXRIZXgL7GAYSCO/OYtlPaxIyvdrhg==}
+    cpu: [x64]
+    os: [darwin]
+
+  opencode-linux-arm64-musl@1.15.3:
+    resolution: {integrity: sha512-l/s38bfeLFaS9E4wI6uPE5Jgk5rNB6i7geDTLXJDq5s5rS4fJjnxxrz5rFBJbrrkhw/lK+MX5lenaWE1Ol4oQg==}
+    cpu: [arm64]
+    os: [linux]
+
+  opencode-linux-arm64@1.15.3:
+    resolution: {integrity: sha512-8Bn4JjCTJBYZGXpXnfCgLz5pdomM+QkL5Vu6yw95P88WWCxe5Ky8sannxZCnGXA2nZKTSVEUY5yTkgfFt2Ys3Q==}
+    cpu: [arm64]
+    os: [linux]
+
+  opencode-linux-x64-baseline-musl@1.15.3:
+    resolution: {integrity: sha512-/ieK3IAC8px3C3PGYOprKUZRRBBNrhW8tNmrZgIQ8MKk7nhm11pNssVhIi+3FEpxZLFroQiTxhqDwge/9tx/EA==}
+    cpu: [x64]
+    os: [linux]
+
+  opencode-linux-x64-baseline@1.15.3:
+    resolution: {integrity: sha512-bfKTSoS0hfoi6Xa6j+1WkQOrfO+z8MQqOCKxi37aT1TNZ831zW4DVGgU5ZKJKzyD9SAVFQLCRIes6b7FfkkOrA==}
+    cpu: [x64]
+    os: [linux]
+
+  opencode-linux-x64-musl@1.15.3:
+    resolution: {integrity: sha512-6I1mnIDQMOSwCBrKBExtY4+LJsB0BwANi7XL0e12R1dAtnSuk3nOyzcKVoGmpnV3C/7k9PIH8xsAcmd2A/jA7w==}
+    cpu: [x64]
+    os: [linux]
+
+  opencode-linux-x64@1.15.3:
+    resolution: {integrity: sha512-aFVaBXGo9VJI4rIdMs/VnWTys0twgh8Lw6YsuCZfNbulQI38h7uy+4Fh5oqIRTpbMMX6o9g5igxRxaLZJRNW5w==}
+    cpu: [x64]
+    os: [linux]
+
+  opencode-windows-arm64@1.15.3:
+    resolution: {integrity: sha512-jbsr/5cIYXxqZwbBYwNmwVceU/HRrn9zcSm8curi/Myuc8JXUxxlC0vk98Lv0/Ek+guogHDg3dKMQSMbPmmDpw==}
+    cpu: [arm64]
+    os: [win32]
+
+  opencode-windows-x64-baseline@1.15.3:
+    resolution: {integrity: sha512-wGbcrA7271nmbyPsQOlXqVpeH6MyzGIuyc5MyN8cEh0rfDEKthHLgUus6FuUWNttHXqy35h5hPTuAmJv/VGzLw==}
+    cpu: [x64]
+    os: [win32]
+
+  opencode-windows-x64@1.15.3:
+    resolution: {integrity: sha512-/AoLA/C9Z/bRxSQvqgKdGWKQnL1UbybyZchSdwB+kU0+oaJ7RZz0KmCkDjUFGEGeYYYHrQ5Lz21vaqCjeEkk1w==}
+    cpu: [x64]
+    os: [win32]
+
   opentracing@0.14.7:
     resolution: {integrity: sha512-vz9iS7MJ5+Bp1URw8Khvdyw1H/hGvzHWlKQ7eRrQojSCDL1/SrWfrY9QebLw97n2deyRtzHRC3MkQfVNUCo91Q==}
     engines: {node: '>=0.10'}
@@ -8414,6 +8485,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-compile-cache@2.4.0:
@@ -16584,6 +16656,57 @@ snapshots:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+
+  opencode-ai@1.15.3:
+    optionalDependencies:
+      opencode-darwin-arm64: 1.15.3
+      opencode-darwin-x64: 1.15.3
+      opencode-darwin-x64-baseline: 1.15.3
+      opencode-linux-arm64: 1.15.3
+      opencode-linux-arm64-musl: 1.15.3
+      opencode-linux-x64: 1.15.3
+      opencode-linux-x64-baseline: 1.15.3
+      opencode-linux-x64-baseline-musl: 1.15.3
+      opencode-linux-x64-musl: 1.15.3
+      opencode-windows-arm64: 1.15.3
+      opencode-windows-x64: 1.15.3
+      opencode-windows-x64-baseline: 1.15.3
+
+  opencode-darwin-arm64@1.15.3:
+    optional: true
+
+  opencode-darwin-x64-baseline@1.15.3:
+    optional: true
+
+  opencode-darwin-x64@1.15.3:
+    optional: true
+
+  opencode-linux-arm64-musl@1.15.3:
+    optional: true
+
+  opencode-linux-arm64@1.15.3:
+    optional: true
+
+  opencode-linux-x64-baseline-musl@1.15.3:
+    optional: true
+
+  opencode-linux-x64-baseline@1.15.3:
+    optional: true
+
+  opencode-linux-x64-musl@1.15.3:
+    optional: true
+
+  opencode-linux-x64@1.15.3:
+    optional: true
+
+  opencode-windows-arm64@1.15.3:
+    optional: true
+
+  opencode-windows-x64-baseline@1.15.3:
+    optional: true
+
+  opencode-windows-x64@1.15.3:
+    optional: true
 
   opentracing@0.14.7: {}
 
