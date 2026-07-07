@@ -21,6 +21,7 @@ applications:
       YARN_PRODUCTION: 'true'
       NODE_OPTIONS: --max-old-space-size=1536 # Increased to 1.5GB to prevent npm install OOM heap exhaustion
       NODE_MODULES_CACHE: 'false' # Disable npm cache to prevent output-cache disk exhaustion
+      YARN_CACHE_FOLDER: '/tmp/yarn-cache' # Redirect yarn cache to writable /tmp
       NPM_CONFIG_CACHE: '/tmp/npm-cache' # Redirect npm cache to writable /tmp to keep application folder small and avoid duplication
       NPM_CONFIG_LEGACY_PEER_DEPS: 'true' # Force legacy peer dep resolution for npm
       NPM_CONFIG_PRODUCTION: 'true' # Only install runtime dependencies (pre-compiled assets already exist)
@@ -37,3 +38,5 @@ applications:
       # Bind to your AWS RDS PostgreSQL service broker on cloud.gov
       # Run first: cf create-service aws-rds micro-psql backstage-db
       - backstage-db
+      # Bind to cloud.gov identity provider
+      - backstage-sso
