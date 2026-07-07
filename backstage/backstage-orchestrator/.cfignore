@@ -8,3 +8,10 @@ node_modules/
 .cache/
 *.log
 package-lock.json
+
+# If we are using artifact-based deployment (bundle.tar.gz), we should exclude the
+# raw packages so that Cloud Foundry doesn't try to npm install the massive dev dependencies
+# inside packages/app or packages/backend during staging.
+packages/
+!packages/backend/dist/bundle.tar.gz
+!packages/backend/dist/skeleton.tar.gz
