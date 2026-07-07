@@ -6,7 +6,7 @@
 applications:
   - name: backstage-fcs-sso-portal
     path: deploy-workspace
-    memory: 3072M # Increased to 3GB to prevent staging and compilation OOM crashes
+    memory: 2048M # Max limit on sandbox orgs
     disk_quota: 4096M # Increased to 4GB to provide plenty of compression buffer space on cloud.gov
     instances: 1 # Scale to 2+ in non-sandbox organization for High Availability (HA)
     buildpacks:
@@ -19,7 +19,7 @@ applications:
     env:
       NODE_ENV: production
       YARN_PRODUCTION: 'true'
-      NODE_OPTIONS: --max-old-space-size=2048 # Increased to 2GB to prevent npm install OOM heap exhaustion
+      NODE_OPTIONS: --max-old-space-size=1536 # Constrain heap so CF staging doesn't OOM kill container
       NODE_MODULES_CACHE: 'false' # Disable npm cache to prevent output-cache disk exhaustion
       TMPDIR: '/home/vcap/app/.tmp' # Move tmpdir to disk to bypass tmpfs/RAM limits
       YARN_CACHE_FOLDER: '/home/vcap/app/.yarn-cache' # Put yarn cache inside the app to prevent /tmp out of space
