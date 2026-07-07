@@ -1,0 +1,37 @@
+---
+# Cloud Foundry Manifest for Backstage Orchestrator
+# Deploying a production-grade Backstage instance to cloud.gov (FedRAMP Moderate)
+# Official documentation: https://backstage.io/docs/deployment/
+
+applications:
+  - name: backstage-fcs-sso-portal
+    memory: 2048M # Increased to 2GB to prevent staging and compilation OOM crashes
+    disk_quota: 4096M # Increased to 4GB to provide plenty of compression buffer space on cloud.gov
+    instances: 1 # Scale to 2+ in non-sandbox organization for High Availability (HA)
+    buildpacks:
+      - nodejs_buildpack
+
+    # We use a custom start command that runs the credentials extractor first,
+    # then starts the production Backstage backend.
+    command: node -r ./vcap-env.js packages/backend --config app-config.yaml --config app-config.production.yaml
+
+    env:
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=1536 # Increased to 1.5GB to prevent npm install OOM heap exhaustion
+      NODE_MODULES_CACHE: 'false' # Disable npm cache to prevent output-cache disk exhaustion
+      NPM_CONFIG_CACHE: '/tmp/npm-cache' # Redirect npm cache to writable /tmp to keep application folder small and avoid duplication
+      NPM_CONFIG_LEGACY_PEER_DEPS: 'true' # Force legacy peer dep resolution for npm
+      NPM_CONFIG_PRODUCTION: 'false' # Requires dev dependencies to build Backstage during staging
+      NPM_CONFIG_TMP: '/tmp/npm-tmp' # Redirect npm temp folder to writable /tmp to avoid duplication
+
+      # Set Backstage's public URLs. Note: update with your cloud.gov app route
+      APP_CONFIG_app_baseUrl: https://backstage-fcs-sso-portal.app.cloud.gov
+      APP_CONFIG_backend_baseUrl: https://backstage-fcs-sso-portal.app.cloud.gov
+
+      # Optional: Ingestion rate limiting tuning for large catalogs
+      BACKSTAGE_CATALOG_SCAN_INTERVAL: '30m'
+
+    services:
+      # Bind to your AWS RDS PostgreSQL service broker on cloud.gov
+      # Run first: cf create-service aws-rds micro-psql backstage-db
+      - backstage-db

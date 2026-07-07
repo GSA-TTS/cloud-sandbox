@@ -1,0 +1,10 @@
+# .cfignore for Backstage on cloud.gov
+**/node_modules/
+**/node_modules
+node_modules/
+.git/
+.github/
+.yarn/
+.cache/
+*.log
+package-lock.json
