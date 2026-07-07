@@ -35,6 +35,26 @@ try {
     // Locate the specific backstage-db service
     const allServices = Object.values(vcapServices).flat();
     const dbService = allServices.find(s => s.name === 'backstage-db');
+    const ssoService = allServices.find(s => s.name === 'backstage-sso');
+
+    if (ssoService) {
+      const ssoCredentials = ssoService.credentials || {};
+      if (ssoCredentials.client_id && ssoCredentials.client_secret) {
+        process.env.CLOUDGOV_CLIENT_ID = ssoCredentials.client_id;
+        process.env.CLOUDGOV_CLIENT_SECRET = ssoCredentials.client_secret;
+        console.log(
+          '[cloud.gov VCAP_SERVICES] Successfully bound cloud.gov identity provider credentials.',
+        );
+      } else {
+        console.warn(
+          '[cloud.gov VCAP_SERVICES] SSO credentials missing client_id or client_secret.',
+        );
+      }
+    } else {
+      console.warn(
+        '[cloud.gov VCAP_SERVICES] No cloud.gov identity provider bindings found. SSO login may fail.',
+      );
+    }
 
     if (dbService) {
       const credentials = dbService.credentials || {};
