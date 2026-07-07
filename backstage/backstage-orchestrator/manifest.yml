@@ -26,6 +26,7 @@ applications:
       NPM_CONFIG_LEGACY_PEER_DEPS: 'true' # Force legacy peer dep resolution for npm
       NPM_CONFIG_PRODUCTION: 'true' # Only install runtime dependencies (pre-compiled assets already exist)
       NPM_CONFIG_TMP: '/tmp/npm-tmp' # Redirect npm temp folder to writable /tmp
+      YARN_CACHE_FOLDER: '/home/vcap/app/.yarn-cache' # Put yarn cache inside the app to prevent /tmp out of space
 
       # Set Backstage's public URLs. Note: update with your cloud.gov app route
       APP_CONFIG_app_baseUrl: https://backstage-fcs-sso-portal.app.cloud.gov
