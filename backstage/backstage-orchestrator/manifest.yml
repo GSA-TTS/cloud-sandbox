@@ -5,6 +5,7 @@
 
 applications:
   - name: backstage-fcs-sso-portal
+    path: deploy-workspace
     memory: 2048M # Increased to 2GB to prevent staging and compilation OOM crashes
     disk_quota: 4096M # Increased to 4GB to provide plenty of compression buffer space on cloud.gov
     instances: 1 # Scale to 2+ in non-sandbox organization for High Availability (HA)
@@ -13,10 +14,11 @@ applications:
 
     # We use a custom start command that runs the credentials extractor first,
     # then starts the production Backstage backend.
-    command: ./prestart.sh
+    command: node -r ./vcap-env.js packages/backend --config app-config.yaml --config app-config.production.yaml
 
     env:
       NODE_ENV: production
+      YARN_PRODUCTION: 'true'
       NODE_OPTIONS: --max-old-space-size=1536 # Increased to 1.5GB to prevent npm install OOM heap exhaustion
       NODE_MODULES_CACHE: 'false' # Disable npm cache to prevent output-cache disk exhaustion
       NPM_CONFIG_CACHE: '/tmp/npm-cache' # Redirect npm cache to writable /tmp to keep application folder small and avoid duplication
