@@ -6,7 +6,20 @@
  * Happy hacking!
  */
 
+import crypto from 'node:crypto';
 import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  authProvidersExtensionPoint,
+  createOAuthProviderFactory,
+  type OAuthAuthenticatorResult,
+  type SignInResolver,
+} from '@backstage/plugin-auth-node';
+import {
+  oidcAuthenticator,
+  oidcSignInResolvers,
+  type OidcAuthResult,
+} from '@backstage/plugin-auth-backend-module-oidc-provider';
 
 const backend = createBackend();
 
@@ -25,9 +38,62 @@ backend.add(import('@backstage/plugin-techdocs-backend'));
 
 // auth plugin
 backend.add(import('@backstage/plugin-auth-backend'));
-// See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
-backend.add(import('@backstage/plugin-auth-backend-module-oidc-provider'));
-// See https://backstage.io/docs/auth/guest/provider
+
+const cloudGovOidcAuthenticator = {
+  ...oidcAuthenticator,
+  scopes: {
+    ...oidcAuthenticator.scopes,
+    required: ['openid'],
+  },
+};
+
+const cloudGovSignInResolver: SignInResolver<
+  OAuthAuthenticatorResult<OidcAuthResult>
+> = async ({ result }, ctx) => {
+  const subject = result.fullProfile.tokenset.claims().sub;
+  if (!subject) {
+    throw new Error('cloud.gov OIDC token is missing a subject claim');
+  }
+
+  const userEntityRef = `user:default/cloudgov-${crypto
+    .createHash('sha256')
+    .update(subject)
+    .digest('hex')
+    .slice(0, 16)}`;
+
+  return ctx.issueToken({
+    claims: {
+      sub: userEntityRef,
+      ent: [userEntityRef],
+    },
+  });
+};
+
+backend.add(
+  createBackendModule({
+    pluginId: 'auth',
+    moduleId: 'cloudgov-oidc-provider',
+    register(reg) {
+      reg.registerInit({
+        deps: {
+          providers: authProvidersExtensionPoint,
+        },
+        async init({ providers }) {
+          providers.registerProvider({
+            providerId: 'oidc',
+            factory: createOAuthProviderFactory({
+              authenticator: cloudGovOidcAuthenticator,
+              signInResolver: cloudGovSignInResolver,
+              signInResolverFactories: {
+                ...oidcSignInResolvers,
+              },
+            }),
+          });
+        },
+      });
+    },
+  }),
+);
 
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -41,7 +107,6 @@ backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 // permission plugin
 backend.add(import('@backstage/plugin-permission-backend'));
 // See https://backstage.io/docs/permissions/getting-started for how to create your own permission policy
-import { createBackendModule } from '@backstage/backend-plugin-api';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 import {
   PermissionPolicy,

@@ -21,7 +21,7 @@ applications:
       YARN_PRODUCTION: 'true'
       NODE_OPTIONS: --max-old-space-size=1536 # Constrain heap so CF staging doesn't OOM kill container
       NODE_MODULES_CACHE: 'false' # Disable npm cache to prevent output-cache disk exhaustion
-      TMPDIR: '/home/vcap/app/.tmp' # Move tmpdir to disk to bypass tmpfs/RAM limits
+      TMPDIR: '/tmp' # CF lifecycle expects a pre-existing TMPDIR during droplet generation
       YARN_CACHE_FOLDER: '/home/vcap/app/.yarn-cache' # Put yarn cache inside the app to prevent /tmp out of space
       NPM_CONFIG_CACHE: '/home/vcap/app/.npm-cache' # Redirect npm cache to writable disk
       NPM_CONFIG_LEGACY_PEER_DEPS: 'true' # Force legacy peer dep resolution for npm

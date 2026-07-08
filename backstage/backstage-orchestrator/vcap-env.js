@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // Symlink repair for @backstage/plugin-app-backend on cloud.gov
 // Cloud Foundry tar-based droplets can sometimes lose intra-workspace symlinks created by Yarn.
@@ -96,6 +97,29 @@ try {
       console.warn(
         '[cloud.gov VCAP_SERVICES] No postgres or aws-rds bindings found. Relying on local env vars.',
       );
+    }
+
+    if (!process.env.BACKSTAGE_SESSION_SECRET) {
+      const secretMaterial = [
+        ssoService?.credentials?.client_secret,
+        dbService?.credentials?.password,
+      ]
+        .filter(Boolean)
+        .join(':');
+
+      if (secretMaterial) {
+        process.env.BACKSTAGE_SESSION_SECRET = crypto
+          .createHash('sha256')
+          .update(`backstage-session:${secretMaterial}`)
+          .digest('hex');
+        console.log(
+          '[cloud.gov VCAP_SERVICES] Derived Backstage session secret from bound service credentials.',
+        );
+      } else {
+        console.warn(
+          '[cloud.gov VCAP_SERVICES] Unable to derive BACKSTAGE_SESSION_SECRET; OIDC login may fail.',
+        );
+      }
     }
   } else {
     console.log(
