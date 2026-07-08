@@ -84,3 +84,9 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+.opencode/generated/broker-providers.json
+backstage/catalog-internal-tools-main/
+backstage/docops-dev/
+backstage/iac-community-main/
+backstage/iac-official-main/
+backstage/pipe-core-tenant-portal-backend-development/
