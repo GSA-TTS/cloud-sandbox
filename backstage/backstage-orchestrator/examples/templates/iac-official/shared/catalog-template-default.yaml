@@ -1,0 +1,20 @@
+# Default catalog template for modules that don't ship their own.
+# Produces a single Resource entry matching the existing workflow behavior.
+# Variables available: {{name}}, {{environment}}, {{lifecycle}}, {{org}}, {{resource_dir}}, {{resource_type}}
+entries:
+  - kind: Resource
+    metadata:
+      name: "{{name}}"
+      title: "{{name}} ({{environment}})"
+      description: "AWS {{resource_type}} resource {{name}} in {{environment}} for {{org}}"
+      tags:
+        - "{{resource_type}}"
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: "{{resource_type}}"
+    spec:
+      type: "{{resource_type}}"
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"

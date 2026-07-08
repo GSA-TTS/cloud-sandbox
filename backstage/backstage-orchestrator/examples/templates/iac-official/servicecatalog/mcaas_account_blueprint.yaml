@@ -1,0 +1,239 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: mcaas_account_blueprint
+  title: FCS Account & Network Provisioning
+  description: |
+    Provision a new FCS account with automatic
+    VPC subnet configuration, networking automation, and infrastructure setup.
+  tags:
+    - 'mcaas'
+    - 'vpc'
+    - 'containers-dev'
+    - 'intake-and-provisioning'
+    - 'product-all-dev'
+    - 'tier-techlead'
+spec:
+  owner: fdp/backstage-ops
+  type: Intake and Provisioning
+
+  parameters:
+    - title: Account Information
+      description: Basic account details and organizational information
+      required:
+        - account_name
+        - tenant_short_name
+        - product_name
+        - project_name
+        - poc_email
+      properties:
+        account_name:
+          title: Account Name
+          type: string
+          pattern: '^mcaas-[a-z0-9]+-[a-z]+$'
+          description: |
+            Format: mcaas-{code}-{environment}
+            Examples: mcaas-abc-dev, mcaas-acme-prod
+
+        tenant_short_name:
+          title: Tenant Short Name
+          type: string
+          pattern: '^[a-z]{3,}$'
+          description: |
+            3+ letter tenant identifier
+            Used in DNS: {tenant_short_name}.mcaas.fcs.gsa.gov (for production)
+
+        product_name:
+          title: Product Name
+          type: string
+          description: Product or business unit name
+          enum:
+            - mcaas
+            - prod_mcaas
+          enumNames:
+            - 'MCaaS'
+            - 'MCaaS (legacy prod prefix)'
+          default: "mcaas"
+
+        project_name:
+          title: Project Name
+          type: string
+          description: Project name or initiative identifier
+
+        poc_email:
+          title: Point of Contact Email
+          type: string
+          description: Email for account request notifications and updates
+
+    - title: Environment & Network Sizing
+      description: Configure environment tier and network size
+      required:
+        - environment_tier
+        - size_profile
+      properties:
+        environment_tier:
+          title: Environment Tier
+          type: string
+          enum:
+            - dev
+            - staging
+            - prod
+          default: dev
+          enumNames:
+            - 'Development (2 AZs, minimal resources)'
+            - 'Staging (2 AZs)'
+            - 'Production (3 AZs, high availability)'
+          description: |
+            - dev: Development environment (2 availability zones)
+            - staging: Staging/QA environment (2 availability zones)
+            - prod: Production environment (3 availability zones, highly available)
+
+        size_profile:
+          title: VPC Size Profile
+          type: string
+          enum:
+            - small
+            - medium
+            - large
+            - custom
+          default: medium
+          enumNames:
+            - 'Small (10.0.0.0/16)'
+            - 'Medium (10.20.0.0/16) - Recommended'
+            - 'Large (10.40.0.0/16)'
+            - 'Custom (Specify CIDR)'
+          description: |
+            Pre-configured network size profiles with sensible defaults:
+            - Small: 2 AZs, 10.0.0.0/16 CIDR (development/test)
+            - Medium: 2 AZs, 10.20.0.0/16 CIDR (recommended for most)
+            - Large: 3 AZs, 10.40.0.0/16 CIDR (production scale)
+            - Custom: Provide your own CIDR block and AZ settings
+
+    - title: Custom Network Configuration (Optional)
+      description: Only required for Custom size profile
+      properties:
+        vpc_cidr_block:
+          title: VPC CIDR Block
+          type: string
+          default: '10.20.0.0/16'
+          pattern: '^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$'
+          description: |
+            Valid CIDR notation (e.g., 10.20.0.0/16)
+            Must be at least /16 for proper subnet distribution
+            Only required if size_profile is "Custom"
+
+        num_azs:
+          title: Number of Availability Zones
+          type: integer
+          enum: [2, 3]
+          default: 2
+          description: |
+            - 2 AZs: Standard high availability
+            - 3 AZs: Enhanced resilience (recommended for prod)
+            Only required if size_profile is "Custom"
+
+    - title: Production Configuration (Optional)
+      description: Required fields for production environments
+      properties:
+        tenant_code:
+          title: Tenant Code (Production Only)
+          type: string
+          pattern: '^[a-z]{3,}$'
+          description: |
+            Required for production environments only
+            Used to create Route53 hosted zone: {tenant_code}.mcaas.fcs.gsa.gov
+            Example: "abc" → abc.mcaas.fcs.gsa.gov
+
+        account_budget:
+          title: Monthly Budget Limit (USD)
+          type: integer
+          minimum: 100
+          description: |
+            Monthly AWS spend budget for cost tracking and alerts
+            Only required for production environments
+
+  steps:
+    - id: validate-inputs
+      name: Validate MCaaS Configuration
+      action: debug:log
+      input:
+        message: |
+          ═══════════════════════════════════════════════════════════════
+          MCaaS Account & VPC Provisioning Request
+          ═══════════════════════════════════════════════════════════════
+
+          📋 Account Information:
+            • Account Name: ${{ parameters.account_name }}
+            • Tenant Short Name: ${{ parameters.tenant_short_name }}
+            • Product: ${{ parameters.product_name }}
+            • Project: ${{ parameters.project_name }}
+            • POC Email: ${{ parameters.poc_email }}
+
+          🌐 Network Configuration:
+            • Environment: ${{ parameters.environment_tier }}
+            • Size Profile: ${{ parameters.size_profile }}
+            • VPC CIDR: ${{ parameters.vpc_cidr_block or 'Default for profile' }}
+            • Availability Zones: ${{ parameters.num_azs or 'Default for tier' }}
+
+          💾 GitHub Configuration:
+            • Organization: fdp
+            • Repository: account-management
+            • Branch: ${{ 'MCAAS-' + parameters.account_name }}
+
+          ═══════════════════════════════════════════════════════════════
+
+    - id: trigger-mcaas-workflow
+      name: Trigger MCaaS VPC Provisioning
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: ${{ "NewContainers" }}
+          workflow_id: "${{ 'mcaas-' + parameters.account_name + '-' + parameters.environment_tier }}"
+          task_queue: "${{ 'fcsnext-' + ('development' if parameters.environment_tier == 'dev' else ('staging' if parameters.environment_tier == 'staging' else 'production')) }}"
+          workflow_args:
+            # Core Account Information
+            ticket_number: "${{ 'MCAAS-' + parameters.account_name }}"
+            account_name: ${{ parameters.account_name }}
+            tenant_short_name: ${{ parameters.tenant_short_name }}
+            tenant_id: ${{ parameters.tenant_short_name }}
+            product_name: ${{ parameters.product_name }}
+            project_name: ${{ parameters.project_name }}
+            poc_email: ${{ parameters.poc_email }}
+            account_budget: ${{ parameters.account_budget or 0 }}
+
+            # Environment Configuration (mapped from tier)
+            appenv_long: "${{ 'development' if parameters.environment_tier == 'dev' else ('staging' if parameters.environment_tier == 'staging' else 'production') }}"
+            appenv_short: "${{ 'dev' if parameters.environment_tier == 'dev' else ('stg' if parameters.environment_tier == 'staging' else 'prod') }}"
+            appenv_letter: "${{ 'D' if parameters.environment_tier == 'dev' else ('S' if parameters.environment_tier == 'staging' else 'P') }}"
+
+            # GitHub Configuration
+            branch_name: ${{ 'MCAAS-' + parameters.account_name }}
+            pr_title: '${{ "Provision MCaaS Account: " + parameters.account_name + " (fdp/" + parameters.environment_tier + ")" }}'
+            pr_body: '${{ "Provisions a new MCaaS account named " + parameters.account_name + " for tenant " + parameters.tenant_short_name + " in the " + parameters.environment_tier + " environment." }}'
+
+            # Backstage Configuration (Phase 2 Automation)
+            backstage_config:
+              size_profile: ${{ parameters.size_profile }}
+              environment_tier: ${{ parameters.environment_tier }}
+              tenant_code: ${{ parameters.tenant_code or none }}
+              num_azs: ${{ parameters.num_azs or none }}
+              vpc_cidr_block: ${{ parameters.vpc_cidr_block or none }}
+              endpoint_base: ${{ "https://github.helix.gsa.gov" }}
+              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+
+  output:
+    links:
+      - title: 'View Temporal Workflow Status'
+        url: "${{ 'https://temporal-ui.internal/namespaces/default/workflows/mcaas-' + parameters.account_name + '-' + parameters.environment_tier }}"
+        icon: watch
+      - title: 'View GitHub Pull Request'
+        url: ${{ "https://github.helix.gsa.gov/fdp/account-management/pulls" }}
+        icon: github
+      - title: 'Account Documentation'
+        url: "${{ 'https://backstage.fcs.gsa.gov/docs/default/component/' + parameters.account_name }}"
+        icon: docs

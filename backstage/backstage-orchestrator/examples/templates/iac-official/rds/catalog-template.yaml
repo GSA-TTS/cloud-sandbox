@@ -1,0 +1,54 @@
+# Catalog template for the RDS module.
+# Rendered by the Tenant-IAC-catalog-info workflow when a new RDS resource is added.
+# Variables available: {{name}}, {{environment}}, {{lifecycle}}, {{org}}, {{resource_dir}}, {{resource_type}}
+entries:
+  - kind: Resource
+    metadata:
+      name: "{{name}}"
+      title: "{{name}} ({{environment}})"
+      description: "RDS database instance {{name}} in {{environment}} for {{org}}"
+      tags:
+        - database
+        - rds
+        - data-tier
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: rds
+      links:
+        - url: "https://console.aws.amazon.com/rds/home?region=us-east-1#database:id={{name}}"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: database
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependsOn:
+        - "resource:default/{{name}}-credentials"
+  - kind: Resource
+    metadata:
+      name: "{{name}}-credentials"
+      title: "{{name}} Credentials"
+      description: "Secrets Manager secret containing RDS connection details for {{name}}"
+      tags:
+        - secret
+        - credentials
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: secretsmanager
+        fcs.gsa.gov/secret-name: "{{name}}-credentials"
+      links:
+        - url: "https://console.aws.amazon.com/secretsmanager/secret?name={{name}}-credentials&region=us-east-1"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: secret
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependencyOf:
+        - "resource:default/{{name}}"

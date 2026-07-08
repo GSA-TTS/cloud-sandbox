@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fcs-iac-modules
+  description: TF/TG config files and actions
+  annotations:
+    github.com/project-slug: fdp/FCS-IaC-Modules
+    backstage.io/techdocs-ref: url:https://github.helix.gsa.gov/fdp/FCS-IaC-Modules/blob/main/
+spec:
+  type: service
+  owner: fdp/fcs-next
+  lifecycle: development

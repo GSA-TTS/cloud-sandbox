@@ -1,0 +1,250 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: backstage-dynamodb-template
+  title: Create DynamoDB
+  description: Provision and configure a new AWS DynamoDB instance.
+  tags:
+    - 'single-resource'
+    - 'product-serverless'
+    - 'product-containers'
+    - 'product-data'
+    - 'tier-developer'
+spec:
+  owner: fdp/fcs-next
+  type: AWS Service
+  parameters:
+    - title: Name
+      required:
+        - dynamodb_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        dynamodb_name:
+          title: DynamoDB Name
+          type: string
+          description: Enter the human-readable name of the DynamoDB instance
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+    - title: DynamoDB Parameters
+      required:
+        - hash_key
+      properties:
+        hash_key:
+          title: Hash Key
+          type: string
+          description: DynamoDB table Hash Key
+        hash_key_type:
+          title: Hash Key Type
+          type: string
+          description: "Hash Key type, which must be a scalar type: S, N, or B for (S)tring, (N)umber or (B)inary data"
+          default: "S"
+    - title: Optional DynamoDB Parameters
+      properties:
+        module_version:
+          title: Module Version
+          type: string
+          description: Tag version of the DynamoDB module in FCS-IaC-Modules (e.g. v1.0.0, v2.0.0)
+          default: "v1.0.4"
+        autoscale_max_read_capacity:
+          title: Autoscale Max Read Capacity
+          type: number
+          description: DynamoDB autoscaling max read capacity
+          default: 20
+        autoscale_max_write_capacity:
+          title: Autoscale Max Write Capacity
+          type: number
+          description: DynamoDB autoscaling max write capacity
+          default: 20
+        autoscale_min_read_capacity:
+          title: Autoscale Min Read Capacity
+          type: number
+          description: DynamoDB autoscaling min read capacity
+          default: 5
+        autoscale_min_write_capacity:
+          title: Autoscale Min Write Capacity
+          type: number
+          description: DynamoDB autoscaling min write capacity
+          default: 5
+        autoscale_read_target:
+          title: Autoscale Read Target
+          type: number
+          description: The target value (in %) for DynamoDB read autoscaling
+          default: 50
+        autoscale_write_target:
+          title: Autoscale Write Traget
+          type: number
+          description: The target value (in %) for DynamoDB write autoscaling
+          default: 50
+        billing_mode:
+          title: Billing Mode
+          type: string
+          description: DynamoDB Billing mode. Can be PROVISIONED or PAY_PER_REQUEST
+          default: "PROVISIONED"
+        delimited:
+          title: Delimited
+          type: string
+          description: Delimiter to be used between namespace, environment, stage, name and attributes
+          default: "-"
+        # dynamodb_attributes:
+        #   title: DynamoDB Attributes
+        #   type: string
+        #   description: Additional DynamoDB attributes in the form of a list of mapped values
+        enable_autoscaler:
+          title: Enable Autoscaler
+          type: string
+          description: Flag to enable/disable DynamoDB autoscaling
+          default: "false"
+        enable_encryption:
+          title: Enable Encryption
+          type: string
+          description: Enable DynamoDB server-side encryption
+          default: "true"
+        enable_point_in_time_recovery:
+          title: Enable Point in Time Recover
+          type: string
+          description: Enable DynamoDB point in time recovery
+          default: "true"
+        enable_streams:
+          title: Enable Streams
+          type: string
+          description: Enable DynamoDB streams
+          default: "false"
+        enabled:
+          title: Enabled
+          type: string
+          description: Set to false to prevent the module from creating any resources
+          default: "true"
+        environment:
+          title: Environment
+          type: string
+          description: Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT'. This is used for DB settings, not the environment the DB will be provisioned in.
+        # global_secondary_index_map:
+        #   title: Global Secondary Index Map
+        #   type: string
+        #   description: Additional global secondary indexes in the form of a list of mapped values
+        # local_secondary_index_map:
+        #   title: Local Secondary Index Map
+        #   type: string
+        #   description: Additional local secondary indexes in the form of a list of mapped values
+        namespace:
+          title: Namespace
+          type: string
+          description: Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'
+        range_key:
+          title: Range Key
+          type: string
+          description: DynamoDB table Range Key
+        range_key_type:
+          title: Range Key Type
+          type: string
+          description: "Range Key type, which must be a scalar type: S, N, or B for (S)tring, (N)umber or (B)inary data"
+        regex_replace_chars:
+          title: Regex Replace Chars
+          type: string
+          description: Regex to replace chars with empty string in namespace, environment, stage and name. By default only hyphens, letters and digits are allowed, all other chars are removed
+          default: "/[^a-zA-Z0-9-]/"
+        stage:
+          title: Stage
+          type: string
+          description: Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release'
+        stream_view_type:
+          title: Stream View Type
+          type: string
+          description: When an item in the table is modified, what information is written to the stream
+        # tags:
+        #   title:
+        #   type:
+        #   description:
+        #   default:
+        ttl_attribute:
+          title: TTL Attribute
+          type: string
+          description: DynamoDB table TTL attribute
+          default: "Expires"
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-dynamodb-" + parameters.github_org + "-" + parameters.dynamodb_name + "-" + parameters.deployment_env }}
+            task_queue: ${{ fcs.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/dynamodb/" + parameters.dynamodb_name }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add DynamoDB Table: " + parameters.dynamodb_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions a DynamoDB table named " + parameters.dynamodb_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+              module_version: ${{ parameters.module_version }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "dynamodb" }}
+              resource_config:
+                name: ${{ parameters.dynamodb_name }}
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  name: ${{ parameters.dynamodb_name }}
+                  # attributes: ${{ parameters.attributes }}
+                  autoscale_max_read_capacity: ${{ parameters.autoscale_max_read_capacity }}
+                  autoscale_max_write_capacity: ${{ parameters.autoscale_max_write_capacity }}
+                  autoscale_min_read_capacity: ${{ parameters.autoscale_min_read_capacity }}
+                  autoscale_min_write_capacity: ${{ parameters.autoscale_min_write_capacity }}
+                  autoscale_read_target: ${{ parameters.autoscale_read_target }}
+                  autoscale_write_target: ${{ parameters.autoscale_write_target }}
+                  billing_mode: ${{ parameters.billing_mode }}
+                  delimited: ${{ parameters.delimited }}
+                  # dynamodb_attributes: ${{ parameters. }}
+                  enable_autoscaler: ${{ parameters.enable_autoscaler }}
+                  enable_encryption: ${{ parameters.enable_encryption }}
+                  enable_point_in_time_recovery: ${{ parameters.enable_point_in_time_recovery }}
+                  enable_streams: ${{ parameters.enable_streams }}
+                  enabled: ${{ parameters.enabled }}
+                  environment: ${{ parameters.environment }}
+                  # global_secondary_index_map: ${{ parameters. }}
+                  hash_key: ${{ parameters.hash_key }}
+                  hash_key_type: ${{ parameters.hash_key_type }}
+                  # local_secondary_index_map: ${{ parameters. }}
+                  namespace: ${{ parameters.namespace }}
+                  range_key: ${{ parameters.range_key }}
+                  range_key_type: ${{ parameters.range_key_type }}
+                  regex_replace_chars: ${{ parameters.regex_replace_chars }}
+                  stage: ${{ parameters.stage }}
+                  stream_view_type: ${{ parameters.stream_view_type }}
+                  # tags: ${{ parameters.tags }}
+                  ttl_attribute: ${{ parameters.ttl_attribute }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

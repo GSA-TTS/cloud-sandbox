@@ -1,0 +1,474 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: sre-capacity-planning-questionnaire
+  title: SRE Gate 1 — Capacity Planning
+  description: >
+    Collects the information the SRE team needs to calculate your product's
+    capacity score (1–5 scale) per the SRE Capacity Planning Calculation
+    Framework. Select "New Product" for a service approaching its first
+    production deployment, or "Existing / Grandfathered Product" for an
+    established product entering or re-entering the SRE programme.
+    Repository URLs and infrastructure access details are collected separately
+    in the Gate 2 form.
+    Estimated time: 10–15 minutes.
+  tags:
+    - sre
+    - gate1
+    - capacity-planning
+    - intake
+    - platform-internal
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  owner: group:mcaas-cc/backstage-admins
+  type: internal-workflow
+
+  parameters:
+
+    # ── Step 1: Product & Track ───────────────────────────────────────────────
+    - title: Product & Track
+      description: >
+        Basic identifying information and assessment track.
+        The track you select determines which context questions appear in the
+        final step.
+      required:
+        - assessmentTrack
+        - productName
+        - teamOrganization
+        - experienceArea
+        - primaryContactEmail
+      properties:
+        assessmentTrack:
+          title: Assessment Track
+          type: string
+          description: >
+            New Product — approaching first production deployment, requesting
+            SRE handoff. Existing / Grandfathered Product — established product
+            entering or re-entering the SRE programme.
+          enum:
+            - new-product
+            - existing-product
+          enumNames:
+            - "New Product"
+            - "Existing / Grandfathered Product"
+          ui:widget: radio
+          ui:autofocus: true
+        productName:
+          title: Product / Service Name
+          type: string
+        teamOrganization:
+          title: Team / Organization
+          type: string
+          description: e.g. FCS API Exchange, Status Dashboard Team
+        experienceArea:
+          title: Experience Area
+          type: string
+          enum:
+            - Developer Experience
+            - Data Experience
+            - Workloads Experience
+            - AI/ML Experience
+            - Integration Experience
+            - Foundational Experience
+        primaryContactEmail:
+          title: Primary Contact Email
+          type: string
+          format: email
+          description: Person the SRE team should contact with questions about this assessment.
+
+    # ── Step 2: Weekly Operational Hours ──────────────────────────────────────
+    - title: Weekly Operational Hours
+      description: >
+        Estimate the average number of hours your team spends each week on each
+        operational category. Use actuals from the last 3–6 months for existing
+        products, or projections for new products. Enter 0 for categories that
+        do not apply. Include all time — waiting, coordination,
+        context-switching — not just "hands on keyboard" time.
+      required:
+        - hoursDeployments
+        - hoursPatchingUpgrades
+        - hoursScalingOperations
+        - hoursMonitoringAlerting
+        - hoursIncidentResponse
+        - hoursMaintenanceWindows
+        - hoursUserTenantManagement
+        - hoursSecretRotation
+        - hoursCapacityPlanning
+        - hoursDocumentationUpdates
+        - hoursDatabaseOperations
+        - hoursSupportTickets
+        - hoursDataOperations
+        - hoursAiMlOperations
+        - hoursMultiTenantOperations
+        - hoursOther
+      properties:
+        hoursDeployments:
+          title: Deployments
+          type: number
+          minimum: 0
+          description: >
+            Total time per week for all production deployments including
+            validation, rollbacks, and post-deploy checks.
+        hoursPatchingUpgrades:
+          title: Patching & Upgrades
+          type: number
+          minimum: 0
+          description: OS patches, dependency updates, runtime upgrades (weekly average).
+        hoursScalingOperations:
+          title: Scaling Operations
+          type: number
+          minimum: 0
+          description: Manual capacity adjustments, threshold tuning, scaling events.
+        hoursMonitoringAlerting:
+          title: Monitoring & Alert Triage
+          type: number
+          minimum: 0
+          description: >
+            Dashboard reviews, alert triage, false-positive investigation.
+            Include all daily checks.
+        hoursIncidentResponse:
+          title: Incident Response
+          type: number
+          minimum: 0
+          description: >
+            Average weekly time on Critical-to-Low incidents. Use a 3-month
+            average and divide by the number of weeks.
+        hoursMaintenanceWindows:
+          title: Maintenance Windows
+          type: number
+          minimum: 0
+          description: Scheduled maintenance tasks (database maintenance, backups, etc.) — weekly average.
+        hoursUserTenantManagement:
+          title: User / Tenant Management
+          type: number
+          minimum: 0
+          description: Onboarding, offboarding, access provisioning, quota adjustments.
+        hoursSecretRotation:
+          title: Secret Rotation
+          type: number
+          minimum: 0
+          description: Certificate renewals, password rotations, API key management — weekly average.
+        hoursCapacityPlanning:
+          title: Capacity Planning
+          type: number
+          minimum: 0
+          description: Resource monitoring, forecasting, review meetings.
+        hoursDocumentationUpdates:
+          title: Documentation Updates
+          type: number
+          minimum: 0
+          description: Runbook updates, architecture doc maintenance, wiki edits.
+        hoursDatabaseOperations:
+          title: Database Operations
+          type: number
+          minimum: 0
+          description: Manual backups, index maintenance, performance tuning — weekly average.
+        hoursSupportTickets:
+          title: Support Tickets
+          type: number
+          minimum: 0
+          description: Time spent on operational support requests (Jira, email).
+        hoursDataOperations:
+          title: Data Operations
+          type: number
+          minimum: 0
+          description: >
+            (Data products only) Pipeline monitoring, failed job reruns, data
+            quality checks. Enter 0 if not applicable.
+        hoursAiMlOperations:
+          title: AI / ML Operations
+          type: number
+          minimum: 0
+          description: >
+            (AI/ML products only) Model deployments, GPU management, training
+            job monitoring. Enter 0 if not applicable.
+        hoursMultiTenantOperations:
+          title: Multi-tenant Operations
+          type: number
+          minimum: 0
+          description: >
+            (Platform products only) Tenant-specific troubleshooting, isolation
+            issue resolution. Enter 0 if not applicable.
+        hoursOther:
+          title: Other
+          type: number
+          minimum: 0
+          description: >
+            Any operational tasks not covered by the categories above.
+            Describe them in the "Operational Gaps" field on the next step.
+
+    # ── Step 3: Automation & Operational Context ──────────────────────────────
+    - title: Automation & Operational Context
+      description: >
+        These inputs, combined with your weekly hours total, determine your
+        capacity score via the SRE scoring matrix.
+      required:
+        - automationLevel
+      properties:
+        automationLevel:
+          title: Overall operational automation level
+          type: string
+          enum:
+            - "> 80% — most tasks automated, minimal manual intervention"
+            - "50–80% — mix of automated and manual tasks"
+            - "< 50% — mostly manual operations"
+          description: >
+            Estimate across all operational tasks combined.
+            New products: estimate at expected launch state.
+            Existing products: current actual level.
+            Maps directly to the capacity scoring matrix.
+        riskFactors:
+          title: Applicable risk factors (select all that apply)
+          type: array
+          items:
+            type: string
+            enum:
+              - Legacy technology (> 5 years old or EOL versions)
+              - High traffic (> 10K req/sec)
+              - Critical business impact — 24/7 availability required
+              - Poor or missing documentation
+              - Weak automation (< 50% coverage)
+              - Excellent automation (> 90% coverage)
+              - Mature observability (comprehensive monitoring and alerting)
+              - Frequent changes (daily deployments)
+          uniqueItems: true
+          ui:widget: checkboxes
+          description: >
+            These do not change the capacity score — they provide context for
+            the SRE team to understand the sources of operational load.
+        operationalGaps:
+          title: Known operational gaps, risks, or tech debt
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 5
+          description: >
+            Areas where operational posture needs work before or after handoff.
+            Also use this field to describe any hours recorded under "Other" above.
+            Leave blank if none.
+
+    # ── Step 4: Track-Specific Context ───────────────────────────────────────
+    # Uses JSON Schema `dependencies` + `oneOf` so RJSF shows only the fields
+    # relevant to the selected track. assessmentTrack is re-declared here so
+    # the dependency engine can read it; Backstage carries the value forward
+    # from Step 1 automatically.
+    # ─────────────────────────────────────────────────────────────────────────
+    - title: Track-Specific Context
+      description: >
+        The fields below are filtered to match the track you selected in Step 1.
+        Confirm your track in the dropdown to reveal the relevant questions.
+      required:
+        - assessmentTrack
+      properties:
+        assessmentTrack:
+          title: Assessment Track
+          type: string
+          description: Carried forward from Step 1 — confirm or update here.
+          enum:
+            - new-product
+            - existing-product
+          enumNames:
+            - "New Product"
+            - "Existing / Grandfathered Product"
+      dependencies:
+        assessmentTrack:
+          oneOf:
+            - properties:
+                assessmentTrack:
+                  const: new-product
+                targetLaunchDate:
+                  title: Target production launch date
+                  type: string
+                  format: date
+                  description: Target SRE handoff / production go-live date.
+                deploymentFrequency:
+                  title: Expected deployment frequency post-launch
+                  type: string
+                  enum:
+                    - Multiple times per day
+                    - Daily
+                    - Weekly
+                    - Bi-weekly / sprint-aligned
+                    - Monthly or less
+                    - On-demand / no fixed cadence
+                expectedPeakLoad:
+                  title: Expected peak load or scale at launch
+                  type: string
+                  description: >
+                    e.g., "~500 concurrent users", "~200 req/sec at peak". Estimates are fine.
+              required:
+                - targetLaunchDate
+                - deploymentFrequency
+            - properties:
+                assessmentTrack:
+                  const: existing-product
+                productionAge:
+                  title: How long has this product been in production?
+                  type: string
+                  enum:
+                    - Less than 6 months
+                    - 6 months – 1 year
+                    - 1 – 3 years
+                    - 3 – 5 years
+                    - More than 5 years
+                monthlyHighIncidents:
+                  title: Average number of Critical / High severity incidents per month
+                  type: string
+                  enum:
+                    - "0"
+                    - "1–2"
+                    - "3–5"
+                    - "6–10"
+                    - "10+"
+                    - "Unknown / not tracked"
+                assessmentReason:
+                  title: Why is this capacity assessment being initiated now?
+                  type: string
+                  ui:widget: textarea
+                  ui:options:
+                    rows: 4
+                  description: >
+                    e.g., first formal SRE handoff, post-refactor review, new team
+                    taking ownership, annual review cycle.
+              required:
+                - productionAge
+                - monthlyHighIncidents
+                - assessmentReason
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STEPS — executed after the form is submitted
+  # ─────────────────────────────────────────────────────────────────────────────
+  steps:
+    - id: create-gate1-issue
+      name: Open SRE Gate 1 Tracking Ticket
+      action: github:issues:create
+      input:
+        repoUrl: github.helix.gsa.gov?owner=SRE&repo=sre-assessments
+        title: "[SRE Gate 1] ${{ parameters.productName }} — ${{ parameters.teamOrganization }}"
+        labels:
+          - sre-gate1
+          - capacity-planning
+          - intake
+        assignees: []
+        body: |
+          ## SRE Gate 1: Capacity Planning — ${{ parameters.productName }}
+
+          **Track:** ${{ 'New Product' if parameters.assessmentTrack === 'new-product' else 'Existing / Grandfathered Product' }}
+          **Primary Contact:** ${{ parameters.primaryContactEmail }}
+
+          ---
+
+          ## 1. Product Information
+
+          | Field | Value |
+          |---|---|
+          | Product / Service Name | ${{ parameters.productName }} |
+          | Team / Organization | ${{ parameters.teamOrganization }} |
+          | Experience Area | ${{ parameters.experienceArea }} |
+          | Primary Contact | ${{ parameters.primaryContactEmail }} |
+          | Assessment Track | ${{ 'New Product' if parameters.assessmentTrack === 'new-product' else 'Existing / Grandfathered Product' }} |
+
+          ---
+
+          ## 2. Weekly Operational Hours
+
+          > Use the total below with the automation level to calculate the capacity score
+          > via the [SRE Capacity Planning Scoring Matrix](https://github.helix.gsa.gov/SRE/sre-framework/blob/main/docs/09-capacity-planning-calculation.md).
+
+          | Category | Hours / Week |
+          |---|---|
+          | Deployments | ${{ parameters.hoursDeployments }} |
+          | Patching & Upgrades | ${{ parameters.hoursPatchingUpgrades }} |
+          | Scaling Operations | ${{ parameters.hoursScalingOperations }} |
+          | Monitoring & Alert Triage | ${{ parameters.hoursMonitoringAlerting }} |
+          | Incident Response | ${{ parameters.hoursIncidentResponse }} |
+          | Maintenance Windows | ${{ parameters.hoursMaintenanceWindows }} |
+          | User / Tenant Management | ${{ parameters.hoursUserTenantManagement }} |
+          | Secret Rotation | ${{ parameters.hoursSecretRotation }} |
+          | Capacity Planning | ${{ parameters.hoursCapacityPlanning }} |
+          | Documentation Updates | ${{ parameters.hoursDocumentationUpdates }} |
+          | Database Operations | ${{ parameters.hoursDatabaseOperations }} |
+          | Support Tickets | ${{ parameters.hoursSupportTickets }} |
+          | Data Operations | ${{ parameters.hoursDataOperations }} |
+          | AI / ML Operations | ${{ parameters.hoursAiMlOperations }} |
+          | Multi-tenant Operations | ${{ parameters.hoursMultiTenantOperations }} |
+          | Other | ${{ parameters.hoursOther }} |
+          | **TOTAL** | **${{ parameters.hoursDeployments + parameters.hoursPatchingUpgrades + parameters.hoursScalingOperations + parameters.hoursMonitoringAlerting + parameters.hoursIncidentResponse + parameters.hoursMaintenanceWindows + parameters.hoursUserTenantManagement + parameters.hoursSecretRotation + parameters.hoursCapacityPlanning + parameters.hoursDocumentationUpdates + parameters.hoursDatabaseOperations + parameters.hoursSupportTickets + parameters.hoursDataOperations + parameters.hoursAiMlOperations + parameters.hoursMultiTenantOperations + parameters.hoursOther }} hrs/week** |
+
+          {% set totalHours = parameters.hoursDeployments + parameters.hoursPatchingUpgrades + parameters.hoursScalingOperations + parameters.hoursMonitoringAlerting + parameters.hoursIncidentResponse + parameters.hoursMaintenanceWindows + parameters.hoursUserTenantManagement + parameters.hoursSecretRotation + parameters.hoursCapacityPlanning + parameters.hoursDocumentationUpdates + parameters.hoursDatabaseOperations + parameters.hoursSupportTickets + parameters.hoursDataOperations + parameters.hoursAiMlOperations + parameters.hoursMultiTenantOperations + parameters.hoursOther %}
+          > **Calculated Capacity Score:**
+          > {% if totalHours <= 2 %}{% if '> 80%' in parameters.automationLevel %}**5 — Minimal** ✅ Accept immediately{% elif '50–80%' in parameters.automationLevel %}**4 — Low** ✅ Accept{% else %}**3 — Moderate** ⚠️ Accept with plan{% endif %}{% elif totalHours <= 5 %}{% if '> 80%' in parameters.automationLevel %}**4 — Low** ✅ Accept{% elif '50–80%' in parameters.automationLevel %}**3 — Moderate** ⚠️ Accept with plan{% else %}**2 — High** 🛑 Remediation required{% endif %}{% elif totalHours <= 10 %}{% if '50–80%' in parameters.automationLevel or '> 80%' in parameters.automationLevel %}**3 — Moderate** ⚠️ Accept with plan{% else %}**2 — High** 🛑 Remediation required{% endif %}{% elif totalHours <= 20 %}{% if '> 80%' in parameters.automationLevel %}**2 — High** 🛑 Remediation required{% elif '50–80%' in parameters.automationLevel %}**2 — High** 🛑 Remediation required{% else %}**1 — Very High** 🛑 Not ready{% endif %}{% else %}{% if '> 80%' in parameters.automationLevel %}**2 — High** 🛑 Remediation required{% else %}**1 — Very High** 🛑 Not ready{% endif %}{% endif %}
+          > Total: **{{ totalHours }} hrs/week** | Automation: ${{ parameters.automationLevel }}
+
+          ---
+
+          ## 3. Automation & Operational Context
+
+          **Automation Level:** ${{ parameters.automationLevel }}
+
+          **Risk Factors:**
+          ${{ parameters.riskFactors | join(", ") if parameters.riskFactors else "None selected" }}
+
+          **Known Gaps / Risks / Tech Debt:**
+          ${{ parameters.operationalGaps or "None provided" }}
+
+          ---
+
+          ## 4. Track-Specific Context
+
+          {% if parameters.assessmentTrack === 'new-product' %}
+          ### New Product — Launch Planning
+
+          | Field | Value |
+          |---|---|
+          | Target Launch Date | ${{ parameters.targetLaunchDate or "Not provided" }} |
+          | Expected Deployment Frequency | ${{ parameters.deploymentFrequency or "Not provided" }} |
+          | Expected Peak Load at Launch | ${{ parameters.expectedPeakLoad or "Not provided" }} |
+          {% endif %}
+
+          {% if parameters.assessmentTrack === 'existing-product' %}
+          ### Existing Product — Operational History
+
+          | Field | Value |
+          |---|---|
+          | Time in Production | ${{ parameters.productionAge or "Not provided" }} |
+          | Avg Critical / High Incidents / Month | ${{ parameters.monthlyHighIncidents or "Not provided" }} |
+          | Reason for Assessment | ${{ parameters.assessmentReason or "Not provided" }} |
+          {% endif %}
+
+          ---
+
+          ## Capacity Score Reference
+
+          | | Automation < 50% | Automation 50–80% | Automation > 80% |
+          |---|---|---|---|
+          | **0–2 hrs/week** | Score 3 | Score 4 | Score 5 |
+          | **2–5 hrs/week** | Score 2 | Score 3 | Score 4 |
+          | **5–10 hrs/week** | Score 2 | Score 3 | Score 3 |
+          | **10–20 hrs/week** | Score 1 | Score 2 | Score 2 |
+          | **20+ hrs/week** | Score 1 | Score 1 | Score 2 |
+
+          **Target for SRE acceptance: Score 3+ (≤ 10 hrs/week)**
+
+          ---
+          *Auto-generated by Backstage SRE Gate 1 Capacity Planning Form*
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # OUTPUT
+  # ─────────────────────────────────────────────────────────────────────────────
+  output:
+    links:
+      - title: View Gate 1 Ticket
+        url: ${{ steps['create-gate1-issue'].output.issueUrl }}
+        icon: github
+    text:
+      - title: What Happens Next
+        content: |
+          Your SRE Gate 1 Capacity Planning submission has been received. Here's what to expect:
+
+          1. **SRE team review** — The team will review your submission and calculate your capacity score within 2 business days.
+          2. **Capacity score report** — You'll receive a report with your score (1–5), the decision (accept / conditional / remediation required), and prioritised recommendations.
+          3. **Gate 2** — Once Gate 1 is complete, submit the SRE Gate 2 Production Readiness form from the Backstage catalog. Gate 2 is where repository URLs and infrastructure access details are collected.
+
+          **Questions?** Reach the SRE team at sre-team@gsa.gov.

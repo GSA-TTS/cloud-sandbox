@@ -1,0 +1,69 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: workspace_reboot
+  title: Workspace Reboot
+  description: Reboot your AWS WorkSpace remotely. Use this if you are unable to log in to your workspace or it has become unresponsive.
+  tags:
+    - 'workspace'
+    - 'self-service'
+    - 'reboot'
+    - 'tier-user'
+spec:
+  owner: fdp/backstage-ops
+  type: Self-Service
+  parameters:
+    - title: Workspace Reboot
+      required:
+        - confirm
+      properties:
+        workspace_username:
+          title: Your Username
+          type: string
+          ui:field: WorkspaceCurrentUser
+        registration_code:
+          title: Your Workspace
+          type: string
+          ui:field: WorkspacePicker
+        confirm:
+          title: "I understand that rebooting will close all open applications and unsaved work will be lost."
+          type: boolean
+          const: true
+          description: "Your workspace will be rebooted using your Backstage login username. You must check this box to proceed."
+          default: false
+          ui:widget: checkbox
+        cooldown_guard:
+          type: string
+          ui:field: WorkspaceCooldownGuard
+          ui:options:
+            cooldownMinutes: 15
+            actionKey: reboot
+
+  steps:
+    - id: trigger_reboot_workflow
+      name: Trigger Workspace Reboot
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.helix.gsa.gov?repo=bulkhead&owner=fdp
+        workflowId: workspace_self_service_reboot.yml
+        branchOrTagName: main
+        workflowInputs:
+          workspace_username: ${{ user.entity.metadata.name }}
+          registration_code: ${{ parameters.registration_code }}
+
+  output:
+    text:
+      - title: Reboot Initiated
+        content: |
+          Your workspace reboot has been triggered for user **${{ user.entity.metadata.name }}**.
+
+          The workspace will reboot within 1-2 minutes. You will be able to log back in once it returns to AVAILABLE state (usually within 5-10 minutes).
+
+          ---
+
+          **Please wait at least 15 minutes before submitting another reboot.**
+          Rebooting again too soon while the workspace is still coming back up can leave it in a broken state and may require IT support to recover.
+
+          ---
+
+          If the issue persists after 15 minutes, please try the **Workspace Baseline Apply** option or contact support.

@@ -1,0 +1,120 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: fcs-virt-asst-fe
+  title: FCP Virtual Assistant FE
+  description: This template deploys FCP's Virtual Assistant Frontend.
+  tags:
+    - 'blueprint'
+    - 'product-containers'
+    - 'tier-developer'
+spec:
+  owner: fcs-fcp-org/iac-deployment
+  type: Blueprint
+  parameters:
+    - title: FCP Virtual Assistant Frontend
+      required:
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+    - title: FCP Virtual Assistant Frontend Parameters
+      required:
+        - aws_region
+        - stack_prefix
+        - frontend_build_tag
+        - backend_api_endpoint
+        - allowed_ip_addresses
+      properties:
+        aws_region:
+          title: AWS Region
+          type: string
+          description: The AWS region to deploy into
+          default: "us-east-1"
+        stack_prefix:
+          title: Stack Prefix
+          type: string
+          description: The stack prefix
+          default: ""
+        frontend_build_tag:
+          title: Frontend Build Tag
+          type: string
+          description: The frontend build tag
+          default: ""
+        backend_api_endpoint:
+          title: Backend API Endpoint
+          type: string
+          description: The backend API endpoint
+          default: ""
+        allowed_ip_addresses:
+          title: Allowed IP Addresses
+          type: array
+          items:
+            type: string
+          ui:field: DelimitedTextArray
+          ui:options:
+            name: Allowed IP Addresses
+            description: A comma-delimited list of allowed IP addresses
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-virt-asst-fe-" + parameters.github_org + "-" + parameters.stack_prefix + "-" + parameters.deployment_env }}
+            task_queue: ${{ fcs.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/virt-asst-fe/" + parameters.stack_prefix }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add Virtual Assistant FE: " + parameters.stack_prefix + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions a Virtual Assistant Frontend named " + parameters.stack_prefix + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.helix.gsa.gov:fcs-fcp-org/iac.git/" }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "virt-asst-fe" }}
+              tenant: ${{ "FCP" }}
+              resource_config:
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  name: ${{ "fcp-virt-asst-fe" }}
+                  aws_region: ${{ parameters.aws_region }}
+                  stack_prefix: ${{ parameters.stack_prefix }}
+                  frontend_build_tag: ${{ parameters.frontend_build_tag }}
+                  backend_api_endpoint: ${{ parameters.backend_api_endpoint }}
+                  allowed_ip_addresses: ${{ parameters.ip_addresses }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

@@ -1,0 +1,217 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: databricks_add_user
+  title: Add User to Databricks Workspace
+
+  description: >-
+    Add one or more users to an existing Databricks workspace.
+
+    An FCSTS Jira ticket is created and the workspace owner is notified by email to
+    approve or decline the request. Once approved, each requested user receives a link
+    to accept the Rules of Behavior for their role. Access is provisioned automatically
+    as each user accepts.
+  tags:
+    - 'product-databricks-dev'
+    - 'data-self-service'
+spec:
+  owner: fdp/backstage-ops
+  type: Self-Service
+  parameters:
+    # ── Step 1: Workspace ────────────────────────────────────────────────────
+    - title: Select Workspace
+      required:
+        - workspace_name
+      properties:
+        workspace_name:
+          title: Please enter your Databricks Workspace Name
+          type: string
+          description: |
+            **Enter the workspace name or paste its URL** (e.g. `fcsd-auto-sbx`).
+
+            The name is the part between `gsa-` and `.cloud.databricks.com` in the workspace URL.
+
+            **Can't find it?** Ask your workspace owner or [contact the FCS Data Platform team](mailto:fcs-data-platform@gsa.gov).
+          ui:field: DatabricksWorkspacePicker
+          ui:options:
+            hideError: true
+
+    # ── Step 2: Role ─────────────────────────────────────────────────────────
+    - title: Role
+      required:
+        - role
+      properties:
+        workspace_groups_info:
+          title: ''
+          type: string
+          ui:field: DatabricksWorkspaceGroupsInfo
+        role:
+          title: Role
+          type: string
+          default: Analyst
+          description: |
+            **Standard workspace roles** — group assigned: `{Workspace}_{Role}_{env}` or `{Workspace}_{Role}_{Team}_{env}` (if team provided).
+
+            | Role | Team-specific? | Description |
+            |------|---------------|-------------|
+            | **Owner** | No | No expected direct use of Databricks; approves teams, users, and additional workspace groups |
+            | **Steward** | No | Manages Unity Catalog object metadata and data access privileges |
+            | **Admin** | Yes | Administration and oversight of privileged resources in the Databricks workspace for their tenant or team(s) |
+            | **Developer** | Yes | Management and curation of production-grade data products (e.g. data entities, AI/ML models) |
+            | **Analyst** *(default)* | No | Read authorized catalog sources as input to analyses; write analysis output to temporary locations |
+            | **Consumer** | No | Interface with data in curated presentations (dashboards) or AI-mediated interactions |
+
+            [Role documentation →](https://docops.myfcs.itplaybook.gsa.gov/docs/product_portfolio/data_experience/data_processing/documentation/databricks/overview/roles_and_responsibilities/)
+          enum:
+            - Owner
+            - Steward
+            - Admin
+            - Developer
+            - Analyst
+            - Consumer
+          enumNames:
+            - 'Owner — full workspace control'
+            - 'Steward — data governance'
+            - 'Admin — catalog & cluster management'
+            - 'Developer — create notebooks, jobs, clusters'
+            - 'Analyst — run notebooks & SQL (recommended default)'
+            - 'Consumer — read-only data access'
+
+      dependencies:
+        role:
+          oneOf:
+            - properties:
+                role:
+                  enum:
+                    - Admin
+                    - Developer
+                team_name:
+                  title: Team (optional)
+                  type: string
+                  description: >-
+                    Select or enter the team name within this workspace (e.g. Analytics, Finance).
+                    Leave blank to be added to the workspace-level role group.
+                  ui:field: DatabricksTeamPicker
+              required:
+                - role
+            - properties:
+                role:
+                  enum:
+                    - Owner
+                    - Steward
+                    - Analyst
+                    - Consumer
+              required:
+                - role
+
+    # ── Step 3: Users to Add ──────────────────────────────────────────────────
+    - title: Users to Add
+      required:
+        - user_emails
+      properties:
+        user_emails:
+          title: User Email(s)
+          type: array
+          description: Email address(es) of the user(s) to add.
+          ui:field: DatabricksUserEmailsField
+          ui:options:
+            hideError: true
+
+        missing_active_fcs_id_users:
+          title: ''
+          type: array
+          description: Derived list of requested users who still need active FCS ID follow-up.
+          default: []
+          ui:field: DatabricksMissingActiveFcsIdUsersField
+          items:
+            type: string
+
+        notify_user:
+          title: Notify User
+          type: boolean
+          description: Send an email notification to the user once access is provisioned.
+          default: true
+
+        submitter_email:
+          title: Submitter Email
+          type: string
+          ui:field: UserEmailField
+
+      dependencies:
+        missing_active_fcs_id_users:
+          oneOf:
+            - properties:
+                missing_active_fcs_id_users:
+                  maxItems: 0
+            - properties:
+                missing_active_fcs_id_users:
+                  minItems: 1
+                supervisor_email:
+                  title: Supervisor Email
+                  type: string
+                  description: >-
+                    Required when one or more requested users do not have an active FCS ID yet.
+                    This email is captured on the FCSTS ticket for FCS Account Creation follow-up after owner approval.
+                  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                supervisor_name:
+                  title: Supervisor Name (optional)
+                  type: string
+                  description: Optional display name to include with the supervisor follow-up details.
+              required:
+                - supervisor_email
+
+    # ── Step 4: Rules of Behavior (only if adding yourself) ────────────────
+    - title: Rules of Behavior
+      description: >-
+        If you are submitting this request on behalf of someone else, you do not need to
+        accept the Rules of Behavior here — each user added will receive a personal
+        link to accept after the workspace owner approves the request.
+      properties:
+        rob_accepted:
+          title: I have read and agree to the FCS Rules of Behavior.
+          type: boolean
+          description: >-
+            Only required if you are one of the users added.
+            If so, open and accept both the general FCS Rules of Behavior and the agreement
+            for your role to skip the post-approval acceptance step.
+            Otherwise, each user will receive a personal link after the owner approves.
+          ui:field: DatabricksRoBCheckbox
+          default: false
+
+  steps:
+    - id: backstage_request_with_input
+      name: Submit User Access Request
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: AddUserToWorkspaceJiraCentric
+          workflow_id: DatabricksAddUser_${{ parameters.workspace_name }}_${{ parameters.user_emails | join(',') }}_${{ parameters.role }}_${{ parameters.team_name }}
+          task_queue: ${{ fcs.taskQueue }}
+          await_result: false
+          wait_for_ticket_info: true
+          ticket_info_timeout_seconds: 60
+          workflow_args:
+            workspace_name: ${{ parameters.workspace_name }}
+            team_name: ${{ parameters.team_name }}
+            role: ${{ parameters.role }}
+            user_emails: ${{ parameters.user_emails }}
+            missing_active_fcs_id_users: ${{ parameters.missing_active_fcs_id_users }}
+            supervisor_email: ${{ parameters.supervisor_email }}
+            supervisor_name: ${{ parameters.supervisor_name }}
+            notify_user: ${{ parameters.notify_user }}
+            submitter_email: ${{ parameters.submitter_email }}
+            rob_accepted: ${{ parameters.rob_accepted }}
+
+  output:
+    text:
+      - title: Request Submitted
+        content: |
+          ${{ ('Your access request has been submitted as ' + steps["backstage_request_with_input"].output.body.jira_ticket + '.\n\nThe workspace owner will be notified to approve it.\nAny requested user who has not already accepted the Rules of Behavior will receive a personal link and must accept it before access is set up.\nYou will be notified once access has been set up.\n\nYou can check the status of your request at any time by opening the FCSTS ticket linked below.') if steps["backstage_request_with_input"].output.body.ticket_created else ('Your access request has been submitted. A ticket will be created in FCSTS and the workspace owner will be notified to approve it.\nAny requested user who has not already accepted the Rules of Behavior will receive a personal link and must accept it before access is set up.\nYou will be notified once access has been set up.\n\nYou can check the status of your request in the FCSTS service desk linked below.') }}
+    links:
+      - title: '${{ "FCSTS Access Ticket: " + steps["backstage_request_with_input"].output.body.jira_ticket if steps["backstage_request_with_input"].output.body.ticket_created else "FCSTS Queue" }}'
+        url: '${{ steps["backstage_request_with_input"].output.body.jira_url if steps["backstage_request_with_input"].output.body.ticket_created else "https://gsa-standard.atlassian-us-gov-mod.net/jira/servicedesk/projects/FCSTS/queues" }}'
+        icon: docs

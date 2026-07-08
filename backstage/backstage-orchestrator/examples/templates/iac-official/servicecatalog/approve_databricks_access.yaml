@@ -1,0 +1,93 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# TEMPORARY — owner approval via Backstage link until Jira webhook approval is configured.
+# Once Jira automation is set up to fire the execute lambda on an approval transition,
+# this template can be retired in favour of a native Jira approval step.
+kind: Template
+metadata:
+  name: databricks_approve_access
+  title: Approve Databricks User Access Request
+  description: >
+    Approve or decline a pending Databricks workspace access request.
+    This form is sent to workspace owners when a non-owner submits an access request.
+    Your Backstage identity is recorded as the approver for audit purposes.
+  tags:
+    - 'internal'
+    - 'product-databricks-dev'
+spec:
+  owner: fdp/backstage-ops
+  type: Internal
+  parameters:
+    - title: Request Details
+      properties:
+        jira_ticket:
+          title: FCSTS Ticket
+          type: string
+          description: The FCSTS Jira ticket for this access request (auto-populated from link).
+          ui:readonly: true
+
+        jira_url:
+          title: FCSTS Ticket URL
+          type: string
+          ui:readonly: true
+          ui:widget: hidden
+
+        workspace_name:
+          title: Workspace
+          type: string
+          description: The Databricks workspace the user is requesting access to.
+          ui:readonly: true
+
+        user_email:
+          title: Requesting User
+          type: string
+          description: The user requesting access.
+          ui:readonly: true
+
+        role:
+          title: Requested Role
+          type: string
+          description: The role the user is requesting.
+          ui:readonly: true
+
+    - title: Your Decision
+      required:
+        - approved
+      properties:
+        approved:
+          title: Approve this access request
+          type: boolean
+          description: >-
+            Check to approve. Leave unchecked to decline.
+            The requesting user will be notified either way via the FCSTS ticket.
+          default: false
+          ui:widget: checkbox
+
+        approver_email:
+          title: Approver Email
+          type: string
+          ui:field: UserEmailField
+
+  steps:
+    - id: submit_decision
+      name: Submit Decision
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: AddUserToWorkspaceOwnerApproval
+          workflow_id: AddUserToWorkspaceOwnerApproval-${{ parameters.jira_ticket }}-${{ user.entity.spec.profile.email }}
+          task_queue: ${{ fcs.taskQueue }}
+          await_result: true
+          workflow_args:
+            ticket_number: ${{ parameters.jira_ticket }}
+            approved: ${{ parameters.approved }}
+            approver_email: ${{ parameters.approver_email }}
+
+  output:
+    links:
+      - title: 'View FCSTS Ticket'
+        url: '${{ parameters.jira_url }}'
+        icon: docs

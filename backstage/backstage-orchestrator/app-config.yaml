@@ -124,6 +124,23 @@ catalog:
       rules:
         - allow: [Template]
 
+    # Imported Backstage template examples from internal platform repositories.
+    - type: file
+      target: ../../examples/templates/catalog-internal-tools/location.yaml
+      rules:
+        - allow: [Location]
+
+    - type: file
+      target: ../../examples/templates/iac-official/location.yaml
+      rules:
+        - allow: [Location]
+
+    # Imported API catalog example from the tenant portal backend OpenAPI spec.
+    - type: file
+      target: ../../examples/apis/tenant-portal/catalog-info.yaml
+      rules:
+        - allow: [Component, API]
+
     # Local example organizational data
     - type: file
       target: ../../examples/org.yaml

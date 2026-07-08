@@ -1,0 +1,2092 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: virtual_assistant_blueprint
+  title: Virtual Assistant Blueprint
+  description: Provision an AI-powered Virtual Assistant backend with AWS Bedrock, RDS PostgreSQL, DynamoDB, OpenSearch, and Lambda.
+  tags:
+    - 'virtual-assistant'
+    - 'blueprint'
+    - 'product-virtual-desktop'
+    - 'tier-techlead'
+spec:
+  owner: fdp/backstage-ops
+  type: Intake and Provisioning
+  parameters:
+    # Page 1: Required Fields
+    - title: Required Configuration
+      required:
+        - agent_name
+        - deployment_env
+        - github_org
+        - github_repo
+        - module_version
+      properties:
+        agent_name:
+          title: Agent Name
+          type: string
+          description: Name of the virtual assistant agent (lowercase, alphanumeric, hyphens only)
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration
+          default: "iac"
+        module_version:
+          title: Module Version
+          type: string
+          description: Git tag of the virtual-assistant-backend module to deploy
+          default: "v1.1.25"
+
+    # Page 2: S3 Bucket Names and Optional Services
+    - title: S3 Buckets and Optional Services
+      properties:
+        s3_shared_bucket_suffix:
+          title: S3 Shared Bucket Name
+          type: string
+          description: Name for the shared S3 bucket (Lambda layers and Bedrock). Must be globally unique.
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-shared"
+            editable: true
+            checkS3Availability: true
+        s3_data_bucket_suffix:
+          title: S3 Data Bucket Name
+          type: string
+          description: Name for the data S3 bucket (knowledge base documents). Must be globally unique.
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-data"
+            editable: true
+            checkS3Availability: true
+        selected_sections:
+          title: Optional Configuration Sections
+          type: array
+          description: Select which services to configure. Each selected service gets its own wizard page.
+          items:
+            type: string
+          ui:field: SectionSelectorField
+          ui:options:
+            sections:
+              - key: ecr
+                label: ECR Repository
+                description: Container image registry - image names, lifecycle rules, scanning
+              - key: s3_advanced
+                label: S3 Advanced Settings
+                description: Bucket policies, versioning, encryption, and prefix configuration
+              - key: lambda
+                label: Lambda Functions
+                description: Function names, IAM roles, timeouts, handlers, and runtimes
+              - key: rds
+                label: RDS PostgreSQL
+                description: Database instance class, storage, credentials, and IAM auth
+              - key: bedrock_kb
+                label: Bedrock Knowledge Base
+                description: KB name, models, chunking strategies, and data source settings
+              - key: bedrock_guardrails
+                label: Bedrock Guardrails
+                description: Content filtering strengths and blocked messaging
+              - key: opensearch
+                label: OpenSearch Serverless
+                description: Collection type, network and data access policies
+              - key: api_gateway
+                label: API Gateway
+                description: REST API name, WAF, routing, and stage configuration
+              - key: waf_cors
+                label: WAF and CORS
+                description: WAF default action, sampled requests, and CORS headers
+              - key: dynamodb
+                label: DynamoDB
+                description: Table name, streams, TTL, billing mode, and encryption
+              - key: github_deploy
+                label: GitHub Deploy
+                description: GitHub Actions IAM role and policy for automated deployments
+              - key: ssm
+                label: SSM Parameters
+                description: Parameter path prefix and environment variable descriptions
+              - key: file_paths
+                label: Terraform File Paths
+                description: Archive types, temp directories, and Lambda source filenames
+              - key: kms
+                label: KMS Keys
+                description: Key rotation, deletion windows, alias names, and policy SIDs
+
+    # Page 3: ECR Repository
+    - title: ECR Configuration
+      properties:
+        _gate_ecr:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: ecr
+        ecr_repository_name:
+          title: ECR Repository Name
+          type: string
+          description: Name for ECR repository
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            editable: false
+        ecr_backend_tag_name:
+          title: ECR Backend Tag Name
+          type: string
+          description: Tag name for backend ECR repository
+          default: "va-backend-ecr"
+        ecr_lifecycle_rule_priority:
+          title: ECR Lifecycle Rule Priority
+          type: number
+          description: Priority for ECR lifecycle policy rule
+          default: 1
+        ecr_image_count_limit:
+          title: ECR Image Count Limit
+          type: number
+          description: Maximum number of ECR images to retain
+          default: 1000
+        ecr_image_tag_mutability:
+          title: ECR Image Tag Mutability
+          type: string
+          description: ECR image tag mutability setting
+          default: "MUTABLE"
+        ecr_scan_on_push:
+          title: ECR Scan On Push
+          type: boolean
+          description: Enable image scanning on push to ECR
+          default: true
+        ecr_encryption_type:
+          title: ECR Encryption Type
+          type: string
+          description: Encryption type for ECR repository
+          default: "AES256"
+        ecr_force_delete:
+          title: ECR Force Delete
+          type: boolean
+          description: Allow ECR repository deletion even if it contains images
+          default: true
+        ecr_lifecycle_tag_status:
+          title: ECR Lifecycle Tag Status
+          type: string
+          description: Tag status for ECR lifecycle policy
+          default: "any"
+        ecr_lifecycle_count_type:
+          title: ECR Lifecycle Count Type
+          type: string
+          description: Count type for ECR lifecycle policy
+          default: "imageCountMoreThan"
+        ecr_lifecycle_action_type:
+          title: ECR Lifecycle Action Type
+          type: string
+          description: Action type for ECR lifecycle policy
+          default: "expire"
+        ecr_check_interpreter:
+          title: ECR Check Interpreter
+          type: array
+          description: Interpreter for ECR image check command
+          items:
+            type: string
+          default: ["sh", "-c"]
+
+    # Page 4: S3 Advanced Settings
+    - title: S3 Advanced Configuration
+      properties:
+        _gate_s3_advanced:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: s3_advanced
+        s3_force_destroy:
+          title: S3 Force Destroy
+          type: boolean
+          description: Allow destruction of S3 buckets even if they contain objects
+          default: true
+        s3_block_public_acls:
+          title: S3 Block Public ACLs
+          type: boolean
+          description: Block public ACLs on S3 buckets
+          default: true
+        s3_block_public_policy:
+          title: S3 Block Public Policy
+          type: boolean
+          description: Block public bucket policies on S3 buckets
+          default: true
+        s3_ignore_public_acls:
+          title: S3 Ignore Public ACLs
+          type: boolean
+          description: Ignore public ACLs on S3 buckets
+          default: true
+        s3_restrict_public_buckets:
+          title: S3 Restrict Public Buckets
+          type: boolean
+          description: Restrict public bucket policies on S3 buckets
+          default: true
+        s3_versioning_status:
+          title: S3 Versioning Status
+          type: string
+          description: S3 bucket versioning status
+          default: "Enabled"
+        s3_object_ownership:
+          title: S3 Object Ownership
+          type: string
+          description: Object ownership setting for S3 buckets
+          default: "BucketOwnerEnforced"
+        s3_kb_prefix:
+          title: S3 Knowledge Base Prefix
+          type: string
+          description: S3 prefix for knowledge base documents
+          default: "knowledgebase"
+        s3_bedrock_prefix:
+          title: S3 Bedrock Prefix
+          type: string
+          description: S3 prefix for Bedrock transformation data
+          default: "aws/bedrock"
+        s3_init_data_key:
+          title: S3 Init Data Key
+          type: string
+          description: S3 key for init data index mapping file
+          default: "init-data/kb-index-mapping.json"
+        s3_init_data_content_type:
+          title: S3 Init Data Content Type
+          type: string
+          description: Content type for init data files
+          default: "application/json"
+        s3_sse_algorithm:
+          title: S3 SSE Algorithm
+          type: string
+          description: Server-side encryption algorithm for S3 buckets
+          default: "AES256"
+        s3_kms_sse_algorithm:
+          title: S3 KMS SSE Algorithm
+          type: string
+          description: KMS encryption algorithm for S3 buckets
+          default: "aws:kms"
+
+    # Page 5: Lambda Functions
+    - title: Lambda Configuration
+      properties:
+        _gate_lambda:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: lambda
+        lambda_backend_function_name:
+          title: Lambda Backend Function Name
+          type: string
+          description: Name for backend Lambda function
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-backend-lambda"
+            editable: false
+        lambda_db_migrate_function_name:
+          title: Lambda DB Migrate Function Name
+          type: string
+          description: Name for database migration Lambda function
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-db-migrate-lambda"
+            editable: false
+        lambda_dynamo_streams_function_name:
+          title: Lambda DynamoDB Streams Function Name
+          type: string
+          description: Name for DynamoDB streams Lambda function
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-dynamo-streams-lambda"
+            editable: false
+        lambda_init_data_function_name:
+          title: Lambda Init Data Function Name
+          type: string
+          description: Name for init data Lambda function
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-init-data-lambda"
+            editable: false
+        lambda_metadata_function_name:
+          title: Lambda Metadata Function Name
+          type: string
+          description: Name for metadata Lambda function
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-metadata-lambda"
+            editable: false
+        lambda_init_layer_name:
+          title: Lambda Init Layer Name
+          type: string
+          description: Name for init data Lambda layer
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-init-data-layer"
+            editable: false
+        iam_backend_role_name:
+          title: IAM Backend Role Name
+          type: string
+          description: Name for backend Lambda IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-backend-role-bedrock"
+            editable: false
+        iam_db_migrate_role_name:
+          title: IAM DB Migrate Role Name
+          type: string
+          description: Name for database migration Lambda IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-db-migrate-role-bedrock"
+            editable: false
+        iam_dynamo_streams_role_name:
+          title: IAM DynamoDB Streams Role Name
+          type: string
+          description: Name for DynamoDB streams Lambda IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-dynamo-streams-role-bedrock"
+            editable: false
+        iam_init_data_role_name:
+          title: IAM Init Data Role Name
+          type: string
+          description: Name for init data Lambda IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-init-data-lambda-role-iam"
+            editable: false
+        iam_metadata_role_name:
+          title: IAM Metadata Role Name
+          type: string
+          description: Name for metadata Lambda IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-metadata-lambda-role-iam"
+            editable: false
+        lambda_timeout_seconds:
+          title: Lambda Timeout Seconds
+          type: number
+          description: Lambda function timeout in seconds
+          default: 900
+        lambda_log_retention_days:
+          title: Lambda Log Retention Days
+          type: number
+          description: CloudWatch log retention for Lambda functions in days
+          default: 5
+        lambda_log_format:
+          title: Lambda Log Format
+          type: string
+          description: Lambda log format (Text or JSON)
+          default: "Text"
+        lambda_runtime:
+          title: Lambda Runtime
+          type: string
+          description: Python runtime version for Lambda functions
+          default: "python3.12"
+        lambda_timezone:
+          title: Lambda Timezone
+          type: string
+          description: Timezone for Lambda functions
+          default: "America/New_York"
+        lambda_basic_execution_policy_arn:
+          title: Lambda Basic Execution Policy ARN
+          type: string
+          description: ARN for AWS Lambda basic execution policy
+          default: "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        lambda_vpc_execution_policy_arn:
+          title: Lambda VPC Execution Policy ARN
+          type: string
+          description: ARN for AWS Lambda VPC access execution policy
+          default: "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+        lambda_dynamodb_execution_policy_arn:
+          title: Lambda DynamoDB Execution Policy ARN
+          type: string
+          description: ARN for AWS Lambda DynamoDB execution policy
+          default: "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
+        lambda_backend_policy_name:
+          title: Lambda Backend Policy Name
+          type: string
+          description: Name for backend Lambda IAM policy
+          default: "backend_policy"
+        lambda_backend_sid_ssm:
+          title: Lambda Backend SID SSM
+          type: string
+          description: Statement ID for backend Lambda SSM access
+          default: "ReadAccessToSsm"
+        lambda_backend_sid_secrets:
+          title: Lambda Backend SID Secrets
+          type: string
+          description: Statement ID for backend Lambda Secrets Manager access
+          default: "ReadAccessToSecrets"
+        lambda_backend_sid_s3:
+          title: Lambda Backend SID S3
+          type: string
+          description: Statement ID for backend Lambda S3 access
+          default: "AccessToDataBucket"
+        lambda_backend_sid_dynamodb:
+          title: Lambda Backend SID DynamoDB
+          type: string
+          description: Statement ID for backend Lambda DynamoDB access
+          default: "AccessToDynamoDb"
+        lambda_backend_sid_guardrails:
+          title: Lambda Backend SID Guardrails
+          type: string
+          description: Statement ID for backend Lambda guardrails access
+          default: "AccessToGuardrails"
+        lambda_backend_sid_kb:
+          title: Lambda Backend SID Knowledge Base
+          type: string
+          description: Statement ID for backend Lambda knowledge base access
+          default: "AccessToKnowledgebase"
+        lambda_backend_sid_kms:
+          title: Lambda Backend SID KMS
+          type: string
+          description: Statement ID for backend Lambda KMS access
+          default: "AccessToKms"
+        lambda_backend_handler_command:
+          title: Lambda Backend Handler Command
+          type: array
+          description: Handler command for backend Lambda container
+          items:
+            type: string
+          default: ["backend_lambda.handle_event"]
+        lambda_backend_cors_origins:
+          title: Lambda Backend CORS Origins
+          type: string
+          description: CORS allowed origins for backend Lambda
+          default: "*"
+        lambda_streams_policy_name:
+          title: Lambda Streams Policy Name
+          type: string
+          description: Name for DynamoDB streams Lambda IAM policy
+          default: "dynamo_streams_policy"
+        lambda_streams_handler_command:
+          title: Lambda Streams Handler Command
+          type: array
+          description: Handler command for streams Lambda container
+          items:
+            type: string
+          default: ["sqs_chat_lambda.handle_event"]
+        lambda_streams_starting_position:
+          title: Lambda Streams Starting Position
+          type: string
+          description: Starting position for DynamoDB stream event source
+          default: "LATEST"
+        lambda_streams_batch_size:
+          title: Lambda Streams Batch Size
+          type: number
+          description: Batch size for DynamoDB stream processing
+          default: 5
+        lambda_streams_batching_window_seconds:
+          title: Lambda Streams Batching Window Seconds
+          type: number
+          description: Maximum batching window in seconds for DynamoDB streams
+          default: 5
+        lambda_streams_max_retry_attempts:
+          title: Lambda Streams Max Retry Attempts
+          type: number
+          description: Maximum retry attempts for DynamoDB stream processing
+          default: 3
+        lambda_streams_enabled:
+          title: Lambda Streams Enabled
+          type: boolean
+          description: Enable DynamoDB stream event source mapping
+          default: true
+        lambda_streams_function_response_types:
+          title: Lambda Streams Function Response Types
+          type: array
+          description: Function response types for DynamoDB stream processing
+          items:
+            type: string
+          default: ["ReportBatchItemFailures"]
+        lambda_migrate_policy_name:
+          title: Lambda Migrate Policy Name
+          type: string
+          description: Name for DB migration Lambda IAM policy
+          default: "db_migrate_policy"
+        lambda_migrate_handler_command:
+          title: Lambda Migrate Handler Command
+          type: array
+          description: Handler command for DB migration Lambda container
+          items:
+            type: string
+          default: ["db_migrate_lambda.handle_event"]
+        lambda_metadata_policy_name:
+          title: Lambda Metadata Policy Name
+          type: string
+          description: Name for metadata Lambda IAM policy
+          default: "metadata_lambda_policy"
+        lambda_metadata_filename:
+          title: Lambda Metadata Filename
+          type: string
+          description: Python filename for metadata Lambda function
+          default: "metadata_lambda.py"
+        lambda_metadata_handler:
+          title: Lambda Metadata Handler
+          type: string
+          description: Handler for metadata Lambda function
+          default: "metadata_lambda.handle_event"
+        lambda_package_type_image:
+          title: Lambda Package Type Image
+          type: string
+          description: Package type for Lambda functions using Docker images
+          default: "Image"
+        lambda_package_type_zip:
+          title: Lambda Package Type Zip
+          type: string
+          description: Package type for Lambda functions using ZIP files
+          default: "Zip"
+        lambda_replace_security_groups_on_destroy:
+          title: Lambda Replace Security Groups On Destroy
+          type: boolean
+          description: Replace security groups on Lambda destruction
+          default: true
+        lambda_init_policy_name:
+          title: Lambda Init Policy Name
+          type: string
+          description: Name for init data Lambda IAM policy
+          default: "init_data_lambda_policy"
+        lambda_init_handler:
+          title: Lambda Init Handler
+          type: string
+          description: Handler for init data Lambda function
+          default: "init_data_lambda.handle_event"
+        lambda_init_file_permission:
+          title: Lambda Init File Permission
+          type: string
+          description: File permission for init Lambda layer script
+          default: "0755"
+        lambda_layer_compatible_runtimes:
+          title: Lambda Layer Compatible Runtimes
+          type: array
+          description: Compatible runtimes for Lambda layer
+          items:
+            type: string
+          default: ["python3.12"]
+        lambda_layer_interpreter:
+          title: Lambda Layer Interpreter
+          type: array
+          description: Interpreter for null resource commands
+          items:
+            type: string
+          default: ["sh", "-c"]
+
+    # Page 6: RDS PostgreSQL Database
+    - title: RDS Configuration
+      properties:
+        _gate_rds:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: rds
+        rds_database_name:
+          title: Database Name
+          type: string
+          description: Name for the PostgreSQL database
+          default: "virtual_assistant_db"
+        rds_subnet_group_name:
+          title: RDS Subnet Group Name
+          type: string
+          description: Name for RDS subnet group
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-rds-subnet-group"
+            editable: false
+        rds_instance_identifier:
+          title: RDS Instance Identifier
+          type: string
+          description: Identifier for RDS PostgreSQL instance
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-rds-pg-instance"
+            editable: false
+        rds_import_role_name:
+          title: RDS Import Role Name
+          type: string
+          description: Name for RDS S3 import IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-import-rds-iam-role"
+            editable: false
+        rds_export_role_name:
+          title: RDS Export Role Name
+          type: string
+          description: Name for RDS S3 export IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-export-rds-iam-role"
+            editable: false
+        rds_allocated_storage:
+          title: RDS Allocated Storage
+          type: number
+          description: Allocated storage for RDS instance in GB
+          default: 30
+        rds_engine:
+          title: RDS Engine
+          type: string
+          description: Database engine type
+          default: "postgres"
+        rds_engine_version:
+          title: RDS Engine Version
+          type: string
+          description: Database engine version
+          default: "18.3"
+        rds_instance_class:
+          title: RDS Instance Class
+          type: string
+          description: RDS instance class
+          default: "db.t3.small"
+        rds_username:
+          title: RDS Username
+          type: string
+          description: Master username for RDS instance
+          default: "postgres"
+        rds_manage_master_user_password:
+          title: RDS Manage Master User Password
+          type: boolean
+          description: Let AWS manage the master user password
+          default: true
+        rds_storage_encrypted:
+          title: RDS Storage Encrypted
+          type: boolean
+          description: Enable storage encryption for RDS
+          default: true
+        rds_skip_final_snapshot:
+          title: RDS Skip Final Snapshot
+          type: boolean
+          description: Skip final snapshot when destroying RDS instance
+          default: true
+        rds_final_snapshot_identifier:
+          title: RDS Final Snapshot Identifier
+          type: string
+          description: Name of final snapshot if skip_final_snapshot is false
+          default: "final-snapshot"
+        rds_iam_database_authentication_enabled:
+          title: RDS IAM Database Authentication
+          type: boolean
+          description: Enable IAM database authentication
+          default: true
+        rds_apply_immediately:
+          title: RDS Apply Immediately
+          type: boolean
+          description: Apply changes immediately instead of during maintenance window
+          default: false
+        rds_subnet_group_description:
+          title: RDS Subnet Group Description
+          type: string
+          description: Description for RDS subnet group
+          default: "RDS subnet group"
+        rds_import_policy_name:
+          title: RDS Import Policy Name
+          type: string
+          description: Name for RDS S3 import IAM policy
+          default: "import_policy"
+        rds_export_policy_name:
+          title: RDS Export Policy Name
+          type: string
+          description: Name for RDS S3 export IAM policy
+          default: "export_policy"
+        rds_s3_import_feature_name:
+          title: RDS S3 Import Feature Name
+          type: string
+          description: Feature name for RDS S3 import
+          default: "s3Import"
+        rds_s3_export_feature_name:
+          title: RDS S3 Export Feature Name
+          type: string
+          description: Feature name for RDS S3 export
+          default: "s3Export"
+        rds_password_length:
+          title: RDS Password Length
+          type: number
+          description: Length of generated RDS password
+          default: 24
+        rds_password_special:
+          title: RDS Password Special Characters
+          type: boolean
+          description: Include special characters in RDS password
+          default: true
+        rds_password_min_upper:
+          title: RDS Password Min Uppercase
+          type: number
+          description: Minimum uppercase characters in RDS password
+          default: 2
+        rds_password_min_numeric:
+          title: RDS Password Min Numeric
+          type: number
+          description: Minimum numeric characters in RDS password
+          default: 2
+        rds_password_min_lower:
+          title: RDS Password Min Lowercase
+          type: number
+          description: Minimum lowercase characters in RDS password
+          default: 2
+        rds_password_min_special:
+          title: RDS Password Min Special
+          type: number
+          description: Minimum special characters in RDS password
+          default: 2
+        rds_password_override_special:
+          title: RDS Password Override Special
+          type: string
+          description: Override special characters allowed in RDS password
+          default: "#%-_{}[]<>:"
+
+    # Page 7: Bedrock Knowledge Base
+    - title: Bedrock Knowledge Base Configuration
+      properties:
+        _gate_bedrock_kb:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: bedrock_kb
+        bedrock_kb_name:
+          title: Bedrock Knowledge Base Name
+          type: string
+          description: Name for Bedrock Knowledge Base
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-kb"
+            editable: false
+        bedrock_kb_help_docs_datasource_name:
+          title: Bedrock KB Help Docs DataSource Name
+          type: string
+          description: Name for Bedrock KB help docs data source
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-s3-help-docs"
+            editable: false
+        bedrock_kb_workbooks_datasource_name:
+          title: Bedrock KB Workbooks DataSource Name
+          type: string
+          description: Name for Bedrock KB workbooks data source
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-s3-workbooks"
+            editable: false
+        bedrock_nova_lite_profile_name:
+          title: Bedrock Nova Lite Profile Name
+          type: string
+          description: Name for Bedrock Nova Lite inference profile
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-nova-lite-profile"
+            editable: false
+        bedrock_nova_pro_profile_name:
+          title: Bedrock Nova Pro Profile Name
+          type: string
+          description: Name for Bedrock Nova Pro inference profile
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-nova-pro-profile"
+            editable: false
+        bedrock_kb_help_docs_path_segment:
+          title: KB Help Docs Path Segment
+          type: string
+          description: S3 prefix path segment for help docs data source
+          default: "help-docs"
+        bedrock_kb_workbooks_path_segment:
+          title: KB Workbooks Path Segment
+          type: string
+          description: S3 prefix path segment for workbooks data source
+          default: "workbooks"
+        bedrock_kb_execution_role_name:
+          title: Bedrock KB Execution Role Name
+          type: string
+          description: Name of the Bedrock Knowledge Base execution role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            prefix: "BKBRole_"
+            editable: false
+        bedrock_query_model:
+          title: Bedrock Query Model
+          type: string
+          description: Model to use for chat query responses (nova-lite, nova-pro)
+          default: "nova-lite"
+        bedrock_kbase_model:
+          title: Bedrock Knowledge Base Model
+          type: string
+          description: Model to use for knowledge base queries (nova-lite, nova-pro)
+          default: "nova-lite"
+        bedrock_grading_model:
+          title: Bedrock Grading Model
+          type: string
+          description: Model to use for response grading (nova-lite, nova-pro)
+          default: "nova-lite"
+        bedrock_invoke_policy_name:
+          title: Bedrock Invoke Policy Name
+          type: string
+          description: Name for Bedrock model invocation policy
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-bedrock-invoke-policy"
+            editable: false
+        bedrock_kb_vector_field:
+          title: Knowledge Base Vector Field
+          type: string
+          description: OpenSearch vector field name for knowledge base
+          default: "content_vector"
+        bedrock_kb_text_field:
+          title: Knowledge Base Text Field
+          type: string
+          description: OpenSearch text field name for knowledge base
+          default: "content"
+        bedrock_kb_metadata_field:
+          title: Knowledge Base Metadata Field
+          type: string
+          description: OpenSearch metadata field name for knowledge base
+          default: "content_metadata"
+        bedrock_kb_help_docs_chunking_strategy:
+          title: KB Help Docs Chunking Strategy
+          type: string
+          description: Chunking strategy for help documents data source
+          default: "FIXED_SIZE"
+        bedrock_kb_help_docs_max_tokens:
+          title: KB Help Docs Max Tokens
+          type: integer
+          description: Maximum tokens per chunk for help documents
+          default: 256
+        bedrock_kb_help_docs_overlap_percentage:
+          title: KB Help Docs Overlap Percentage
+          type: integer
+          description: Overlap percentage between chunks for help documents
+          default: 20
+        bedrock_kb_workbooks_chunking_strategy:
+          title: KB Workbooks Chunking Strategy
+          type: string
+          description: Chunking strategy for workbooks data source
+          default: "NONE"
+        bedrock_kb_policy_name:
+          title: Bedrock KB Policy Name
+          type: string
+          description: Name for Bedrock Knowledge Base IAM policy
+          default: "knowledgebase"
+        bedrock_kb_storage_type:
+          title: Bedrock KB Storage Type
+          type: string
+          description: Storage type for Bedrock Knowledge Base
+          default: "VECTOR"
+        bedrock_kb_storage_engine:
+          title: Bedrock KB Storage Engine
+          type: string
+          description: Storage engine for Bedrock Knowledge Base
+          default: "OPENSEARCH_SERVERLESS"
+        bedrock_kb_data_source_type:
+          title: Bedrock KB Data Source Type
+          type: string
+          description: Data source type for Bedrock Knowledge Base
+          default: "S3"
+        bedrock_kb_create_duration:
+          title: Bedrock KB Create Duration
+          type: string
+          description: Time to wait for Bedrock Knowledge Base creation
+          default: "360s"
+        bedrock_kb_data_deletion_policy:
+          title: Bedrock KB Data Deletion Policy
+          type: string
+          description: Data deletion policy for Bedrock Knowledge Base data sources
+          default: "RETAIN"
+        bedrock_kb_transformation_step:
+          title: Bedrock KB Transformation Step
+          type: string
+          description: Step to apply transformation for Bedrock Knowledge Base
+          default: "POST_CHUNKING"
+        bedrock_kb_help_docs_description:
+          title: Bedrock KB Help Docs Description
+          type: string
+          description: Description for Bedrock KB help docs data source
+          default: "Help documentation data source"
+        bedrock_kb_workbooks_description:
+          title: Bedrock KB Workbooks Description
+          type: string
+          description: Description for Bedrock KB workbooks data source
+          default: "Workbooks data source"
+
+    # Page 7: Bedrock Guardrails
+    - title: Bedrock Guardrail Configuration
+      properties:
+        _gate_bedrock_guardrails:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: bedrock_guardrails
+        bedrock_guardrail_description:
+          title: Bedrock Guardrail Description
+          type: string
+          description: Description for Bedrock input guardrail
+          default: "Input Guardrail for Virtual Assistant"
+        bedrock_input_guardrail_name:
+          title: Bedrock Input Guardrail Name
+          type: string
+          description: Name for Bedrock input guardrail
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-input-guardrail"
+            editable: false
+        bedrock_guardrail_input_message:
+          title: Bedrock Guardrail Input Message
+          type: string
+          description: Blocked input message for guardrail
+          default: "BLOCKED_BY_GUARDRAILS input"
+        bedrock_guardrail_output_message:
+          title: Bedrock Guardrail Output Message
+          type: string
+          description: Blocked output message for guardrail
+          default: "BLOCKED_BY_GUARDRAILS output"
+        bedrock_guardrail_hate_filter_strength:
+          title: Bedrock Guardrail Hate Filter Strength
+          type: string
+          description: Filter strength for hate content
+          default: "HIGH"
+        bedrock_guardrail_insults_filter_strength:
+          title: Bedrock Guardrail Insults Filter Strength
+          type: string
+          description: Filter strength for insults
+          default: "HIGH"
+        bedrock_guardrail_sexual_filter_strength:
+          title: Bedrock Guardrail Sexual Filter Strength
+          type: string
+          description: Filter strength for sexual content
+          default: "HIGH"
+        bedrock_guardrail_violence_filter_strength:
+          title: Bedrock Guardrail Violence Filter Strength
+          type: string
+          description: Filter strength for violence
+          default: "HIGH"
+        bedrock_guardrail_misconduct_filter_strength:
+          title: Bedrock Guardrail Misconduct Filter Strength
+          type: string
+          description: Filter strength for misconduct
+          default: "LOW"
+        bedrock_guardrail_prompt_attack_filter_strength:
+          title: Bedrock Guardrail Prompt Attack Filter Strength
+          type: string
+          description: Filter strength for prompt attacks
+          default: "NONE"
+        bedrock_guardrail_word_list_type:
+          title: Bedrock Guardrail Word List Type
+          type: string
+          description: Type of word policy filter
+          default: "PROFANITY"
+        bedrock_guardrail_version_description:
+          title: Bedrock Guardrail Version Description
+          type: string
+          description: Description for Bedrock guardrail version
+          default: "update output verbiage"
+        bedrock_guardrail_skip_destroy:
+          title: Bedrock Guardrail Skip Destroy
+          type: boolean
+          description: Skip destruction of Bedrock guardrail version
+          default: true
+
+    # Page 8: OpenSearch
+    - title: OpenSearch Configuration
+      properties:
+        _gate_opensearch:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: opensearch
+        opensearch_encryption_policy_name:
+          title: OpenSearch Encryption Policy Name
+          type: string
+          description: Name for OpenSearch encryption policy
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-encr"
+            editable: false
+        opensearch_network_policy_name:
+          title: OpenSearch Network Policy Name
+          type: string
+          description: Name for OpenSearch network policy
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-net"
+            editable: false
+        opensearch_data_policy_name:
+          title: OpenSearch Data Policy Name
+          type: string
+          description: Name for OpenSearch data access policy
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-data"
+            editable: false
+        opensearch_standby_replicas:
+          title: OpenSearch Standby Replicas
+          type: string
+          description: OpenSearch Serverless standby replicas configuration
+          default: "DISABLED"
+        opensearch_collection_type:
+          title: OpenSearch Collection Type
+          type: string
+          description: OpenSearch Serverless collection type
+          default: "VECTORSEARCH"
+        opensearch_network_policy_description:
+          title: OpenSearch Network Policy Description
+          type: string
+          description: Description for OpenSearch network policy
+          default: "Public Access"
+        opensearch_data_policy_description:
+          title: OpenSearch Data Policy Description
+          type: string
+          description: Description for OpenSearch data access policy
+          default: "Custom permissions for bedrock and terraform"
+        opensearch_encryption_policy_type:
+          title: OpenSearch Encryption Policy Type
+          type: string
+          description: Type for OpenSearch encryption security policy
+          default: "encryption"
+        opensearch_network_policy_type:
+          title: OpenSearch Network Policy Type
+          type: string
+          description: Type for OpenSearch network security policy
+          default: "network"
+        opensearch_data_policy_type:
+          title: OpenSearch Data Policy Type
+          type: string
+          description: Type for OpenSearch data access policy
+          default: "data"
+
+    # Page 9: API Gateway
+    - title: API Gateway Configuration
+      properties:
+        _gate_api_gateway:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: api_gateway
+        apigateway_name:
+          title: API Gateway Name
+          type: string
+          description: Name for API Gateway REST API
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-api-gw"
+            editable: false
+        apigateway_waf_ipset_name:
+          title: WAF IP Set Name
+          type: string
+          description: Name for WAF IP set
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-waf-ipset"
+            editable: false
+        apigateway_waf_metric_name:
+          title: WAF Metric Name
+          type: string
+          description: Metric name for WAF web ACL
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-waf"
+            editable: false
+        apigateway_waf_ipset_metric_name:
+          title: WAF IP Set Metric Name
+          type: string
+          description: Metric name for WAF IP set rule
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-waf-ipset"
+            editable: false
+        iam_api_gateway_role_name:
+          title: IAM API Gateway Role Name
+          type: string
+          description: Name for API Gateway IAM role
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-api-gw-iam-role"
+            editable: false
+        apigateway_timeout_milliseconds:
+          title: API Gateway Timeout Milliseconds
+          type: number
+          description: API Gateway integration timeout in milliseconds
+          default: 29000
+        apigateway_waf_ip_match_rule_priority:
+          title: WAF IP Match Rule Priority
+          type: number
+          description: Priority for WAF IP match rule
+          default: 1
+        apigateway_title:
+          title: API Title
+          type: string
+          description: API Gateway title shown in OpenAPI spec
+          default: "virtualassistant"
+        apigateway_version:
+          title: API Version
+          type: string
+          description: API Gateway version shown in OpenAPI spec
+          default: "1.0"
+        apigateway_endpoint_types:
+          title: API Endpoint Types
+          type: array
+          description: API Gateway endpoint types
+          items:
+            type: string
+          default: ["REGIONAL"]
+        apigateway_stage_name:
+          title: API Stage Name
+          type: string
+          description: API Gateway deployment stage name
+          default: "dev"
+        apigateway_inline_policy_name:
+          title: API Gateway Inline Policy Name
+          type: string
+          description: Name for API Gateway inline IAM policy
+          default: "inline-policy"
+        apigateway_api_key_source:
+          title: API Gateway API Key Source
+          type: string
+          description: API Gateway API key source (HEADER or AUTHORIZER)
+          default: "AUTHORIZER"
+        apigateway_binary_media_types:
+          title: API Gateway Binary Media Types
+          type: array
+          description: Binary media types for API Gateway
+          items:
+            type: string
+          default: ["image/*"]
+        apigateway_waf_rule_name:
+          title: API Gateway WAF Rule Name
+          type: string
+          description: Name for WAF IP match rule
+          default: "IPMatchRule"
+        apigateway_waf_scope:
+          title: API Gateway WAF Scope
+          type: string
+          description: Scope for WAF resources (REGIONAL or CLOUDFRONT)
+          default: "REGIONAL"
+        apigateway_parameter_name_bagel:
+          title: API Gateway Parameter Name Bagel
+          type: string
+          description: Path parameter name for bagel catch-all route
+          default: "bagel"
+        apigateway_openapi_version:
+          title: API Gateway OpenAPI Version
+          type: string
+          description: OpenAPI specification version
+          default: "3.0.1"
+        apigateway_ip_address_version:
+          title: API Gateway IP Address Version
+          type: string
+          description: IP address version for WAF IP set (IPV4 or IPV6)
+          default: "IPV4"
+        apigateway_integration_http_method:
+          title: API Gateway Integration HTTP Method
+          type: string
+          description: HTTP method for API Gateway Lambda integration
+          default: "POST"
+        apigateway_integration_status_code:
+          title: API Gateway Integration Status Code
+          type: string
+          description: Status code for API Gateway responses
+          default: "200"
+        apigateway_integration_passthrough_when_no_templates:
+          title: API Gateway Integration Passthrough When No Templates
+          type: string
+          description: Passthrough behavior when no templates match
+          default: "when_no_templates"
+        apigateway_integration_passthrough_never:
+          title: API Gateway Integration Passthrough Never
+          type: string
+          description: Passthrough behavior set to never
+          default: "never"
+        apigateway_integration_timeout_millis:
+          title: API Gateway Integration Timeout Millis
+          type: number
+          description: Timeout in milliseconds for API Gateway integration
+          default: 29000
+        apigateway_integration_type_aws_proxy:
+          title: API Gateway Integration Type AWS Proxy
+          type: string
+          description: Integration type for AWS Lambda proxy
+          default: "aws_proxy"
+        apigateway_integration_type_mock:
+          title: API Gateway Integration Type Mock
+          type: string
+          description: Integration type for mock responses
+          default: "mock"
+        apigateway_parameter_in_path:
+          title: API Gateway Parameter In Path
+          type: string
+          description: Parameter location for path parameters
+          default: "path"
+        apigateway_parameter_required:
+          title: API Gateway Parameter Required
+          type: boolean
+          description: Whether API Gateway parameters are required
+          default: true
+        apigateway_schema_type_object:
+          title: API Gateway Schema Type Object
+          type: string
+          description: Schema type for object parameters
+          default: "object"
+        apigateway_cloudwatch_metrics_enabled:
+          title: API Gateway CloudWatch Metrics Enabled
+          type: boolean
+          description: Whether CloudWatch metrics are enabled for WAF
+          default: false
+        apigateway_request_template_content_type:
+          title: API Gateway Request Template Content Type
+          type: string
+          description: Content type for API Gateway request templates
+          default: "application/json"
+        apigateway_request_template_status_code_body:
+          title: API Gateway Request Template Status Code Body
+          type: string
+          description: Body content for status code request template
+          default: "{\"statusCode\": 200}"
+        apigateway_schema_title_empty:
+          title: API Gateway Schema Title Empty
+          type: string
+          description: Title for empty schema in API Gateway
+          default: "Empty Schema"
+        apigateway_response_status_code_200:
+          title: API Gateway Response Status Code 200
+          type: string
+          description: HTTP 200 status code for API Gateway responses
+          default: "200"
+        apigateway_schema_type_string:
+          title: API Gateway Schema Type String
+          type: string
+          description: Schema type for string in API Gateway
+          default: "string"
+        apigateway_response_description:
+          title: API Gateway Response Description
+          type: string
+          description: Description for API Gateway responses
+          default: "200 response"
+
+    # Page 10: WAF & CORS
+    - title: WAF and CORS Configuration
+      properties:
+        _gate_waf_cors:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: waf_cors
+        # WAF Configuration
+        apigateway_waf_sampled_requests_enabled:
+          title: WAF Sampled Requests Enabled
+          type: boolean
+          description: Whether to enable sampled requests for WAF
+          default: false
+        apigateway_waf_rule_cloudwatch_metrics_enabled:
+          title: WAF Rule CloudWatch Metrics Enabled
+          type: boolean
+          description: Whether to enable CloudWatch metrics for WAF rule
+          default: false
+        apigateway_waf_default_action_type:
+          title: WAF Default Action Type
+          type: string
+          description: Default action type for WAF (allow or block)
+          default: "block"
+
+        # CORS Configuration
+        apigateway_cors_allow_methods:
+          title: CORS Allow Methods
+          type: string
+          description: CORS allowed methods header value
+          default: "'GET,POST,PUT,DELETE,OPTIONS'"
+        apigateway_cors_allow_headers:
+          title: CORS Allow Headers
+          type: string
+          description: CORS allowed headers header value
+          default: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+        apigateway_cors_allow_origin:
+          title: CORS Allow Origin
+          type: string
+          description: CORS allowed origin header value
+          default: "'*'"
+        apigateway_cors_allow_credentials:
+          title: CORS Allow Credentials
+          type: string
+          description: CORS allowed credentials header value
+          default: "'true'"
+
+    # Page 11: DynamoDB
+    - title: DynamoDB Configuration
+      properties:
+        _gate_dynamodb:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: dynamodb
+        dynamodb_dlq_name:
+          title: DynamoDB DLQ Name
+          type: string
+          description: Name for DynamoDB streams dead letter queue
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-streams-dlq"
+            editable: false
+        dynamodb_table_name:
+          title: DynamoDB Table Name
+          type: string
+          description: Name for DynamoDB conversation history table
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-conversation-history"
+            editable: false
+        dynamodb_billing_mode:
+          title: DynamoDB Billing Mode
+          type: string
+          description: DynamoDB billing mode (PROVISIONED or PAY_PER_REQUEST)
+          default: "PROVISIONED"
+        dynamodb_read_capacity:
+          title: DynamoDB Read Capacity
+          type: number
+          description: Read capacity units for DynamoDB table
+          default: 1
+        dynamodb_write_capacity:
+          title: DynamoDB Write Capacity
+          type: number
+          description: Write capacity units for DynamoDB table
+          default: 2
+        dynamodb_stream_enabled:
+          title: DynamoDB Stream Enabled
+          type: boolean
+          description: Enable DynamoDB streams
+          default: true
+        dynamodb_stream_view_type:
+          title: DynamoDB Stream View Type
+          type: string
+          description: DynamoDB stream view type
+          default: "NEW_IMAGE"
+        dynamodb_hash_key:
+          title: DynamoDB Hash Key
+          type: string
+          description: DynamoDB table hash key
+          default: "session_id"
+        dynamodb_range_key:
+          title: DynamoDB Range Key
+          type: string
+          description: DynamoDB table range key
+          default: "creation_ts"
+        dynamodb_encryption_enabled:
+          title: DynamoDB Encryption Enabled
+          type: boolean
+          description: Enable server-side encryption for DynamoDB
+          default: true
+        dynamodb_ttl_enabled:
+          title: DynamoDB TTL Enabled
+          type: boolean
+          description: Enable TTL for DynamoDB table
+          default: true
+        dynamodb_ttl_attribute_name:
+          title: DynamoDB TTL Attribute Name
+          type: string
+          description: Attribute name for DynamoDB TTL
+          default: "ttl"
+        dynamodb_lsi_name:
+          title: DynamoDB LSI Name
+          type: string
+          description: Name for DynamoDB local secondary index
+          default: "request_index"
+        dynamodb_lsi_projection_type:
+          title: DynamoDB LSI Projection Type
+          type: string
+          description: Projection type for DynamoDB LSI
+          default: "ALL"
+        dynamodb_lsi_range_key:
+          title: DynamoDB LSI Range Key
+          type: string
+          description: Range key for DynamoDB LSI
+          default: "request_id"
+        dynamodb_request_id_attribute:
+          title: DynamoDB Request ID Attribute
+          type: string
+          description: Attribute name for request ID in DynamoDB
+          default: "request_id"
+        dynamodb_attribute_type_string:
+          title: DynamoDB Attribute Type String
+          type: string
+          description: DynamoDB attribute type for string attributes
+          default: "S"
+
+    # Page 12: GitHub Deploy
+    - title: GitHub Deploy Configuration
+      properties:
+        _gate_github_deploy:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: github_deploy
+        github_deploy_role_arn:
+          title: GitHub Deploy Role ARN
+          type: string
+          description: ARN of GitHub Actions deployment role (optional - leave empty if not needed)
+          default: ""
+        github_deploy_policy_name:
+          title: GitHub Deploy Policy Name
+          type: string
+          description: Name for GitHub Actions deployment policy
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            suffix: "-github-action-be-policy"
+            editable: false
+        github_deploy_sid_lambda:
+          title: GitHub Deploy SID Lambda
+          type: string
+          description: Statement ID for Lambda update permissions
+          default: "AllLambdaUpdate"
+        github_deploy_sid_invocation:
+          title: GitHub Deploy SID Invocation
+          type: string
+          description: Statement ID for Lambda invocation permissions
+          default: "AllowLambdaInvocation"
+        github_deploy_sid_s3_kms:
+          title: GitHub Deploy SID S3 KMS
+          type: string
+          description: Statement ID for S3 and KMS access permissions
+          default: "AllowS3AndKMSAccess"
+        github_deploy_sid_kb:
+          title: GitHub Deploy SID KB
+          type: string
+          description: Statement ID for knowledge base access permissions
+          default: "AccessToKnowledgeBase"
+
+    # Page 13: SSM Parameters
+    - title: SSM Configuration
+      properties:
+        _gate_ssm:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: ssm
+        ssm_prefix:
+          title: SSM Prefix
+          type: string
+          description: Prefix for SSM parameter paths
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            editable: false
+        ssm_data_bucket_description:
+          title: SSM Data Bucket Description
+          type: string
+          description: Description for SSM parameter ENV_DATA_BUCKET
+          default: "DEV_DATA_BUCKET"
+        ssm_opensearch_endpoint_description:
+          title: SSM OpenSearch Endpoint Description
+          type: string
+          description: Description for SSM parameter ENV_OPENSEARCH_ENDPOINT
+          default: "DEV_OPENSEARCH_ENDPOINT"
+        ssm_opensearch_collection_name_description:
+          title: SSM OpenSearch Collection Name Description
+          type: string
+          description: Description for SSM parameter ENV_OPENSEARCH_COLLECTION_NAME
+          default: "DEV_OPENSEARCH_COLLECTION_NAME"
+        ssm_opensearch_index_mapping_key_description:
+          title: SSM OpenSearch Index Mapping Key Description
+          type: string
+          description: Description for SSM parameter ENV_OPENSEARCH_INDEX_MAPPING_KEY
+          default: "DEV_OPENSEARCH_INDEX_MAPPING_KEY"
+        ssm_query_model_arn_description:
+          title: SSM Query Model ARN Description
+          type: string
+          description: Description for SSM parameter ENV_QUERY_MODEL_ARN
+          default: "DEV_QUERY_MODEL_ARN"
+        ssm_kbase_model_arn_description:
+          title: SSM KBase Model ARN Description
+          type: string
+          description: Description for SSM parameter ENV_KBASE_MODEL_ARN
+          default: "DEV_KBASE_MODEL_ARN"
+        ssm_grade_model_arn_description:
+          title: SSM Grade Model ARN Description
+          type: string
+          description: Description for SSM parameter ENV_GRADE_MODEL_ARN
+          default: "DEV_GRADE_MODEL_ARN"
+        ssm_input_guardrail_arn_description:
+          title: SSM Input Guardrail ARN Description
+          type: string
+          description: Description for SSM parameter ENV_INPUT_GUARDRAIL_ARN
+          default: "DEV_INPUT_GUARDRAIL_ARN"
+        ssm_input_guardrail_version_description:
+          title: SSM Input Guardrail Version Description
+          type: string
+          description: Description for SSM parameter ENV_INPUT_GUARDRAIL_VERSION
+          default: "DEV_INPUT_GUARDRAIL_VERSION"
+        ssm_conversation_tablename_description:
+          title: SSM Conversation Tablename Description
+          type: string
+          description: Description for SSM parameter ENV_CONVERSATION_TABLENAME
+          default: "DEV_CONVERSATION_TABLENAME"
+        ssm_rds_user_secret_description:
+          title: SSM RDS User Secret Description
+          type: string
+          description: Description for SSM parameter ENV_RDS_USER_SECRET
+          default: "DEV_RDS_USER_SECRET"
+        ssm_knowledgebase_id_description:
+          title: SSM Knowledgebase ID Description
+          type: string
+          description: Description for SSM parameter ENV_KNOWLEDGEBASE_ID
+          default: "DEV_KNOWLEDGEBASE_ID"
+        ssm_init_data_lambda_description:
+          title: SSM Init Data Lambda Description
+          type: string
+          description: Description for SSM parameter ENV_INIT_DATA_LAMBDA
+          default: "DEV_INIT_DATA_LAMBDA"
+        ssm_parameter_type_string:
+          title: SSM Parameter Type String
+          type: string
+          description: SSM parameter type for string values
+          default: "String"
+
+    # Page 14: File Paths & Miscellaneous
+    - title: Terraform Files and Miscellaneous Configuration
+      properties:
+        _gate_file_paths:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: file_paths
+        # WAF Allowed IP Addresses
+        allowed_ip_addresses:
+          title: Allowed IP Addresses
+          type: array
+          description: List of allowed IP CIDR ranges for WAF IP set (Zscaler range pre-populated)
+          items:
+            type: string
+          default:
+            - "136.226.0.0/16"
+        # Archive File Configuration
+        archive_file_type_zip:
+          title: Archive File Type Zip
+          type: string
+          description: Archive file type for ZIP archives
+          default: "zip"
+
+        # Terraform File Paths
+        lambda_terraform_tmp_dir:
+          title: Terraform Tmp Dir
+          type: string
+          description: Directory for temporary Terraform files
+          default: ".terraform/tmp"
+        lambda_terraform_archives_dir:
+          title: Terraform Archives Dir
+          type: string
+          description: Directory for Terraform archive files
+          default: ".terraform/archives"
+        lambda_layer_requirements_filename:
+          title: Layer Requirements Filename
+          type: string
+          description: Filename for layer requirements file
+          default: "layer-requirements.txt"
+        lambda_layer_create_script_filename:
+          title: Create Layer Script Filename
+          type: string
+          description: Filename for create layer script
+          default: "create-layer.sh"
+        lambda_layer_content_zip_filename:
+          title: Layer Content Zip Filename
+          type: string
+          description: Filename for layer content zip
+          default: "layer_content.zip"
+        lambda_init_data_lambda_py_filename:
+          title: Init Data Lambda Py Filename
+          type: string
+          description: Filename for init data Lambda Python file
+          default: "init_data_lambda.py"
+        lambda_init_data_oss_py_filename:
+          title: Init Data OSS Py Filename
+          type: string
+          description: Filename for init data OpenSearch Python file
+          default: "init_data_oss.py"
+        lambda_init_data_psql_py_filename:
+          title: Init Data PSQL Py Filename
+          type: string
+          description: Filename for init data PostgreSQL Python file
+          default: "init_data_psql.py"
+        lambda_init_data_lambda_zip_filename:
+          title: Init Data Lambda Zip Filename
+          type: string
+          description: Filename for init data Lambda zip archive
+          default: "init_data_lambda.zip"
+        lambda_metadata_zip_filename:
+          title: Metadata Lambda Zip Filename
+          type: string
+          description: Filename for metadata Lambda zip archive
+          default: "metadata_lambda.zip"
+
+    # Page 15: KMS Keys
+    - title: KMS Configuration
+      properties:
+        _gate_kms:
+          title: Section Gate
+          type: string
+          description: Internal field - controls visibility of this section
+          ui:field: SectionGateField
+          ui:options:
+            sectionKey: kms
+        kms_deletion_window_days:
+          title: KMS Deletion Window Days
+          type: number
+          description: Number of days before KMS key deletion
+          default: 7
+        kms_enable_key_rotation:
+          title: KMS Enable Key Rotation
+          type: boolean
+          description: Enable automatic KMS key rotation
+          default: true
+        kms_policy_id:
+          title: KMS Policy ID
+          type: string
+          description: ID for KMS key policy
+          default: "KmsPolicy"
+        kms_policy_version:
+          title: KMS Policy Version
+          type: string
+          description: Version for KMS key policy
+          default: "2012-10-17"
+        kms_s3_description:
+          title: KMS S3 Description
+          type: string
+          description: Description for S3 KMS key
+          default: "KMS key for S3 bucket encryption"
+        kms_s3_sid_root:
+          title: KMS S3 SID Root
+          type: string
+          description: Statement ID for S3 KMS root access
+          default: "DoNOTDelete"
+        kms_s3_sid_resources:
+          title: KMS S3 SID Resources
+          type: string
+          description: Statement ID for S3 KMS resource access
+          default: "AwsResourcesAccess"
+        kms_s3_sid_cloudfront:
+          title: KMS S3 SID CloudFront
+          type: string
+          description: Statement ID for CloudFront KMS access to S3
+          default: "CloudfrontAccess"
+        kms_sqs_description:
+          title: KMS SQS Description
+          type: string
+          description: Description for SQS KMS key
+          default: "KMS key for SQS encryption"
+        kms_sqs_sid_root:
+          title: KMS SQS SID Root
+          type: string
+          description: Statement ID for SQS KMS root access
+          default: "DontDelete"
+        kms_sqs_sid_backend:
+          title: KMS SQS SID Backend
+          type: string
+          description: Statement ID for backend Lambda SQS KMS access
+          default: "BackendAccess"
+        kms_dynamodb_description:
+          title: KMS DynamoDB Description
+          type: string
+          description: Description for DynamoDB KMS key
+          default: "KMS key for DynamoDB table encryption"
+        kms_dynamodb_sid_root:
+          title: KMS DynamoDB SID Root
+          type: string
+          description: Statement ID for DynamoDB KMS root access
+          default: "DontDelete"
+        kms_dynamodb_sid_backend:
+          title: KMS DynamoDB SID Backend
+          type: string
+          description: Statement ID for backend Lambda DynamoDB KMS access
+          default: "BackendAccess"
+        kms_dynamodb_sid_service:
+          title: KMS DynamoDB SID Service
+          type: string
+          description: Statement ID for DynamoDB service KMS access
+          default: "AllowDynamoDBToUseKey"
+        kms_s3_alias_name:
+          title: KMS S3 Alias Name
+          type: string
+          description: KMS alias name for S3 data bucket key
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            prefix: "alias/"
+            suffix: "-s3-data-key"
+            editable: false
+        kms_sqs_alias_name:
+          title: KMS SQS Alias Name
+          type: string
+          description: KMS alias name for SQS streams DLQ key
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            prefix: "alias/"
+            suffix: "-sqs-streams-dlq-key"
+            editable: false
+        kms_dynamodb_alias_name:
+          title: KMS DynamoDB Alias Name
+          type: string
+          description: KMS alias name for DynamoDB conversations key
+          ui:field: DerivedField
+          ui:options:
+            sourceField: agent_name
+            prefix: "alias/"
+            suffix: "-dynamodb-convos-key"
+            editable: false
+
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewVirtualAssistant" }}
+            workflow_id: ${{ "NewVirtualAssistant-" + parameters.github_org + "-" + parameters.agent_name + "-" + parameters.deployment_env }}
+            task_queue: ${{ fcs.taskQueue }}
+            workflow_args:
+              agent_name: ${{ parameters.agent_name }}
+              module_version: ${{ parameters.module_version }}
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/virtual-assistant/" + parameters.agent_name }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add Virtual Assistant: " + parameters.agent_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions a virtual assistant named " + parameters.agent_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              environment: ${{ parameters.deployment_env }}
+              allowed_ip_addresses: ${{ parameters.allowed_ip_addresses }}
+              rds_database_name: ${{ parameters.rds_database_name }}
+              kms_deletion_window_days: ${{ parameters.kms_deletion_window_days }}
+              kms_enable_key_rotation: ${{ parameters.kms_enable_key_rotation }}
+              kms_policy_id: ${{ parameters.kms_policy_id }}
+              kms_policy_version: ${{ parameters.kms_policy_version }}
+              kms_s3_description: ${{ parameters.kms_s3_description }}
+              kms_s3_sid_root: ${{ parameters.kms_s3_sid_root }}
+              kms_s3_sid_resources: ${{ parameters.kms_s3_sid_resources }}
+              kms_s3_sid_cloudfront: ${{ parameters.kms_s3_sid_cloudfront }}
+              kms_sqs_description: ${{ parameters.kms_sqs_description }}
+              kms_sqs_sid_root: ${{ parameters.kms_sqs_sid_root }}
+              kms_sqs_sid_backend: ${{ parameters.kms_sqs_sid_backend }}
+              kms_dynamodb_description: ${{ parameters.kms_dynamodb_description }}
+              kms_dynamodb_sid_root: ${{ parameters.kms_dynamodb_sid_root }}
+              kms_dynamodb_sid_backend: ${{ parameters.kms_dynamodb_sid_backend }}
+              kms_dynamodb_sid_service: ${{ parameters.kms_dynamodb_sid_service }}
+              kms_s3_alias_name: ${{ parameters.kms_s3_alias_name }}
+              kms_sqs_alias_name: ${{ parameters.kms_sqs_alias_name }}
+              kms_dynamodb_alias_name: ${{ parameters.kms_dynamodb_alias_name }}
+              s3_shared_bucket_suffix: ${{ parameters.s3_shared_bucket_suffix }}
+              s3_data_bucket_suffix: ${{ parameters.s3_data_bucket_suffix }}
+              s3_force_destroy: ${{ parameters.s3_force_destroy }}
+              s3_block_public_acls: ${{ parameters.s3_block_public_acls }}
+              s3_block_public_policy: ${{ parameters.s3_block_public_policy }}
+              s3_ignore_public_acls: ${{ parameters.s3_ignore_public_acls }}
+              s3_restrict_public_buckets: ${{ parameters.s3_restrict_public_buckets }}
+              s3_versioning_status: ${{ parameters.s3_versioning_status }}
+              s3_object_ownership: ${{ parameters.s3_object_ownership }}
+              s3_kb_prefix: ${{ parameters.s3_kb_prefix }}
+              s3_bedrock_prefix: ${{ parameters.s3_bedrock_prefix }}
+              s3_init_data_key: ${{ parameters.s3_init_data_key }}
+              s3_init_data_content_type: ${{ parameters.s3_init_data_content_type }}
+              s3_sse_algorithm: ${{ parameters.s3_sse_algorithm }}
+              s3_kms_sse_algorithm: ${{ parameters.s3_kms_sse_algorithm }}
+              rds_subnet_group_name: ${{ parameters.rds_subnet_group_name }}
+              rds_instance_identifier: ${{ parameters.rds_instance_identifier }}
+              rds_import_role_name: ${{ parameters.rds_import_role_name }}
+              rds_export_role_name: ${{ parameters.rds_export_role_name }}
+              rds_allocated_storage: ${{ parameters.rds_allocated_storage }}
+              rds_engine: ${{ parameters.rds_engine }}
+              rds_engine_version: ${{ parameters.rds_engine_version }}
+              rds_instance_class: ${{ parameters.rds_instance_class }}
+              rds_username: ${{ parameters.rds_username }}
+              rds_manage_master_user_password: ${{ parameters.rds_manage_master_user_password }}
+              rds_storage_encrypted: ${{ parameters.rds_storage_encrypted }}
+              rds_skip_final_snapshot: ${{ parameters.rds_skip_final_snapshot }}
+              rds_final_snapshot_identifier: ${{ parameters.rds_final_snapshot_identifier }}
+              rds_iam_database_authentication_enabled: ${{ parameters.rds_iam_database_authentication_enabled }}
+              rds_apply_immediately: ${{ parameters.rds_apply_immediately }}
+              rds_subnet_group_description: ${{ parameters.rds_subnet_group_description }}
+              rds_import_policy_name: ${{ parameters.rds_import_policy_name }}
+              rds_export_policy_name: ${{ parameters.rds_export_policy_name }}
+              rds_s3_import_feature_name: ${{ parameters.rds_s3_import_feature_name }}
+              rds_s3_export_feature_name: ${{ parameters.rds_s3_export_feature_name }}
+              rds_password_length: ${{ parameters.rds_password_length }}
+              rds_password_special: ${{ parameters.rds_password_special }}
+              rds_password_min_upper: ${{ parameters.rds_password_min_upper }}
+              rds_password_min_numeric: ${{ parameters.rds_password_min_numeric }}
+              rds_password_min_lower: ${{ parameters.rds_password_min_lower }}
+              rds_password_min_special: ${{ parameters.rds_password_min_special }}
+              rds_password_override_special: ${{ parameters.rds_password_override_special }}
+              dynamodb_dlq_name: ${{ parameters.dynamodb_dlq_name }}
+              dynamodb_table_name: ${{ parameters.dynamodb_table_name }}
+              dynamodb_billing_mode: ${{ parameters.dynamodb_billing_mode }}
+              dynamodb_read_capacity: ${{ parameters.dynamodb_read_capacity }}
+              dynamodb_write_capacity: ${{ parameters.dynamodb_write_capacity }}
+              dynamodb_stream_enabled: ${{ parameters.dynamodb_stream_enabled }}
+              dynamodb_stream_view_type: ${{ parameters.dynamodb_stream_view_type }}
+              dynamodb_hash_key: ${{ parameters.dynamodb_hash_key }}
+              dynamodb_range_key: ${{ parameters.dynamodb_range_key }}
+              dynamodb_encryption_enabled: ${{ parameters.dynamodb_encryption_enabled }}
+              dynamodb_ttl_enabled: ${{ parameters.dynamodb_ttl_enabled }}
+              dynamodb_ttl_attribute_name: ${{ parameters.dynamodb_ttl_attribute_name }}
+              dynamodb_lsi_name: ${{ parameters.dynamodb_lsi_name }}
+              dynamodb_lsi_projection_type: ${{ parameters.dynamodb_lsi_projection_type }}
+              dynamodb_lsi_range_key: ${{ parameters.dynamodb_lsi_range_key }}
+              dynamodb_request_id_attribute: ${{ parameters.dynamodb_request_id_attribute }}
+              dynamodb_attribute_type_string: ${{ parameters.dynamodb_attribute_type_string }}
+              lambda_backend_function_name: ${{ parameters.lambda_backend_function_name }}
+              lambda_db_migrate_function_name: ${{ parameters.lambda_db_migrate_function_name }}
+              lambda_dynamo_streams_function_name: ${{ parameters.lambda_dynamo_streams_function_name }}
+              lambda_init_data_function_name: ${{ parameters.lambda_init_data_function_name }}
+              lambda_metadata_function_name: ${{ parameters.lambda_metadata_function_name }}
+              lambda_init_layer_name: ${{ parameters.lambda_init_layer_name }}
+              iam_backend_role_name: ${{ parameters.iam_backend_role_name }}
+              iam_db_migrate_role_name: ${{ parameters.iam_db_migrate_role_name }}
+              iam_dynamo_streams_role_name: ${{ parameters.iam_dynamo_streams_role_name }}
+              iam_init_data_role_name: ${{ parameters.iam_init_data_role_name }}
+              iam_metadata_role_name: ${{ parameters.iam_metadata_role_name }}
+              lambda_timeout_seconds: ${{ parameters.lambda_timeout_seconds }}
+              lambda_log_retention_days: ${{ parameters.lambda_log_retention_days }}
+              lambda_log_format: ${{ parameters.lambda_log_format }}
+              lambda_runtime: ${{ parameters.lambda_runtime }}
+              lambda_timezone: ${{ parameters.lambda_timezone }}
+              lambda_basic_execution_policy_arn: ${{ parameters.lambda_basic_execution_policy_arn }}
+              lambda_vpc_execution_policy_arn: ${{ parameters.lambda_vpc_execution_policy_arn }}
+              lambda_dynamodb_execution_policy_arn: ${{ parameters.lambda_dynamodb_execution_policy_arn }}
+              lambda_backend_policy_name: ${{ parameters.lambda_backend_policy_name }}
+              lambda_backend_sid_ssm: ${{ parameters.lambda_backend_sid_ssm }}
+              lambda_backend_sid_secrets: ${{ parameters.lambda_backend_sid_secrets }}
+              lambda_backend_sid_s3: ${{ parameters.lambda_backend_sid_s3 }}
+              lambda_backend_sid_dynamodb: ${{ parameters.lambda_backend_sid_dynamodb }}
+              lambda_backend_sid_guardrails: ${{ parameters.lambda_backend_sid_guardrails }}
+              lambda_backend_sid_kb: ${{ parameters.lambda_backend_sid_kb }}
+              lambda_backend_sid_kms: ${{ parameters.lambda_backend_sid_kms }}
+              lambda_backend_handler_command: ${{ parameters.lambda_backend_handler_command }}
+              lambda_backend_cors_origins: ${{ parameters.lambda_backend_cors_origins }}
+              lambda_streams_policy_name: ${{ parameters.lambda_streams_policy_name }}
+              lambda_streams_handler_command: ${{ parameters.lambda_streams_handler_command }}
+              lambda_streams_starting_position: ${{ parameters.lambda_streams_starting_position }}
+              lambda_streams_batch_size: ${{ parameters.lambda_streams_batch_size }}
+              lambda_streams_batching_window_seconds: ${{ parameters.lambda_streams_batching_window_seconds }}
+              lambda_streams_max_retry_attempts: ${{ parameters.lambda_streams_max_retry_attempts }}
+              lambda_streams_enabled: ${{ parameters.lambda_streams_enabled }}
+              lambda_streams_function_response_types: ${{ parameters.lambda_streams_function_response_types }}
+              lambda_migrate_policy_name: ${{ parameters.lambda_migrate_policy_name }}
+              lambda_migrate_handler_command: ${{ parameters.lambda_migrate_handler_command }}
+              lambda_metadata_policy_name: ${{ parameters.lambda_metadata_policy_name }}
+              lambda_metadata_filename: ${{ parameters.lambda_metadata_filename }}
+              lambda_metadata_handler: ${{ parameters.lambda_metadata_handler }}
+              lambda_package_type_image: ${{ parameters.lambda_package_type_image }}
+              lambda_package_type_zip: ${{ parameters.lambda_package_type_zip }}
+              lambda_replace_security_groups_on_destroy: ${{ parameters.lambda_replace_security_groups_on_destroy }}
+              lambda_init_policy_name: ${{ parameters.lambda_init_policy_name }}
+              lambda_init_handler: ${{ parameters.lambda_init_handler }}
+              lambda_init_file_permission: ${{ parameters.lambda_init_file_permission }}
+              lambda_layer_compatible_runtimes: ${{ parameters.lambda_layer_compatible_runtimes }}
+              lambda_layer_interpreter: ${{ parameters.lambda_layer_interpreter }}
+              apigateway_name: ${{ parameters.apigateway_name }}
+              apigateway_waf_ipset_name: ${{ parameters.apigateway_waf_ipset_name }}
+              apigateway_waf_metric_name: ${{ parameters.apigateway_waf_metric_name }}
+              apigateway_waf_ipset_metric_name: ${{ parameters.apigateway_waf_ipset_metric_name }}
+              iam_api_gateway_role_name: ${{ parameters.iam_api_gateway_role_name }}
+              apigateway_timeout_milliseconds: ${{ parameters.apigateway_timeout_milliseconds }}
+              apigateway_waf_ip_match_rule_priority: ${{ parameters.apigateway_waf_ip_match_rule_priority }}
+              apigateway_title: ${{ parameters.apigateway_title }}
+              apigateway_version: ${{ parameters.apigateway_version }}
+              apigateway_endpoint_types: ${{ parameters.apigateway_endpoint_types }}
+              apigateway_stage_name: ${{ parameters.apigateway_stage_name }}
+              apigateway_inline_policy_name: ${{ parameters.apigateway_inline_policy_name }}
+              apigateway_api_key_source: ${{ parameters.apigateway_api_key_source }}
+              apigateway_binary_media_types: ${{ parameters.apigateway_binary_media_types }}
+              apigateway_waf_rule_name: ${{ parameters.apigateway_waf_rule_name }}
+              apigateway_waf_scope: ${{ parameters.apigateway_waf_scope }}
+              apigateway_parameter_name_bagel: ${{ parameters.apigateway_parameter_name_bagel }}
+              apigateway_openapi_version: ${{ parameters.apigateway_openapi_version }}
+              apigateway_ip_address_version: ${{ parameters.apigateway_ip_address_version }}
+              apigateway_integration_http_method: ${{ parameters.apigateway_integration_http_method }}
+              apigateway_integration_status_code: ${{ parameters.apigateway_integration_status_code }}
+              apigateway_integration_passthrough_when_no_templates: ${{ parameters.apigateway_integration_passthrough_when_no_templates }}
+              apigateway_integration_passthrough_never: ${{ parameters.apigateway_integration_passthrough_never }}
+              apigateway_integration_timeout_millis: ${{ parameters.apigateway_integration_timeout_millis }}
+              apigateway_integration_type_aws_proxy: ${{ parameters.apigateway_integration_type_aws_proxy }}
+              apigateway_integration_type_mock: ${{ parameters.apigateway_integration_type_mock }}
+              apigateway_parameter_in_path: ${{ parameters.apigateway_parameter_in_path }}
+              apigateway_parameter_required: ${{ parameters.apigateway_parameter_required }}
+              apigateway_schema_type_object: ${{ parameters.apigateway_schema_type_object }}
+              apigateway_cloudwatch_metrics_enabled: ${{ parameters.apigateway_cloudwatch_metrics_enabled }}
+              apigateway_request_template_content_type: ${{ parameters.apigateway_request_template_content_type }}
+              apigateway_request_template_status_code_body: ${{ parameters.apigateway_request_template_status_code_body }}
+              apigateway_schema_title_empty: ${{ parameters.apigateway_schema_title_empty }}
+              apigateway_response_status_code_200: ${{ parameters.apigateway_response_status_code_200 }}
+              apigateway_schema_type_string: ${{ parameters.apigateway_schema_type_string }}
+              apigateway_response_description: ${{ parameters.apigateway_response_description }}
+              apigateway_waf_sampled_requests_enabled: ${{ parameters.apigateway_waf_sampled_requests_enabled }}
+              apigateway_waf_rule_cloudwatch_metrics_enabled: ${{ parameters.apigateway_waf_rule_cloudwatch_metrics_enabled }}
+              apigateway_waf_default_action_type: ${{ parameters.apigateway_waf_default_action_type }}
+              apigateway_cors_allow_methods: ${{ parameters.apigateway_cors_allow_methods }}
+              apigateway_cors_allow_headers: ${{ parameters.apigateway_cors_allow_headers }}
+              apigateway_cors_allow_origin: ${{ parameters.apigateway_cors_allow_origin }}
+              apigateway_cors_allow_credentials: ${{ parameters.apigateway_cors_allow_credentials }}
+              opensearch_encryption_policy_name: ${{ parameters.opensearch_encryption_policy_name }}
+              opensearch_network_policy_name: ${{ parameters.opensearch_network_policy_name }}
+              opensearch_data_policy_name: ${{ parameters.opensearch_data_policy_name }}
+              opensearch_standby_replicas: ${{ parameters.opensearch_standby_replicas }}
+              opensearch_collection_type: ${{ parameters.opensearch_collection_type }}
+              opensearch_network_policy_description: ${{ parameters.opensearch_network_policy_description }}
+              opensearch_data_policy_description: ${{ parameters.opensearch_data_policy_description }}
+              opensearch_encryption_policy_type: ${{ parameters.opensearch_encryption_policy_type }}
+              opensearch_network_policy_type: ${{ parameters.opensearch_network_policy_type }}
+              opensearch_data_policy_type: ${{ parameters.opensearch_data_policy_type }}
+              ecr_repository_name: ${{ parameters.ecr_repository_name }}
+              ecr_backend_tag_name: ${{ parameters.ecr_backend_tag_name }}
+              ecr_lifecycle_rule_priority: ${{ parameters.ecr_lifecycle_rule_priority }}
+              ecr_image_count_limit: ${{ parameters.ecr_image_count_limit }}
+              ecr_image_tag_mutability: ${{ parameters.ecr_image_tag_mutability }}
+              ecr_scan_on_push: ${{ parameters.ecr_scan_on_push }}
+              ecr_encryption_type: ${{ parameters.ecr_encryption_type }}
+              ecr_force_delete: ${{ parameters.ecr_force_delete }}
+              ecr_lifecycle_tag_status: ${{ parameters.ecr_lifecycle_tag_status }}
+              ecr_lifecycle_count_type: ${{ parameters.ecr_lifecycle_count_type }}
+              ecr_lifecycle_action_type: ${{ parameters.ecr_lifecycle_action_type }}
+              ecr_check_interpreter: ${{ parameters.ecr_check_interpreter }}
+              bedrock_kb_name: ${{ parameters.bedrock_kb_name }}
+              bedrock_kb_help_docs_datasource_name: ${{ parameters.bedrock_kb_help_docs_datasource_name }}
+              bedrock_kb_workbooks_datasource_name: ${{ parameters.bedrock_kb_workbooks_datasource_name }}
+              bedrock_nova_lite_profile_name: ${{ parameters.bedrock_nova_lite_profile_name }}
+              bedrock_nova_pro_profile_name: ${{ parameters.bedrock_nova_pro_profile_name }}
+              bedrock_query_model: ${{ parameters.bedrock_query_model }}
+              bedrock_kbase_model: ${{ parameters.bedrock_kbase_model }}
+              bedrock_grading_model: ${{ parameters.bedrock_grading_model }}
+              bedrock_invoke_policy_name: ${{ parameters.bedrock_invoke_policy_name }}
+              bedrock_input_guardrail_name: ${{ parameters.bedrock_input_guardrail_name }}
+              bedrock_kb_vector_field: ${{ parameters.bedrock_kb_vector_field }}
+              bedrock_kb_text_field: ${{ parameters.bedrock_kb_text_field }}
+              bedrock_kb_metadata_field: ${{ parameters.bedrock_kb_metadata_field }}
+              bedrock_kb_help_docs_chunking_strategy: ${{ parameters.bedrock_kb_help_docs_chunking_strategy }}
+              bedrock_kb_help_docs_max_tokens: ${{ parameters.bedrock_kb_help_docs_max_tokens }}
+              bedrock_kb_help_docs_overlap_percentage: ${{ parameters.bedrock_kb_help_docs_overlap_percentage }}
+              bedrock_kb_workbooks_chunking_strategy: ${{ parameters.bedrock_kb_workbooks_chunking_strategy }}
+              bedrock_kb_policy_name: ${{ parameters.bedrock_kb_policy_name }}
+              bedrock_kb_storage_type: ${{ parameters.bedrock_kb_storage_type }}
+              bedrock_kb_storage_engine: ${{ parameters.bedrock_kb_storage_engine }}
+              bedrock_kb_data_source_type: ${{ parameters.bedrock_kb_data_source_type }}
+              bedrock_kb_create_duration: ${{ parameters.bedrock_kb_create_duration }}
+              bedrock_kb_data_deletion_policy: ${{ parameters.bedrock_kb_data_deletion_policy }}
+              bedrock_kb_transformation_step: ${{ parameters.bedrock_kb_transformation_step }}
+              bedrock_kb_help_docs_description: ${{ parameters.bedrock_kb_help_docs_description }}
+              bedrock_kb_workbooks_description: ${{ parameters.bedrock_kb_workbooks_description }}
+              bedrock_kb_help_docs_path_segment: ${{ parameters.bedrock_kb_help_docs_path_segment }}
+              bedrock_kb_workbooks_path_segment: ${{ parameters.bedrock_kb_workbooks_path_segment }}
+              bedrock_kb_execution_role_name: ${{ parameters.bedrock_kb_execution_role_name }}
+              bedrock_guardrail_description: ${{ parameters.bedrock_guardrail_description }}
+              bedrock_guardrail_input_message: ${{ parameters.bedrock_guardrail_input_message }}
+              bedrock_guardrail_output_message: ${{ parameters.bedrock_guardrail_output_message }}
+              bedrock_guardrail_hate_filter_strength: ${{ parameters.bedrock_guardrail_hate_filter_strength }}
+              bedrock_guardrail_insults_filter_strength: ${{ parameters.bedrock_guardrail_insults_filter_strength }}
+              bedrock_guardrail_sexual_filter_strength: ${{ parameters.bedrock_guardrail_sexual_filter_strength }}
+              bedrock_guardrail_violence_filter_strength: ${{ parameters.bedrock_guardrail_violence_filter_strength }}
+              bedrock_guardrail_misconduct_filter_strength: ${{ parameters.bedrock_guardrail_misconduct_filter_strength }}
+              bedrock_guardrail_prompt_attack_filter_strength: ${{ parameters.bedrock_guardrail_prompt_attack_filter_strength }}
+              bedrock_guardrail_word_list_type: ${{ parameters.bedrock_guardrail_word_list_type }}
+              bedrock_guardrail_version_description: ${{ parameters.bedrock_guardrail_version_description }}
+              bedrock_guardrail_skip_destroy: ${{ parameters.bedrock_guardrail_skip_destroy }}
+              github_deploy_policy_name: ${{ parameters.github_deploy_policy_name }}
+              github_deploy_sid_lambda: ${{ parameters.github_deploy_sid_lambda }}
+              github_deploy_sid_invocation: ${{ parameters.github_deploy_sid_invocation }}
+              github_deploy_sid_s3_kms: ${{ parameters.github_deploy_sid_s3_kms }}
+              github_deploy_sid_kb: ${{ parameters.github_deploy_sid_kb }}
+              ssm_prefix: ${{ parameters.ssm_prefix }}
+              ssm_data_bucket_description: ${{ parameters.ssm_data_bucket_description }}
+              ssm_opensearch_endpoint_description: ${{ parameters.ssm_opensearch_endpoint_description }}
+              ssm_opensearch_collection_name_description: ${{ parameters.ssm_opensearch_collection_name_description }}
+              ssm_opensearch_index_mapping_key_description: ${{ parameters.ssm_opensearch_index_mapping_key_description }}
+              ssm_query_model_arn_description: ${{ parameters.ssm_query_model_arn_description }}
+              ssm_kbase_model_arn_description: ${{ parameters.ssm_kbase_model_arn_description }}
+              ssm_grade_model_arn_description: ${{ parameters.ssm_grade_model_arn_description }}
+              ssm_input_guardrail_arn_description: ${{ parameters.ssm_input_guardrail_arn_description }}
+              ssm_input_guardrail_version_description: ${{ parameters.ssm_input_guardrail_version_description }}
+              ssm_conversation_tablename_description: ${{ parameters.ssm_conversation_tablename_description }}
+              ssm_rds_user_secret_description: ${{ parameters.ssm_rds_user_secret_description }}
+              ssm_knowledgebase_id_description: ${{ parameters.ssm_knowledgebase_id_description }}
+              ssm_init_data_lambda_description: ${{ parameters.ssm_init_data_lambda_description }}
+              ssm_parameter_type_string: ${{ parameters.ssm_parameter_type_string }}
+              archive_file_type_zip: ${{ parameters.archive_file_type_zip }}
+              lambda_terraform_tmp_dir: ${{ parameters.lambda_terraform_tmp_dir }}
+              lambda_terraform_archives_dir: ${{ parameters.lambda_terraform_archives_dir }}
+              lambda_layer_requirements_filename: ${{ parameters.lambda_layer_requirements_filename }}
+              lambda_layer_create_script_filename: ${{ parameters.lambda_layer_create_script_filename }}
+              lambda_layer_content_zip_filename: ${{ parameters.lambda_layer_content_zip_filename }}
+              lambda_init_data_lambda_py_filename: ${{ parameters.lambda_init_data_lambda_py_filename }}
+              lambda_init_data_oss_py_filename: ${{ parameters.lambda_init_data_oss_py_filename }}
+              lambda_init_data_psql_py_filename: ${{ parameters.lambda_init_data_psql_py_filename }}
+              lambda_init_data_lambda_zip_filename: ${{ parameters.lambda_init_data_lambda_zip_filename }}
+              lambda_metadata_zip_filename: ${{ parameters.lambda_metadata_zip_filename }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

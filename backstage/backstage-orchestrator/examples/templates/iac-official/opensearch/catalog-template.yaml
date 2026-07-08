@@ -1,0 +1,99 @@
+# Catalog template for the OpenSearch module.
+# Rendered by the Tenant-IAC-catalog-info workflow when a new OpenSearch resource is added.
+# Variables available: {{name}}, {{environment}}, {{lifecycle}}, {{org}}, {{resource_dir}}, {{resource_type}}
+entries:
+  - kind: Resource
+    metadata:
+      name: "{{name}}"
+      title: "{{name}} ({{environment}})"
+      description: "OpenSearch domain {{name}} in {{environment}} for {{org}}"
+      tags:
+        - search
+        - opensearch
+        - data-tier
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: opensearch
+      links:
+        - url: "https://console.aws.amazon.com/aos/home?region=us-east-1#/opensearch/domains/{{name}}"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: search-engine
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependsOn:
+        - "resource:default/{{name}}-credentials"
+        - "resource:default/{{name}}-logs"
+        - "resource:default/{{name}}-service-linked-role"
+  - kind: Resource
+    metadata:
+      name: "{{name}}-logs"
+      title: "{{name}} CloudWatch Logs"
+      description: "CloudWatch log groups for OpenSearch domain {{name}}"
+      tags:
+        - logging
+        - cloudwatch
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: cloudwatch-logs
+      links:
+        - url: "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: logging
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependencyOf:
+        - "resource:default/{{name}}"
+  - kind: Resource
+    metadata:
+      name: "{{name}}-credentials"
+      title: "{{name}} Credentials"
+      description: "Secrets Manager secret containing OpenSearch connection details for {{name}}"
+      tags:
+        - secret
+        - credentials
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: secretsmanager
+        fcs.gsa.gov/secret-name: "{{name}}-credentials"
+      links:
+        - url: "https://console.aws.amazon.com/secretsmanager/secret?name={{name}}-credentials&region=us-east-1"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: secret
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependencyOf:
+        - "resource:default/{{name}}"
+  - kind: Resource
+    metadata:
+      name: "{{name}}-service-linked-role"
+      title: "{{name}} Service-Linked Role"
+      description: "IAM service-linked role granting OpenSearch VPC access for {{name}}"
+      tags:
+        - iam
+        - service-linked-role
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: iam-service-linked-role
+    spec:
+      type: iam-role
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependencyOf:
+        - "resource:default/{{name}}"

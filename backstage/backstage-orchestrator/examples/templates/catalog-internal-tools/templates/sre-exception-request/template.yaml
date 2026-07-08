@@ -1,0 +1,938 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: sre-exception-request
+  title: SRE Exception Request
+  description: >
+    Submit a formal exception / waiver request when your product cannot meet a
+    specific SRE Production Acceptance criterion and remediation is not possible
+    within the current assessment window.
+
+    All exception requests are reviewed by the SRE team, endorsed by your
+    Portfolio Lead, and approved by the Director of SRE. Decisions are made
+    within 3–4 weeks. Backstage is the system of record — do not submit
+    exception requests by email.
+
+    ⚠️ Category 4 (Security & Compliance) failures are a hard-fail gate and
+    cannot be excepted. Submitting a Category 4 exception will not unblock the
+    intake process — the security gaps must be remediated and re-assessed.
+
+    ⚠️ Platform blockers (capabilities the platform does not yet provide) are
+    NOT exceptions — they have a separate escalation process. See
+    docs/04-governance-processes.md § Platform Blocker Escalation.
+
+    Estimated time: 25–35 minutes.
+  tags:
+    - sre
+    - exception
+    - governance
+    - waiver
+    - platform-internal
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  owner: group:mcaas-cc/backstage-admins
+  type: internal-workflow
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PARAMETERS  (each list item = one wizard step/page in the Backstage UI)
+  # ─────────────────────────────────────────────────────────────────────────────
+  parameters:
+
+    # ── Step 0: AI JSON Import (optional) ────────────────────────────────────
+    - title: Import from AI-generated JSON (optional)
+      description: >
+        Use an AI assistant (Copilot, ChatGPT, Claude) to pre-fill this entire
+        form. Give it the exception-request-schema.json file from the
+        catalog-internal-tools repo along with your product context, and ask it
+        to produce a completed JSON document. Paste the result here and click
+        "Parse & Validate" — all fields on the following steps will be
+        pre-populated for your review.
+
+        Skip this step if you prefer to fill the form manually.
+      properties:
+        importedJson:
+          title: AI-generated Exception Request JSON
+          type: string
+          ui:field: JsonImportField
+
+    # ── Step 1: Pre-screening ─────────────────────────────────────────────────
+    - title: Pre-Screening
+      description: >
+        Answer these questions before proceeding. They ensure this is the right
+        process for your situation and catch common submission errors upfront.
+      required:
+        - hasHadAssessment
+        - assessmentTrack
+        - isPlatformBlocker
+      properties:
+        hasHadAssessment:
+          title: Has this product received a formal SRE Production Acceptance assessment?
+          type: string
+          enum:
+            - "Yes — we have a scored assessment on record"
+            - "No — we have not been formally assessed yet"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "preScreening.hasHadAssessment"
+          description: >
+            If no assessment has been completed, submit the SRE Technical
+            Assessment Intake Form first. Exception requests without a prior
+            assessment on record will be returned.
+        assessmentTrack:
+          title: Which assessment track applies to this product?
+          type: string
+          enum:
+            - "Track A — Full Product / Service"
+            - "Track B — Operational Process"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "preScreening.assessmentTrack"
+          description: >
+            Track determines which criteria are scoreable. Track B products
+            cannot submit exceptions for Track-A-only criteria (e.g., 1.1 HA
+            Design, 2.3 Distributed Tracing, 3.1 Deployment Automation). If in
+            doubt, check the Track B criteria table in 01-production-acceptance.md.
+        isPlatformBlocker:
+          title: >
+            Is the gap you are experiencing caused by a platform capability that
+            does not yet exist (not something your team can fix)?
+          type: string
+          enum:
+            - "Yes"
+            - "No"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "preScreening.isPlatformBlocker"
+          description: >
+            ⚠️ If YES — this is a Platform Blocker, not an exception. Platform
+            blockers follow a separate escalation process (see
+            04-governance-processes.md § Platform Blocker Escalation). Do not
+            file an exception for a platform blocker — score the criterion at
+            its current achievable level and document the blocker separately.
+
+    # ── Step 2: Product & Submission Details ──────────────────────────────────
+    - title: Product & Submission Details
+      description: >
+        Identify the product, primary contacts, and the Portfolio Lead who will
+        be asked to endorse this request (required for all exceptions per SOP).
+      required:
+        - submissionDate
+        - productName
+        - teamOrganization
+        - experienceArea
+        - techLeadName
+        - primaryContactEmail
+        - portfolioLeadName
+        - portfolioLeadEmail
+      properties:
+        submissionDate:
+          title: Submission Date
+          type: string
+          format: date
+          description: Date you are submitting this exception request.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.submissionDate"
+        productName:
+          title: Product / Service Name
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.productName"
+        teamOrganization:
+          title: Team / Organization
+          type: string
+          description: e.g. FCS API Exchange, Status Dashboard Team
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.teamOrganization"
+        experienceArea:
+          title: Experience Area
+          type: string
+          enum:
+            - Developer Experience
+            - Data Experience
+            - Workloads Experience
+            - AI/ML Experience
+            - Integration Experience
+            - Foundational Experience
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.experienceArea"
+        techLeadName:
+          title: Technical Lead Name
+          type: string
+          description: Name of the person submitting this request.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.techLeadName"
+        primaryContactEmail:
+          title: Technical Lead Email
+          type: string
+          format: email
+          description: >
+            SRE team will send acknowledgement and decision notices to this address.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.primaryContactEmail"
+        portfolioLeadName:
+          title: Portfolio Lead Name
+          type: string
+          description: >
+            The Portfolio Lead who must endorse this request before it proceeds
+            to the Director of SRE (required for all exceptions per SOP Step 5).
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.portfolioLeadName"
+        portfolioLeadEmail:
+          title: Portfolio Lead Email
+          type: string
+          format: email
+          description: >
+            The SRE team will route the endorsement request directly to this address.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.portfolioLeadEmail"
+        priorAssessmentDate:
+          title: Most Recent Assessment Date (optional)
+          type: string
+          format: date
+          description: >
+            Date of the most recent SRE Production Acceptance assessment for this
+            product. Leave blank if you do not know the exact date.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "productDetails.priorAssessmentDate"
+
+    # ── Step 3: Criterion Unable to Meet ──────────────────────────────────────
+    - title: Criterion Unable to Meet
+      description: >
+        Select the single criterion you are requesting an exception for.
+        Submit one form per criterion — do not bundle multiple criteria.
+
+        ⛔ CATEGORY 4 (SECURITY & COMPLIANCE) — HARD-FAIL GATE:
+        Criteria 4.1 through 4.5 cannot be excepted. A Category 4 average
+        below 3.0 fails the entire assessment regardless of scores elsewhere.
+        Selecting a Category 4 criterion will NOT unblock the intake process.
+        The SRE team will redirect your submission to the remediation-support track.
+
+        Track B note: criteria marked ❌ in the Track B applicability table
+        in 01-production-acceptance.md cannot be scored and therefore cannot
+        have exceptions filed against them — check your track before selecting.
+      required:
+        - criterionId
+        - currentScore
+        - categoryAverage
+      properties:
+        criterionId:
+          title: Criterion Unable to Meet
+          type: string
+          description: >
+            Select the criterion you cannot currently meet. Criteria 6.1 and
+            6.2 are SRE-owned and excluded from product-team scoring.
+          enum:
+            - "1.1 — High Availability Design"
+            - "1.2 — Scalability Architecture"
+            - "1.3 — Service Dependencies"
+            - "1.4 — Data Architecture"
+            - "2.1 — Application Logging"
+            - "2.2 — Metrics and Dashboards"
+            - "2.3 — Distributed Tracing"
+            - "2.4 — Alerting"
+            - "2.5 — Health Checks"
+            - "2.6 — SLI Definition"
+            - "2.7 — Proactive Monitoring"
+            - "3.1 — Deployment Automation"
+            - "3.2 — Configuration Management"
+            - "3.3 — Infrastructure as Code"
+            - "3.4 — Blue-Green / Canary Deployment"
+            - "3.5 — Database Migration Strategy"
+            - "3.6 — Validation and Testing"
+            - "3.7 — Source Control Hygiene"
+            - "4.1 — Authentication and Authorization"
+            - "4.2 — Secrets Management"
+            - "4.3 — Network Security"
+            - "4.4 — Compliance Documentation"
+            - "4.5 — Vulnerability Management"
+            - "5.1 — System Architecture Documentation"
+            - "5.2 — Operational Runbooks"
+            - "5.3 — Incident Response Playbooks"
+            - "5.4 — API Documentation"
+            - "5.5 — Troubleshooting Guides"
+            - "5.6 — Documentation Structure Compliance"
+            - "5.7 — Code Organization Standards"
+            - "6.3 — Communication Protocols"
+            - "6.4 — Post-Incident Reviews"
+            - "6.5 — Automated Diagnostics Collection"
+            - "6.6 — Failure Mode Knowledge Transfer"
+            - "7.1 — SLOs"
+            - "7.2 — Performance Baselines"
+            - "7.3 — Capacity Planning"
+            - "7.4 — Disaster Recovery Testing"
+            - "8.1 — Customer Support Integration"
+            - "8.2 — Debugging Tools"
+            - "8.3 — Feature Flags"
+            - "8.4 — Maintenance Windows"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "criterion.criterionId"
+        currentScore:
+          title: Current Score for This Criterion
+          type: string
+          description: >
+            The score this criterion received in your most recent assessment
+            (0 = Missing, 1 = Poor, 2 = Adequate, 3 = Good, 4 = Excellent).
+            Target score for SRE acceptance is 3.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "criterion.currentScore"
+        categoryAverage:
+          title: Category Average (from most recent assessment)
+          type: string
+          description: >
+            The average score for the entire category this criterion belongs to
+            (e.g. if the criterion is 2.3, enter the Category 2 average).
+            This helps the reviewer understand whether this is one weak criterion
+            in an otherwise strong category (2.9 avg) vs. a broader category gap
+            (2.1 avg) — the risk profile is very different.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "criterion.categoryAverage"
+
+    # ── Step 4: Constraint Type & Root Cause ──────────────────────────────────
+    - title: Reason & Impact
+      description: >
+        Explain honestly why this criterion cannot be met right now.
+        Vague answers ("we don't have time", "it's too hard") will result in
+        denial. Provide specific technical, resource, timeline, or cost details.
+      required:
+        - constraintType
+        - detailedExplanation
+        - whatHaveYouTried
+        - operationalRiskSeverity
+        - operationalRiskDescription
+        - sreOperationalBurden
+      properties:
+        constraintType:
+          title: Constraint Type
+          type: string
+          description: Primary category of constraint preventing you from meeting this criterion.
+          enum:
+            - Technical Limitation
+            - Resource Constraint
+            - Timeline Constraint
+            - Cost Constraint
+            - Third-Party Vendor Limitation
+            - "Platform Blocker (contact SRE before filing)"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "reasonAndImpact.constraintType"
+        detailedExplanation:
+          title: Detailed Explanation
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "reasonAndImpact.detailedExplanation"
+            rows: 8
+          description: >
+            Explain in 2–3 paragraphs why you cannot meet this criterion.
+            Be specific: reference the system, dependency, vendor, or constraint.
+
+            If this is an Extension request: begin with a progress summary on the
+            original exception (what milestones were achieved, what remains), then
+            explain why the remaining gap requires additional time.
+        whatHaveYouTried:
+          title: What Have You Tried?
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "reasonAndImpact.whatHaveYouTried"
+            rows: 5
+          description: >
+            List all prior attempts to meet this criterion and why each was
+            unsuccessful. "Nothing" or "N/A" are not acceptable responses.
+        operationalRiskSeverity:
+          title: Operational Risk Severity (to the product)
+          type: string
+          description: How much operational risk does this gap introduce for the product?
+          enum:
+            - "Low — minimal impact on product reliability"
+            - "Medium — noticeable impact; workarounds available"
+            - "High — significant reliability risk during exception period"
+            - "Critical — major reliability or availability risk"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "reasonAndImpact.operationalRiskSeverity"
+        operationalRiskDescription:
+          title: Operational Risk Description (to the product)
+          type: string
+          description: >
+            Describe concretely how this gap affects product reliability and operations.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "reasonAndImpact.operationalRiskDescription"
+            rows: 4
+        sreOperationalBurden:
+          title: Additional Burden on the SRE Team
+          type: string
+          description: >
+            Describe what extra manual effort the SRE team will take on because
+            of this gap during the exception period.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "reasonAndImpact.sreOperationalBurden"
+            rows: 4
+
+    # ── Step 5: Proposed Mitigation ───────────────────────────────────────────
+    - title: Proposed Mitigation
+      description: >
+        Describe what you will do instead to partially address this requirement
+        while the exception is active. A strong mitigation reduces operational
+        risk and increases the likelihood of approval.
+      required:
+        - mitigationApproach
+        - riskReductionDescription
+        - tenantImpact
+      properties:
+        mitigationApproach:
+          title: Alternative / Mitigation Approach
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "mitigation.mitigationApproach"
+            rows: 7
+          description: >
+            What will you do in place of — or to partially satisfy — the full
+            criterion? Be specific with numbered steps. Example: "While we
+            cannot implement distributed tracing, we will: (1) add correlation
+            IDs to all log entries, (2) implement request/response logging at
+            service boundaries, (3) create a DataDog saved search using
+            correlation IDs to reconstruct request flows."
+        riskReductionDescription:
+          title: How Does This Mitigation Reduce Operational Risk?
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "mitigation.riskReductionDescription"
+            rows: 4
+          description: >
+            Quantify where possible. Example: "This approach provides ~70% of
+            the troubleshooting capability of full distributed tracing and
+            reduces SRE incident resolution time impact from 5 hrs to ~2 hrs."
+        tenantImpact:
+          title: Tenant / End-User Impact During the Exception Period
+          type: string
+          enum:
+            - "None — this gap is entirely internal and invisible to tenants"
+            - "Indirect — tenants may experience slightly degraded reliability or slower incident resolution"
+            - "Direct — tenants will experience visible impact (describe in tenantImpactDescription)"
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "mitigation.tenantImpact"
+          description: >
+            Will end-users or tenants be affected by this gap during the exception
+            period? Portfolio Leads weigh business risk to tenants when endorsing
+            exception requests.
+        tenantImpactDescription:
+          title: Tenant Impact Description (if Direct impact selected above)
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "mitigation.tenantImpactDescription"
+            rows: 3
+          description: >
+            If you selected "Direct" above, describe what tenants will experience
+            and how the mitigation reduces that impact. Leave blank if None or Indirect.
+
+    # ── Step 6: Remediation Plan & Exception Type ─────────────────────────────
+    - title: Remediation Plan & Exception Type
+      description: >
+        Describe your plan to fully meet this criterion and select the
+        exception type that fits your situation.
+
+        • Temporary — you can remediate within 90 days with dedicated effort.
+        • Extension — you previously held a Temporary exception and need up to
+          90 more days. Meaningful progress on the original exception must be
+          demonstrated. Provide the original exception ID.
+        • Conditional — remediation depends on a specific, named external event
+          (vendor release, platform capability, budget cycle). Not just "someday."
+
+        All exceptions expire at 90 days. There are no automatic renewals.
+      required:
+        - exceptionType
+        - targetCompletionDate
+        - resourcesRequired
+        - successCriteria
+      properties:
+        exceptionType:
+          title: Exception Type Requested
+          type: string
+          enum:
+            - Temporary
+            - Extension
+            - Conditional
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.exceptionType"
+        originalExceptionId:
+          title: Original Exception ID (Extensions only — required)
+          type: string
+          description: >
+            Enter the Backstage ticket number or exception ID (e.g. EXC-2026-001)
+            for the original exception being extended.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.originalExceptionId"
+        extensionProgressReport:
+          title: Progress Report on Original Exception (Extensions only — required)
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.extensionProgressReport"
+            rows: 6
+          description: >
+            Required for Extension requests. Summarise what milestones from the
+            original exception's remediation plan have been completed, what
+            percentage of the work is done, and what specifically remains.
+            Example:
+            "Q1 2026 milestone (Java upgrade design + POC) — COMPLETE.
+            Q2 2026 milestone (WebLogic migration) — 60% complete; blocked on
+            vendor consulting availability until May. Final tracing integration
+            and load testing remain."
+        conditionalTriggerEvent:
+          title: Trigger Event (Conditional exceptions only — required)
+          type: string
+          description: >
+            Name the specific external event that will enable remediation.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.conditionalTriggerEvent"
+        conditionalTriggerDate:
+          title: Expected Trigger Date (Conditional exceptions only)
+          type: string
+          format: date
+          description: >
+            Best estimate of when the trigger event will occur.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.conditionalTriggerDate"
+        conditionalFallbackPlan:
+          title: Fallback Plan if Trigger Does Not Fire (Conditional exceptions only)
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.conditionalFallbackPlan"
+            rows: 4
+          description: >
+            What will your team do if the trigger event is delayed or does not
+            occur by the expected date? The SRE team reviews conditional
+            exceptions every 90 days and needs to know the contingency.
+            Example: "If the vendor SDK is not released by Q3 2026, we will
+            implement a custom OpenTelemetry bridge using the v1 API as an
+            interim solution."
+        targetCompletionDate:
+          title: Target Completion Date
+          type: string
+          format: date
+          description: >
+            Date by which you intend to fully meet this criterion (score ≥ 3).
+            Must be within 90 days for Temporary exceptions.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.targetCompletionDate"
+        remediationTimeline:
+          title: Remediation Timeline (Quarterly Milestones)
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.remediationTimeline"
+            rows: 6
+          description: >
+            Describe what will be completed each quarter leading to full
+            compliance. Use the format below:
+            Q2 2026 — Java platform upgrade design complete, POC started
+            Q3 2026 — WebLogic migration finished; OpenTelemetry integrated in dev
+            Q4 2026 — Load testing complete; tracing live in production
+        resourcesRequired:
+          title: Resources Required
+          type: string
+          description: >
+            List engineering capacity (e.g. "2 FTE-sprints"), budget, external
+            vendors, or training required to execute this plan.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.resourcesRequired"
+            rows: 4
+        externalDependencies:
+          title: External Dependencies
+          type: string
+          description: >
+            List what must happen first that is outside your team's control.
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.externalDependencies"
+            rows: 3
+        successCriteria:
+          title: Success Criteria
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "remediationPlan.successCriteria"
+            rows: 4
+          description: >
+            List the specific, measurable outcomes that will indicate this
+            criterion is fully met. These become the acceptance criteria for
+            closing the exception.
+            Example:
+            - DataDog distributed traces visible for all three critical user journeys
+            - p99 latency traceable end-to-end in a single trace
+            - Criterion 2.3 scores ≥ 3 in the next formal assessment
+
+    # ── Step 7: Internal Approvals & Supporting Documentation ─────────────────
+    - title: Internal Approvals & Supporting Documentation
+      description: >
+        Internal approvals from your Product Owner and Engineering Manager
+        must be obtained before submitting this form. The SRE team will not
+        begin review until both approvals are on record in this submission.
+        Your Portfolio Lead's contact details were captured in Step 2 — the
+        SRE team will route the endorsement request to them directly.
+      required:
+        - productOwnerName
+        - productOwnerEmail
+        - engManagerName
+        - engManagerEmail
+        - internalApprovalsConfirmed
+      properties:
+        productOwnerName:
+          title: Product Owner Name
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.productOwnerName"
+        productOwnerEmail:
+          title: Product Owner Email
+          type: string
+          format: email
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.productOwnerEmail"
+        engManagerName:
+          title: Engineering Manager Name
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.engManagerName"
+        engManagerEmail:
+          title: Engineering Manager Email
+          type: string
+          format: email
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.engManagerEmail"
+        supportingDocLinks:
+          title: Supporting Documentation Links (optional)
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.supportingDocLinks"
+            rows: 4
+          description: >
+            Links to technical analysis, cost estimates, vendor quotes,
+            proof-of-concept results, or any other evidence that supports
+            your exception request. One link per line.
+        additionalContext:
+          title: Additional Context (optional)
+          type: string
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.additionalContext"
+            rows: 4
+          description: >
+            Anything else the SRE team should know when evaluating this request.
+        internalApprovalsConfirmed:
+          title: >
+            I confirm that both the Product Owner and Engineering Manager named
+            above have reviewed and approved this exception request before submission.
+          type: boolean
+          ui:field: JsonPopulatedField
+          ui:options:
+            jsonPath: "internalApprovals.internalApprovalsConfirmed"
+          description: >
+            ⚠️ Submissions without confirmed internal approvals will be
+            returned without SRE review.
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STEPS — executed after the form is submitted
+  # ─────────────────────────────────────────────────────────────────────────────
+  steps:
+    - id: create-exception-issue
+      name: Open SRE Exception Request Ticket
+      action: github:issues:create
+      input:
+        repoUrl: github.helix.gsa.gov?owner=SRE&repo=sre-assessments
+        title: "[SRE Exception] ${{ parameters.productName }} — ${{ parameters.criterionId }}"
+        labels:
+          - sre-exception
+          - exception-request
+          - governance
+          - ${{ 'cat4-hardstop' if '4.' in parameters.criterionId else 'pending-review' }}
+          - ${{ 'extension-request' if parameters.exceptionType == 'Extension' else parameters.exceptionType | lower }}
+        assignees: []
+        body: |
+          ## SRE Exception Request — ${{ parameters.productName }}
+
+          > **Criterion:** ${{ parameters.criterionId }}
+          > **Exception Type:** ${{ parameters.exceptionType }}
+          > **Assessment Track:** ${{ parameters.assessmentTrack }}
+          > **Submitted:** ${{ parameters.submissionDate }}
+          > **Submitted By:** ${{ parameters.techLeadName }} (${{ parameters.primaryContactEmail }})
+          > **Portfolio Lead:** ${{ parameters.portfolioLeadName }} (${{ parameters.portfolioLeadEmail }})
+
+          {% if '4.' in parameters.criterionId %}
+          ---
+          ## ⛔ CATEGORY 4 HARD-FAIL GATE — ACTION REQUIRED
+
+          This submission targets a **Category 4 (Security & Compliance)** criterion.
+          Category 4 is a hard-fail gate. A Category 4 average below 3.0 fails the
+          entire assessment and **cannot be excepted or waived**. This exception
+          request will not unblock the intake process.
+
+          **SRE team action:** Redirect this submission to the remediation-support
+          track. Notify the product team that security gaps must be remediated and
+          the assessment re-run before any acceptance path opens.
+
+          ---
+          {% endif %}
+
+          {% if parameters.isPlatformBlocker == 'Yes' %}
+          ---
+          ## ⚠️ POSSIBLE PLATFORM BLOCKER — VERIFY BEFORE PROCEEDING
+
+          The submitter indicated in pre-screening that this gap may be a
+          **platform blocker** (a capability the platform does not yet provide).
+          Platform blockers are NOT exceptions — they follow a separate escalation
+          process per 04-governance-processes.md § Platform Blocker Escalation.
+
+          **SRE team action:** Confirm whether this is a product-team-owned gap or
+          a genuine platform blocker before assigning to the exception review track.
+
+          ---
+          {% endif %}
+
+          ---
+
+          ## 1. Product Information
+
+          | Field | Value |
+          |---|---|
+          | Product / Service Name | ${{ parameters.productName }} |
+          | Team / Organization | ${{ parameters.teamOrganization }} |
+          | Experience Area | ${{ parameters.experienceArea }} |
+          | Assessment Track | ${{ parameters.assessmentTrack }} |
+          | Technical Lead | ${{ parameters.techLeadName }} |
+          | Primary Contact | ${{ parameters.primaryContactEmail }} |
+          | Portfolio Lead | ${{ parameters.portfolioLeadName }} (${{ parameters.portfolioLeadEmail }}) |
+          | Prior Assessment Date | ${{ parameters.priorAssessmentDate or "Not provided" }} |
+
+          ---
+
+          ## 2. Criterion Unable to Meet
+
+          | Field | Value |
+          |---|---|
+          | Criterion | ${{ parameters.criterionId }} |
+          | Current Score | ${{ parameters.currentScore }} / 4 |
+          | Category Average | ${{ parameters.categoryAverage }} / 4 |
+          | Target Score | 3 (Good — fully meets requirements) |
+
+          ---
+
+          ## 3. Reason & Impact
+
+          **Constraint Type:** ${{ parameters.constraintType }}
+
+          **Detailed Explanation:**
+          ${{ parameters.detailedExplanation }}
+
+          **What Has Been Tried:**
+          ${{ parameters.whatHaveYouTried }}
+
+          **Operational Risk Severity (to product):** ${{ parameters.operationalRiskSeverity }}
+
+          **Operational Risk Description:**
+          ${{ parameters.operationalRiskDescription }}
+
+          **Additional Burden on SRE Team:**
+          ${{ parameters.sreOperationalBurden }}
+
+          ---
+
+          ## 4. Proposed Mitigation
+
+          **Tenant / End-User Impact:** ${{ parameters.tenantImpact }}
+
+          {% if parameters.tenantImpactDescription %}
+          **Tenant Impact Description:**
+          ${{ parameters.tenantImpactDescription }}
+          {% endif %}
+
+          **Alternative Approach:**
+          ${{ parameters.mitigationApproach }}
+
+          **Risk Reduction:**
+          ${{ parameters.riskReductionDescription }}
+
+          ---
+
+          ## 5. Remediation Plan
+
+          | Field | Value |
+          |---|---|
+          | Exception Type | ${{ parameters.exceptionType }} |
+          | Target Completion Date | ${{ parameters.targetCompletionDate }} |
+          {% if parameters.originalExceptionId %}| Original Exception ID | ${{ parameters.originalExceptionId }} |{% endif %}
+          {% if parameters.conditionalTriggerDate %}| Expected Trigger Date | ${{ parameters.conditionalTriggerDate }} |{% endif %}
+
+          {% if parameters.exceptionType == 'Extension' %}
+          **Progress Report on Original Exception:**
+          ${{ parameters.extensionProgressReport or "⚠️ NOT PROVIDED — reviewer must request before proceeding" }}
+          {% endif %}
+
+          {% if parameters.conditionalTriggerEvent %}
+          **Trigger Event:**
+          ${{ parameters.conditionalTriggerEvent }}
+          {% endif %}
+
+          {% if parameters.conditionalFallbackPlan %}
+          **Fallback Plan if Trigger Does Not Fire:**
+          ${{ parameters.conditionalFallbackPlan }}
+          {% endif %}
+
+          {% if parameters.remediationTimeline %}
+          **Quarterly Milestones:**
+          ${{ parameters.remediationTimeline }}
+          {% endif %}
+
+          **Resources Required:**
+          ${{ parameters.resourcesRequired }}
+
+          **External Dependencies:**
+          ${{ parameters.externalDependencies or "None" }}
+
+          **Success Criteria:**
+          ${{ parameters.successCriteria }}
+
+          ---
+
+          ## 6. Internal Approvals
+
+          | Role | Name | Email | Status |
+          |---|---|---|---|
+          | Product Owner | ${{ parameters.productOwnerName }} | ${{ parameters.productOwnerEmail }} | ✅ Confirmed by submitter |
+          | Engineering Manager | ${{ parameters.engManagerName }} | ${{ parameters.engManagerEmail }} | ✅ Confirmed by submitter |
+          | Portfolio Lead | ${{ parameters.portfolioLeadName }} | ${{ parameters.portfolioLeadEmail }} | ⏳ Pending — SRE to route |
+
+          {% if parameters.supportingDocLinks %}
+          **Supporting Documentation:**
+          ${{ parameters.supportingDocLinks }}
+          {% endif %}
+
+          {% if parameters.additionalContext %}
+          **Additional Context:**
+          ${{ parameters.additionalContext }}
+          {% endif %}
+
+          ---
+
+          ## SRE Review Checklist
+
+          > _To be completed by the assigned SRE reviewer_
+
+          **Pre-review gates:**
+          - [ ] Prior assessment confirmed on record
+          - [ ] Assessment track verified: ${{ parameters.assessmentTrack }} — criterion ${{ parameters.criterionId }} is valid for this track
+          {% if '4.' in parameters.criterionId %}
+          - [ ] ⛔ Category 4 — route to remediation-support track, do NOT proceed to approval chain
+          {% endif %}
+          {% if parameters.isPlatformBlocker == 'Yes' %}
+          - [ ] ⚠️ Verify whether this is a genuine platform blocker — if so, redirect to Platform Blocker Escalation process
+          {% endif %}
+
+          **Substance review:**
+          - [ ] Constraint is legitimate and documented (not "no time" or "too hard")
+          - [ ] Product team has made genuine effort to meet criterion
+          - [ ] SRE operational burden is understood and acceptable
+          - [ ] Category average (${{ parameters.categoryAverage }}) context considered in risk assessment
+          - [ ] Mitigation adequately reduces operational risk
+          - [ ] Tenant impact assessed and acceptable
+          - [ ] Remediation plan is credible with named quarterly milestones
+          - [ ] Resources and dependencies are identified
+          - [ ] Success criteria are specific and measurable
+          - [ ] Exception type matches the situation (Temporary / Extension / Conditional)
+          {% if parameters.exceptionType == 'Extension' %}
+          - [ ] Progress report on original exception reviewed — meaningful progress confirmed
+          - [ ] Original exception ID verified: ${{ parameters.originalExceptionId or "⚠️ NOT PROVIDED" }}
+          {% endif %}
+          {% if parameters.exceptionType == 'Conditional' %}
+          - [ ] Trigger event is specific and verifiable (not vague)
+          - [ ] Fallback plan is credible if trigger does not fire on time
+          {% endif %}
+
+          **Routing:**
+          - [ ] Internal approvals (PO + EM) confirmed
+          - [ ] Portfolio Lead endorsement routed to: ${{ parameters.portfolioLeadName }} (${{ parameters.portfolioLeadEmail }})
+
+          ---
+
+          **SRE Recommendation:** _(Approve / Approve with Conditions / Deny)_
+
+          **SRE Rationale:**
+
+          **Portfolio Lead Endorsement:** _(${{ parameters.portfolioLeadName }} — Endorsed / Not Endorsed — Date)_
+
+          **Director of SRE Decision:** _(Approved / Approved with Conditions / Denied — Date)_
+
+          **Conditions (if any):**
+
+          **Exception Expiration Date:** _(+90 days from approval date)_
+
+          ---
+
+          ## Review Timeline
+
+          | Milestone | Target Date | Owner |
+          |---|---|---|
+          | SRE acknowledgement | +2 business days | SRE Team |
+          | SRE review complete + recommendation | +1 week | SRE Reviewer |
+          | Portfolio Lead endorsement | +2 weeks | ${{ parameters.portfolioLeadName }} |
+          | Director of SRE decision | +3–4 weeks | Director of SRE |
+          | 60-day check-in | +60 days from approval | SRE Team |
+          | Exception expiration | +90 days from approval | SRE Team |
+
+          ---
+          *Auto-generated by Backstage SRE Exception Request Form (feature/sre-exception-form)*
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # OUTPUT
+  # ─────────────────────────────────────────────────────────────────────────────
+  output:
+    links:
+      - title: View Exception Request Ticket
+        url: ${{ steps['create-exception-issue'].output.issueUrl }}
+        icon: github
+    text:
+      - title: What Happens Next
+        content: |
+          Your SRE Exception Request has been submitted. Here is what to expect:
+
+          1. **Acknowledgement (2 business days)** — The SRE team will acknowledge receipt and assign a reviewer.
+          2. **SRE review (Week 1–2)** — The assigned reviewer evaluates the legitimacy of the constraint, the adequacy of the mitigation, and the credibility of the remediation plan. They may request a 30-minute clarification call.
+          3. **Portfolio Lead endorsement (Week 3)** — ${{ parameters.portfolioLeadName }} will be contacted directly by the SRE team to endorse the request before it proceeds.
+          4. **Director of SRE decision (Week 3–4)** — Final approval or denial issued. If approved, the exception is logged with an expiration date 90 days from the decision.
+          5. **Quarterly tracking** — Active exceptions are reviewed each quarter. You will receive a 30-day advance notice before expiration.
+
+          ⚠️ If your submission targets a **Category 4 (Security & Compliance)** criterion, the SRE team will redirect your request to the remediation-support track. A Category 4 exception cannot unblock the intake process — the security gaps must be fixed and re-assessed.
+
+          **Questions?** Reach the SRE team at sre-team@gsa.gov or in the **#sre-team** Google Chat space.
+          **Office Hours:** Tuesdays 2–3 PM EST

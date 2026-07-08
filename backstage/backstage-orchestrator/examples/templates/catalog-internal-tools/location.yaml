@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: catalog-internal-tools
+  description: >
+    Aggregates all internal FCS platform templates and tooling registered in
+    catalog-internal-tools. Add new template paths to spec.targets as they are
+    contributed. This file is registered as a static location in the Backstage
+    app-config (cc-flux-config).
+spec:
+  targets:
+    - ./component.yaml
+    # Internal starter example
+    - ./templates/internal-starter-example/template.yaml
+    # SRE Technical Assessment Intake Form
+    - ./templates/sre-technical-assessment-intake/template.yaml
+    # SRE Capacity Planning Questionnaire
+    - ./templates/sre-capacity-planning-questionnaire/template.yaml
+    # SRE Exception Request Form
+    - ./templates/sre-exception-request/template.yaml

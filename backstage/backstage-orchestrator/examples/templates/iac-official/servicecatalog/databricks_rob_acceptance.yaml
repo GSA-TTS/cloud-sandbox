@@ -1,0 +1,91 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: databricks_rob_acceptance
+  title: Databricks Workspace — Rules of Behavior Acceptance
+  description: >
+    Review and accept (or decline) the FCS Databricks Rules of Behavior.
+    This form is sent to you as part of a workspace access request.
+    Your Backstage identity (GitHub SSO) is recorded for audit purposes.
+  tags:
+    - 'internal'
+    - 'rob'
+spec:
+  owner: fdp/fcs-next
+  type: Internal
+  parameters:
+    - title: Your Access Request
+      properties:
+        jira_ticket:
+          title: FCSTS Ticket
+          type: string
+          description: The FCSTS Jira ticket for this access request (auto-populated from link).
+          ui:readonly: true
+        jira_url:
+          title: Ticket URL
+          type: string
+          ui:widget: hidden
+        workspace_url:
+          title: Workspace URL
+          type: string
+          ui:widget: hidden
+        workspace_name:
+          title: Workspace
+          type: string
+          description: The Databricks workspace the user is requesting access to.
+          ui:readonly: true
+        user_email:
+          title: Requesting User
+          type: string
+          description: The user requesting access.
+          ui:readonly: true
+        role:
+          title: Requested Role
+          type: string
+          description: The role the user is requesting.
+          ui:readonly: true
+        workflow_id:
+          title: Workflow ID
+          type: string
+          ui:widget: hidden
+        authenticated_email:
+          title: Your Email
+          type: string
+          ui:field: UserEmailField
+
+    - title: Rules of Behavior
+      required:
+        - rob_accepted
+      properties:
+        rob_accepted:
+          title: I have read and agree to the FCS Rules of Behavior linked above.
+          type: boolean
+          ui:field: DatabricksRoBCheckbox
+          default: false
+
+  steps:
+    - id: send_rob_signal
+      name: Accept Rules of Behavior
+      if: ${{ parameters.rob_accepted === true }}
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+          action: send_signal
+          workflow_id: ${{ parameters.workflow_id }}
+          signal_name: rob_accepted
+          signal_args:
+            user_email: ${{ parameters.user_email }}
+            authenticated_email: ${{ parameters.authenticated_email }}
+
+  output:
+    links:
+      - title: 'View FCSTS Ticket'
+        url: '${{ parameters.jira_url }}'
+        icon: docs
+      - title: 'Open Databricks Workspace'
+        url: '${{ parameters.workspace_url }}'
+        icon: dashboard

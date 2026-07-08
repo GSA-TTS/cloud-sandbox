@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.component_name }}
+  description: ${{ values.description }}
+  annotations:
+    github.com/project-slug: ${{ values.github_org }}/${{ values.component_name }}
+    backstage.io/techdocs-ref: url:https://github.helix.gsa.gov/${{ values.github_org }}/${{ values.component_name }}/blob/main/
+  tags:
+    - platform-internal
+spec:
+  type: service
+  owner: mcaas-cc/backstage-admins
+  lifecycle: development

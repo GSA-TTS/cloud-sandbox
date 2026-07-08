@@ -1,0 +1,149 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: backstage-bedrock-template
+  title: Create Bedrock
+  description: Provision and configure a new AWS Bedrock instance.
+  tags:
+    - 'single-resource'
+spec:
+  owner: fdp/fcs-next
+  type: AWS Service
+  parameters:
+    - title: Name
+      required:
+        - bedrock_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        bedrock_name:
+          title: Bedrock Name
+          type: string
+          description: Enter the human-readable name of the Bedrock instance.
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+    - title: Bedrock Parameters
+      properties:
+        base_model_id:
+          title: Base Model ID
+          type: string
+          description: Foundation model ID (e.g., amazon.titan-text-express-v1)
+        custom_model_name:
+          title: Custom Model Name
+          type: string
+          description: Name of the custom Bedrock model
+        # hyperparameters:
+        #   title: hyperparameters
+        #   type: string
+        #   description: Hyperparameter map for the training job
+        job_name:
+          title: Job Name
+          type: string
+          description: Unique name for the model training job
+        output_data_s3_uri:
+          title: Output Data S3 URI
+          type: string
+          description: S3 URI for model output
+        role_arn:
+          title: Role ARN
+          type: string
+          description:  role_arn
+        training_data_s3_uri:
+          title: Training Data S3 URI
+          type: string
+          description: S3 URI for training data
+    - title: Bedrock Hyperparameters
+      -required:
+        - hyperparameter_epoch_count
+        - hyperparameter_batch_size
+        - hyperparameter_learning_rate
+        - hyperparameter_learning_warmup_rate_steps
+      properties:
+        hyperparameter_epoch_count:
+          title: Base Model ID
+          type: number
+          description: Foundation model ID (e.g., amazon.titan-text-express-v1)
+          default: 1
+        hyperparameter_batch_size:
+          title: Base Model ID
+          type: number
+          description: Foundation model ID (e.g., amazon.titan-text-express-v1)
+          default: 1
+        hyperparameter_learning_rate:
+          title: Base Model ID
+          type: number
+          description: Foundation model ID (e.g., amazon.titan-text-express-v1)
+          default: 0.005
+        hyperparameter_learning_rate_warmup_steps:
+          title: Base Model ID
+          type: number
+          description: Foundation model ID (e.g., amazon.titan-text-express-v1)
+          default: 0
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-bedrock-" + parameters.github_org + "-" + parameters.bedrock_name + "-" + parameters.deployment_env }}
+            task_queue: ${{ fcs.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/bedrock/" + parameters.bedrock_name }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add Bedrock Model: " + parameters.bedrock_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions a Bedrock model named " + parameters.bedrock_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "bedrock" }}
+              resource_config:
+                name: ${{ parameters.bedrock_name }}
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  name: ${{ parameters.bedrock_name }}
+                  base_model_id: ${{ parameters.base_model_id }}
+                  custom_model_name: ${{ parameters.custom_model_name }}
+                  hyperparameters:
+                    epochCount: ${{ parameters.hyperparameter_epoch_count}}
+                    batchSize: ${{ parameters.hyperparameter_batch_size}}
+                    learningRate: ${{ parameters.hyperparameter_learning_rate}}
+                    learningRateWarmupSteps: ${{ parameters.hyperparameter_learning_rate_warmup_steps}}
+                  job_name: ${{ parameters.job_name }}
+                  output_data_s3_uri: ${{ parameters.output_data_s3_uri }}
+                  role_arn: ${{ parameters.role_arn }}
+                  training_data_s3_uri: ${{ parameters.training_data_s3_uri }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

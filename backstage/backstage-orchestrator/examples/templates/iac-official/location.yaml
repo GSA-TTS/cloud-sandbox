@@ -1,0 +1,41 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: fcs-iac-modules
+  description: A collection of the IaC templates used by the FCS Next Portal.
+  annotations:
+    backstage.io/view-url: https://github.helix.gsa.gov/fdp/FCS-IaC-Modules/blob/main/modules/backstage-templates.yaml
+spec:
+  targets:
+    - ./component.yaml
+    - ./s3/backstage-s3.yaml
+    - ./sqs/backstage-sqs.yaml
+    - ./rds/backstage-rds.yaml
+    - ./ecr/backstage-ecr.yaml
+    # - ./bedrock/backstage-bedrock.yaml
+    - ./dynamodb/backstage-dynamodb.yaml
+    - ./lambda/backstage-lambda.yaml
+    - ./apigateway/backstage-apigateway.yaml
+    - ./elasticache/backstage-elasticache.yaml
+    - ./opensearch/backstage-opensearch.yaml
+    # FCP Specific (/modules/fcp-specific)
+    - ./fcp-specific/fcp-virtual-asst-be.yaml
+    - ./fcp-specific/fcp-virtual-asst-fe.yaml
+    # - ./fcs-specific/fcp-virtual-asst.ecr.yaml
+
+    # Service Catalog Templates (/modules/servicecatalog)
+    - ./servicecatalog/intake_template.yaml
+    - ./servicecatalog/mcaas_account_blueprint.yaml
+    - ./servicecatalog/containers_blueprint.yaml
+    - ./servicecatalog/databricks_add_workspace.yaml
+    - ./servicecatalog/databricks_add_user.yaml
+    - ./servicecatalog/databricks_add_team.yaml
+    - ./servicecatalog/databricks_rob_acceptance.yaml
+    - ./servicecatalog/approve_databricks_access.yaml
+    - ./servicecatalog/virtual-assistant-blueprint.yaml
+    - ./servicecatalog/serverless-stack-blueprint.yaml
+    - ./servicecatalog/static-site-blueprint.yaml
+    - ./servicecatalog/Delete-Resource-Blueprint.yaml
+    - ./servicecatalog/workspace-reboot-self-service.yaml
+    - ./servicecatalog/workspace-zscaler-chrome-fix-self-service.yaml
+    - ./servicecatalog/workspace-fix-missing-software-self-service.yaml

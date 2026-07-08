@@ -1,0 +1,55 @@
+# Catalog template for the ElastiCache module.
+# Rendered by the Tenant-IAC-catalog-info workflow when a new ElastiCache resource is added.
+# Variables available: {{name}}, {{environment}}, {{lifecycle}}, {{org}}, {{resource_dir}}, {{resource_type}}
+entries:
+  - kind: Resource
+    metadata:
+      name: "{{name}}"
+      title: "{{name}} ({{environment}})"
+      description: "ElastiCache Redis cluster {{name}} in {{environment}} for {{org}}"
+      tags:
+        - cache
+        - elasticache
+        - redis
+        - data-tier
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: elasticache
+      links:
+        - url: "https://console.aws.amazon.com/elasticache/home?region=us-east-1#/redis/{{name}}"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: cache
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependsOn:
+        - "resource:default/{{name}}-credentials"
+  - kind: Resource
+    metadata:
+      name: "{{name}}-credentials"
+      title: "{{name}} Credentials"
+      description: "Secrets Manager secret containing ElastiCache connection details for {{name}}"
+      tags:
+        - secret
+        - credentials
+      annotations:
+        fcs.gsa.gov/environment: "{{environment}}"
+        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
+        fcs.gsa.gov/aws-resource-type: secretsmanager
+        fcs.gsa.gov/secret-name: "{{name}}-credentials"
+      links:
+        - url: "https://console.aws.amazon.com/secretsmanager/secret?name={{name}}-credentials&region=us-east-1"
+          title: AWS Console
+          icon: cloud
+          type: admin-dashboard
+    spec:
+      type: secret
+      lifecycle: "{{lifecycle}}"
+      owner: "{{org}}/portal-techleads"
+      system: "{{org}}"
+      dependencyOf:
+        - "resource:default/{{name}}"

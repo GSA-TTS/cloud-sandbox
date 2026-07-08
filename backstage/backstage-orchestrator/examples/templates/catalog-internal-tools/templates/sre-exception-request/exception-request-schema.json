@@ -1,0 +1,555 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sre-exception-request",
+  "title": "SRE Exception Request",
+  "description": "Structured input for the FCS SRE Production Acceptance Exception Request process. Provide this schema to an AI along with your product context (assessment results, architecture notes, team constraints) and ask it to produce a completed JSON document that conforms to this schema. Submit the resulting JSON via the Backstage SRE Exception Request form.",
+  "type": "object",
+  "required": [
+    "preScreening",
+    "productDetails",
+    "criterion",
+    "reasonAndImpact",
+    "mitigation",
+    "remediationPlan",
+    "internalApprovals"
+  ],
+  "properties": {
+
+    "preScreening": {
+      "title": "Pre-Screening",
+      "description": "Eligibility checks. These questions prevent wasted SRE reviewer time on invalid submissions. Answer honestly — incorrect answers will cause the submission to be returned.",
+      "type": "object",
+      "required": [
+        "hasHadAssessment",
+        "assessmentTrack",
+        "isPlatformBlocker"
+      ],
+      "properties": {
+        "hasHadAssessment": {
+          "title": "Has this product received a formal SRE Production Acceptance assessment?",
+          "description": "Exception requests require a prior scored assessment on record. If the product has not been through a formal assessment yet, the product team must submit the SRE Technical Assessment Intake Form first.",
+          "type": "string",
+          "enum": [
+            "Yes — we have a scored assessment on record",
+            "No — we have not been formally assessed yet"
+          ]
+        },
+        "assessmentTrack": {
+          "title": "Assessment Track",
+          "description": "Track A covers full products and services. Track B covers discrete operational processes handed off from Base Ops (e.g. AMI patching, Helm updates, tenant onboarding). Track B products cannot file exceptions for Track-A-only criteria — 15 criteria are marked not applicable for Track B (e.g. 1.1 HA Design, 2.3 Distributed Tracing, 3.1 Deployment Automation). Choose the track that was used in the most recent assessment.",
+          "type": "string",
+          "enum": [
+            "Track A — Full Product / Service",
+            "Track B — Operational Process"
+          ]
+        },
+        "isPlatformBlocker": {
+          "title": "Is this gap caused by a missing platform capability that the product team cannot fix themselves?",
+          "description": "Platform blockers are NOT exceptions. A platform blocker occurs when the criterion requires a capability that must be built into the Containers team pipeline or platform Terraform modules by the product development team — something the product team has no path to implementing themselves. If this is a platform blocker, do not file an exception. Instead, document the blocker and escalate via the Platform Blocker Escalation process in 04-governance-processes.md. If the gap is something the product team owns and can remediate (with time, resources, or a vendor), answer No.",
+          "type": "boolean",
+          "examples": [false]
+        }
+      }
+    },
+
+    "productDetails": {
+      "title": "Product & Submission Details",
+      "description": "Identify the product, submitter, and the Portfolio Lead who must endorse this request. Portfolio Lead endorsement is required for all exceptions before the request reaches the Director of SRE (SOP Step 5).",
+      "type": "object",
+      "required": [
+        "submissionDate",
+        "productName",
+        "teamOrganization",
+        "experienceArea",
+        "techLeadName",
+        "primaryContactEmail",
+        "portfolioLeadName",
+        "portfolioLeadEmail"
+      ],
+      "properties": {
+        "submissionDate": {
+          "title": "Submission Date",
+          "description": "Date the exception request is being submitted. ISO 8601 format (YYYY-MM-DD).",
+          "type": "string",
+          "format": "date",
+          "examples": ["2026-04-08"]
+        },
+        "productName": {
+          "title": "Product / Service Name",
+          "description": "The full name of the product or service for which the exception is being requested. Use the same name as in the assessment record.",
+          "type": "string",
+          "examples": ["FCS Status Dashboard", "API Exchange", "AMI Patching Automation"]
+        },
+        "teamOrganization": {
+          "title": "Team / Organization",
+          "description": "The team or organizational unit responsible for this product.",
+          "type": "string",
+          "examples": ["Status Dashboard Team", "FCS API Exchange", "Base Ops Platform Team"]
+        },
+        "experienceArea": {
+          "title": "Experience Area",
+          "description": "The FCS Experience Area this product belongs to. Choose the one that best describes the product's primary domain.",
+          "type": "string",
+          "enum": [
+            "Developer Experience",
+            "Data Experience",
+            "Workloads Experience",
+            "AI/ML Experience",
+            "Integration Experience",
+            "Foundational Experience"
+          ]
+        },
+        "techLeadName": {
+          "title": "Technical Lead Name",
+          "description": "Full name of the person submitting this exception request. This person is the primary point of contact throughout the review process.",
+          "type": "string",
+          "examples": ["Jane Smith"]
+        },
+        "primaryContactEmail": {
+          "title": "Technical Lead Email",
+          "description": "Email address of the submitting technical lead. The SRE team will send acknowledgement, clarification requests, and the decision to this address.",
+          "type": "string",
+          "format": "email",
+          "examples": ["jane.smith@gsa.gov"]
+        },
+        "portfolioLeadName": {
+          "title": "Portfolio Lead Name",
+          "description": "Full name of the Portfolio Lead for this product. Portfolio Lead endorsement is mandatory for all exception requests before they reach the Director of SRE. The SRE team will route the endorsement request directly to this person.",
+          "type": "string",
+          "examples": ["Manoj Patel"]
+        },
+        "portfolioLeadEmail": {
+          "title": "Portfolio Lead Email",
+          "description": "Email address of the Portfolio Lead. The SRE team uses this to route the endorsement request directly.",
+          "type": "string",
+          "format": "email",
+          "examples": ["manoj.patel@gsa.gov"]
+        },
+        "priorAssessmentDate": {
+          "title": "Most Recent Assessment Date",
+          "description": "Date of the most recent formal SRE Production Acceptance assessment for this product (YYYY-MM-DD). Leave null if the exact date is not known.",
+          "type": ["string", "null"],
+          "format": "date",
+          "examples": ["2026-03-17", null]
+        }
+      }
+    },
+
+    "criterion": {
+      "title": "Criterion Unable to Meet",
+      "description": "Identify the single criterion this exception covers. Submit one exception request per criterion — do not bundle multiple criteria. Category 4 criteria (4.1–4.5) are a hard-fail gate and cannot be excepted. Selecting a Category 4 criterion will route the submission to the remediation-support track, not the approval chain.",
+      "type": "object",
+      "required": ["criterionId", "currentScore", "categoryAverage"],
+      "properties": {
+        "criterionId": {
+          "title": "Criterion Unable to Meet",
+          "description": "The criterion identifier and name from the SRE Production Acceptance scorecard. Use the exact format shown (e.g. '2.3 — Distributed Tracing'). Criteria 6.1 and 6.2 are SRE-owned and cannot have exceptions filed against them.",
+          "type": "string",
+          "enum": [
+            "1.1 — High Availability Design",
+            "1.2 — Scalability Architecture",
+            "1.3 — Service Dependencies",
+            "1.4 — Data Architecture",
+            "2.1 — Application Logging",
+            "2.2 — Metrics and Dashboards",
+            "2.3 — Distributed Tracing",
+            "2.4 — Alerting",
+            "2.5 — Health Checks",
+            "2.6 — SLI Definition",
+            "2.7 — Proactive Monitoring",
+            "3.1 — Deployment Automation",
+            "3.2 — Configuration Management",
+            "3.3 — Infrastructure as Code",
+            "3.4 — Blue-Green / Canary Deployment",
+            "3.5 — Database Migration Strategy",
+            "3.6 — Validation and Testing",
+            "3.7 — Source Control Hygiene",
+            "4.1 — Authentication and Authorization",
+            "4.2 — Secrets Management",
+            "4.3 — Network Security",
+            "4.4 — Compliance Documentation",
+            "4.5 — Vulnerability Management",
+            "5.1 — System Architecture Documentation",
+            "5.2 — Operational Runbooks",
+            "5.3 — Incident Response Playbooks",
+            "5.4 — API Documentation",
+            "5.5 — Troubleshooting Guides",
+            "5.6 — Documentation Structure Compliance",
+            "5.7 — Code Organization Standards",
+            "6.3 — Communication Protocols",
+            "6.4 — Post-Incident Reviews",
+            "6.5 — Automated Diagnostics Collection",
+            "6.6 — Failure Mode Knowledge Transfer",
+            "7.1 — SLOs",
+            "7.2 — Performance Baselines",
+            "7.3 — Capacity Planning",
+            "7.4 — Disaster Recovery Testing",
+            "8.1 — Customer Support Integration",
+            "8.2 — Debugging Tools",
+            "8.3 — Feature Flags",
+            "8.4 — Maintenance Windows"
+          ]
+        },
+        "currentScore": {
+          "title": "Current Score for This Criterion",
+          "description": "The score this criterion received in the most recent formal assessment. Scale: 0 = Missing (not implemented), 1 = Poor (significant gaps), 2 = Adequate (partial implementation), 3 = Good (fully meets requirements), 4 = Excellent (exceeds requirements). The target for SRE acceptance is 3. Exceptions are typically applicable for scores of 0–2.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4,
+          "examples": [1, 2]
+        },
+        "categoryAverage": {
+          "title": "Category Average (from most recent assessment)",
+          "description": "The average score for the entire category this criterion belongs to — e.g. if the criterion is 2.3 Distributed Tracing, enter the Category 2 (Observability & Monitoring) average. This context is important: a single weak criterion in an otherwise healthy category (avg 2.9) carries a different risk profile than the same criterion in a broadly struggling category (avg 2.1). Range 0.0–4.0.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4,
+          "examples": [2.7, 2.1, 2.9]
+        }
+      }
+    },
+
+    "reasonAndImpact": {
+      "title": "Reason & Impact",
+      "description": "The SRE team evaluates three things here: (1) is the constraint legitimate, (2) has the product team genuinely tried to meet the criterion, and (3) what additional operational burden does this gap place on the SRE team. Vague or dismissive answers result in denial.",
+      "type": "object",
+      "required": [
+        "constraintType",
+        "detailedExplanation",
+        "whatHaveYouTried",
+        "operationalRiskSeverity",
+        "operationalRiskDescription",
+        "sreOperationalBurden"
+      ],
+      "properties": {
+        "constraintType": {
+          "title": "Constraint Type",
+          "description": "The primary category of constraint. Choose the one that most accurately describes the root cause. 'Technical Limitation' covers architectural or technology constraints including legacy systems. 'Third-Party Vendor Limitation' is for cases where the gap exists because a vendor has not yet released a required feature or SDK — this naturally maps to a Conditional exception type. 'Platform Blocker' should only be selected if the pre-screening question was answered incorrectly — flag this to the SRE team.",
+          "type": "string",
+          "enum": [
+            "Technical Limitation",
+            "Resource Constraint",
+            "Timeline Constraint",
+            "Cost Constraint",
+            "Third-Party Vendor Limitation",
+            "Platform Blocker (contact SRE before filing)"
+          ]
+        },
+        "detailedExplanation": {
+          "title": "Detailed Explanation",
+          "description": "A 2–3 paragraph explanation of why this criterion cannot be met. Be specific: name the system, dependency, vendor, or constraint. Explain what architectural or technical factor creates the barrier. Investigations and ruled-out alternatives belong here too. For Extension requests: begin with a progress summary on the original exception — what milestones have been completed, what percentage is done, and what specifically remains — then explain the continuing gap.",
+          "type": "string",
+          "minLength": 200,
+          "examples": [
+            "Our application is a legacy Java 7 system running on WebLogic 10.3. Implementing distributed tracing (criterion 2.3) requires OpenTelemetry SDK support, which requires Java 11+. Upgrading to Java 11 on WebLogic 10.3 is not supported — the WebLogic upgrade path requires re-architecting several core components that rely on deprecated Java EE 5 APIs.\n\nWe investigated a custom log-correlation approach and a commercial APM agent (AppDynamics) as alternatives. The APM agent does not support WebLogic 10.3's classloader model and caused instability in our staging environment. Log correlation provides some capability but cannot reconstruct distributed traces across service boundaries.\n\nThe only viable path is a full platform upgrade (Java 11 + WebLogic 14 or migration to a supported runtime). This is estimated at 6 months of engineering effort by two senior engineers, which we do not have available in FY2026 Q2–Q3 given existing delivery commitments."
+          ]
+        },
+        "whatHaveYouTried": {
+          "title": "What Have You Tried?",
+          "description": "A numbered list of all prior attempts to meet this criterion and why each was unsuccessful. The SRE team uses this to verify genuine effort has been made and to rule out alternatives they might otherwise suggest. 'Nothing' or 'N/A' are not acceptable — they result in automatic denial.",
+          "type": "string",
+          "minLength": 100,
+          "examples": [
+            "1. Evaluated OpenTelemetry Java agent — requires Java 11+; our runtime is Java 7. Not compatible.\n2. Evaluated AppDynamics APM agent — caused classloader instability on WebLogic 10.3 in staging; vendor confirmed lack of support.\n3. Evaluated Datadog APM agent — same Java version constraint as OpenTelemetry.\n4. Implemented enhanced correlation ID logging as a partial mitigation — confirmed it does not satisfy the distributed tracing criterion but reduces incident diagnosis time somewhat."
+          ]
+        },
+        "operationalRiskSeverity": {
+          "title": "Operational Risk Severity (to the product)",
+          "description": "A severity rating describing the risk this gap introduces to product reliability and operations during the exception period.",
+          "type": "string",
+          "enum": [
+            "Low — minimal impact on product reliability",
+            "Medium — noticeable impact; workarounds available",
+            "High — significant reliability risk during exception period",
+            "Critical — major reliability or availability risk"
+          ]
+        },
+        "operationalRiskDescription": {
+          "title": "Operational Risk Description (to the product)",
+          "description": "A concrete description of how this gap affects product reliability. Quantify where possible — include frequency estimates, impact on availability, and what workarounds exist. The SRE team uses this to calibrate overall risk tolerance.",
+          "type": "string",
+          "examples": [
+            "Without blue-green deployments, a failed production release requires manual rollback following documented procedures. Estimated rollback time is 15–30 minutes during which the service is degraded. Our deployment frequency is approximately once per month. The manual rollback procedure has been tested and works reliably. Risk is Low–Medium given low deployment frequency and well-documented fallback."
+          ]
+        },
+        "sreOperationalBurden": {
+          "title": "Additional Burden on the SRE Team",
+          "description": "Describe specifically what extra manual effort the SRE team will absorb because of this gap during the exception period. This is a core factor in the SRE team's risk assessment and recommendation — it is not the same as product operational risk. Quantify where possible: time per incident, frequency of manual steps, types of tasks that cannot be automated. An honest, specific answer here increases the likelihood of a realistic approval with appropriate conditions.",
+          "type": "string",
+          "examples": [
+            "Without distributed tracing, SRE engineers responding to cross-service incidents must manually correlate logs across 4 microservices using correlation IDs. Based on our incident history, we have approximately 2–3 High or Critical cross-service incidents per month. Each incident is estimated to take 3–5 additional hours compared to trace-assisted diagnosis. Monthly SRE burden estimate: 6–15 additional engineering hours. The enhanced correlation ID logging mitigation reduces but does not eliminate this burden."
+          ]
+        }
+      }
+    },
+
+    "mitigation": {
+      "title": "Proposed Mitigation",
+      "description": "The mitigation is what the product team will do instead of — or in partial satisfaction of — the full criterion while the exception is active. A strong mitigation directly reduces the operational risks identified in the previous section. Weak or missing mitigations significantly reduce approval likelihood.",
+      "type": "object",
+      "required": [
+        "mitigationApproach",
+        "riskReductionDescription",
+        "tenantImpact"
+      ],
+      "properties": {
+        "mitigationApproach": {
+          "title": "Alternative / Mitigation Approach",
+          "description": "A numbered, specific description of what the product team will implement as an alternative. Avoid vague commitments like 'we will improve logging' — name the specific tools, configurations, and procedures. A good mitigation directly addresses the operational burdens identified in reasonAndImpact.sreOperationalBurden.",
+          "type": "string",
+          "examples": [
+            "While we cannot implement distributed tracing on our current Java 7 / WebLogic stack, we will implement the following compensating controls:\n1. Add a unique correlation ID header (X-Correlation-ID) to all inter-service requests, propagated through the full call chain.\n2. Emit the correlation ID in all structured log entries across all 4 services.\n3. Create a Datadog saved search / dashboard that reconstructs a request flow across all services using a single correlation ID lookup.\n4. Document the log-correlation investigation procedure in the relevant runbooks so SRE engineers can execute it without product team involvement.\n5. Host a 30-minute knowledge transfer session with the SRE team covering the correlation ID approach."
+          ]
+        },
+        "riskReductionDescription": {
+          "title": "How Does This Mitigation Reduce Operational Risk?",
+          "description": "Explain how the mitigation reduces the risks described in reasonAndImpact. Quantify the reduction where possible. Reference the specific burdens from sreOperationalBurden and explain how each is addressed.",
+          "type": "string",
+          "examples": [
+            "The correlation ID approach provides approximately 70% of the troubleshooting value of full distributed tracing for our architecture (single-region, 4 services, low fan-out). The Datadog saved search reduces the manual log correlation time from 3–5 hours per incident to approximately 1–2 hours. The runbook documentation eliminates the need for SRE to escalate to the product team for log navigation during incidents."
+          ]
+        },
+        "tenantImpact": {
+          "title": "Tenant / End-User Impact During the Exception Period",
+          "description": "Will tenants or end-users be affected by this gap? This is a distinct question from product operational risk — it specifically concerns what tenants will observe or experience. Portfolio Leads weigh business risk to tenants when deciding whether to endorse an exception.",
+          "type": "string",
+          "enum": [
+            "None — this gap is entirely internal and invisible to tenants",
+            "Indirect — tenants may experience slightly degraded reliability or slower incident resolution",
+            "Direct — tenants will experience visible impact (describe in tenantImpactDescription)"
+          ]
+        },
+        "tenantImpactDescription": {
+          "title": "Tenant Impact Description",
+          "description": "Required if tenantImpact is 'Direct'. Describe what tenants will experience and how the mitigation reduces that impact. Leave null if None or Indirect.",
+          "type": ["string", "null"],
+          "examples": [null, "Tenants may experience up to 30 minutes of degraded service (elevated error rates) in the event of a failed deployment. The manual rollback procedure caps this at 30 minutes. We will proactively communicate via the Status Dashboard during any degradation event."]
+        }
+      }
+    },
+
+    "remediationPlan": {
+      "title": "Remediation Plan",
+      "description": "The plan to fully meet this criterion. All exceptions are time-limited to 90 days maximum. There are no automatic renewals. The plan must be credible — resources and milestones must be realistic given the team's actual capacity.",
+      "type": "object",
+      "required": [
+        "exceptionType",
+        "targetCompletionDate",
+        "resourcesRequired",
+        "successCriteria"
+      ],
+      "properties": {
+        "exceptionType": {
+          "title": "Exception Type Requested",
+          "description": "Temporary: remediation is achievable within 90 days with dedicated effort. Extension: a prior Temporary exception was held and up to 90 more days are needed; meaningful progress must be shown and the original exception ID must be provided. Conditional: remediation depends on a specific, named, verifiable external event (a vendor releasing a feature, a budget cycle, a platform capability being added). Conditional is not a way to defer indefinitely — the trigger must be concrete.",
+          "type": "string",
+          "enum": ["Temporary", "Extension", "Conditional"]
+        },
+        "originalExceptionId": {
+          "title": "Original Exception ID (required for Extension requests)",
+          "description": "The Backstage ticket number or exception record ID for the original exception being extended (e.g. EXC-2026-001). The SRE reviewer will verify progress against the original remediation plan milestones. Required for Extension type; leave null otherwise.",
+          "type": ["string", "null"],
+          "examples": ["EXC-2026-001", null]
+        },
+        "extensionProgressReport": {
+          "title": "Progress Report on Original Exception (required for Extension requests)",
+          "description": "Required when exceptionType is Extension. Summarise: which milestones from the original remediation plan have been completed, what percentage of the total work is done, and what specifically remains. The SRE team will compare this report against the original milestones on record. Lack of meaningful progress is grounds for denial of the extension. Leave null for Temporary or Conditional requests.",
+          "type": ["string", "null"],
+          "examples": [
+            "Q1 2026 milestone (Java upgrade design complete + proof-of-concept started) — COMPLETE. Design document delivered March 10, 2026. POC demonstrated on isolated dev environment March 28, 2026.\nQ2 2026 milestone (WebLogic migration finished) — 60% complete. 3 of 5 services migrated. Remaining 2 services (auth-service and report-service) blocked on vendor consulting availability until mid-May 2026.\nRemaining work: complete WebLogic migration for 2 services, integrate OpenTelemetry in all services, complete load testing, deploy to production.",
+            null
+          ]
+        },
+        "conditionalTriggerEvent": {
+          "title": "Trigger Event (required for Conditional requests)",
+          "description": "The specific, named, verifiable external event that will enable remediation. Must be concrete — not 'when we have budget' but 'FY2027 Q1 budget approved and allocated.' Not 'when the platform supports it' but 'Containers team delivers Flagger-based progressive delivery in the platform pipeline.' The SRE team reviews conditional exceptions every 90 days and at the expected trigger date. Leave null for Temporary or Extension requests.",
+          "type": ["string", "null"],
+          "examples": [
+            "Vendor X releases OpenTelemetry SDK v2.0 with WebLogic 10.3 support (currently on vendor roadmap for Q3 2026).",
+            "FY2027 Q1 budget (starting October 1, 2026) approved and production monitoring tooling line item confirmed by Budget Officer.",
+            null
+          ]
+        },
+        "conditionalTriggerDate": {
+          "title": "Expected Trigger Date (for Conditional requests)",
+          "description": "Best estimate of when the trigger event will occur (YYYY-MM-DD). The exception will be reviewed when this date passes, or every 90 days if the trigger has not fired. Leave null for Temporary or Extension requests.",
+          "type": ["string", "null"],
+          "format": "date",
+          "examples": ["2026-09-01", null]
+        },
+        "conditionalFallbackPlan": {
+          "title": "Fallback Plan if Trigger Does Not Fire (for Conditional requests)",
+          "description": "What will the team do if the named trigger event is delayed or does not occur by the expected date? The SRE team needs a credible contingency before approving a Conditional exception. Leave null for Temporary or Extension requests.",
+          "type": ["string", "null"],
+          "examples": [
+            "If the vendor SDK is not released by Q3 2026, we will implement a custom OpenTelemetry bridge using the existing v1 Java API as an interim solution. This provides reduced functionality (no automatic span propagation) but satisfies the criterion at score 3. Estimated effort: 2 FTE-sprints.",
+            null
+          ]
+        },
+        "targetCompletionDate": {
+          "title": "Target Completion Date",
+          "description": "The date by which the product team intends to fully meet this criterion (score ≥ 3). For Temporary exceptions, this must be within 90 days of the expected approval date. For Extensions, within 90 days of the extension approval. For Conditional, this may extend beyond 90 days if the trigger event is the hard dependency, but the exception itself will still be reviewed every 90 days.",
+          "type": "string",
+          "format": "date",
+          "examples": ["2026-07-01"]
+        },
+        "remediationTimeline": {
+          "title": "Remediation Timeline (Quarterly Milestones)",
+          "description": "A quarter-by-quarter breakdown of what will be completed on the path to fully meeting the criterion. Use the format shown. Each milestone should be a specific, verifiable deliverable — not 'work will continue' but 'X service migrated to Java 11 and merged to main.' These milestones become the check-in checkpoints during exception monitoring.",
+          "type": ["string", "null"],
+          "examples": [
+            "Q2 2026 — Java 11 upgrade design complete; auth-service and report-service WebLogic migration complete; OpenTelemetry integrated in dev environment for all 4 services\nQ3 2026 — Load testing against OpenTelemetry-instrumented services complete; tracing deployed to staging; distributed traces visible in Datadog\nQ3 2026 (end) — Distributed tracing live in production across all 4 services; criterion 2.3 re-scored in quarterly review",
+            null
+          ]
+        },
+        "resourcesRequired": {
+          "title": "Resources Required",
+          "description": "Specific engineering capacity, budget, vendor, or training resources needed to execute this remediation plan. Be concrete — name the number of FTE-sprints, budget line items, or vendor engagements. Vague answers like 'engineering time' without estimates do not demonstrate credible planning.",
+          "type": "string",
+          "examples": [
+            "2 senior engineers × 6 sprints (12 FTE-sprints total over Q2–Q3 2026). No additional budget required — work will be funded from existing team capacity. External dependency: vendor consulting for WebLogic migration (already contracted, slots available from mid-May 2026)."
+          ]
+        },
+        "externalDependencies": {
+          "title": "External Dependencies",
+          "description": "Things that must happen first that are outside the product team's direct control. Identify the dependency, who owns it, and the expected date. Leave null if there are no external dependencies.",
+          "type": ["string", "null"],
+          "examples": [
+            "WebLogic migration consulting slots — contracted with vendor, available from May 15, 2026. Identity team service account with Kubernetes read access — requested March 30, 2026, ETA 2 weeks.",
+            null
+          ]
+        },
+        "successCriteria": {
+          "title": "Success Criteria",
+          "description": "A numbered list of specific, measurable outcomes that will confirm this criterion is fully met at score ≥ 3. These become the acceptance criteria for closing the exception at the next formal assessment. Each criterion should be independently verifiable by the SRE reviewer.",
+          "type": "string",
+          "examples": [
+            "1. Datadog distributed traces visible end-to-end for all three critical user journeys (create workspace, access workspace, workspace deletion).\n2. p99 request latency traceable in a single trace across all 4 services.\n3. Trace sampling rate ≥ 10% for all production traffic.\n4. Criterion 2.3 (Distributed Tracing) scores ≥ 3 in the next formal SRE Production Acceptance assessment."
+          ]
+        }
+      }
+    },
+
+    "internalApprovals": {
+      "title": "Internal Approvals & Supporting Documentation",
+      "description": "Both the Product Owner and Engineering Manager must review and approve this exception request before it is submitted. The SRE team will not begin review until both approvals are on record. Portfolio Lead endorsement is handled by the SRE team after submission — their contact details were captured in productDetails.",
+      "type": "object",
+      "required": [
+        "productOwnerName",
+        "productOwnerEmail",
+        "engManagerName",
+        "engManagerEmail",
+        "internalApprovalsConfirmed"
+      ],
+      "properties": {
+        "productOwnerName": {
+          "title": "Product Owner Name",
+          "description": "Full name of the Product Owner who has reviewed and approved this submission.",
+          "type": "string",
+          "examples": ["Alex Johnson"]
+        },
+        "productOwnerEmail": {
+          "title": "Product Owner Email",
+          "type": "string",
+          "format": "email",
+          "examples": ["alex.johnson@gsa.gov"]
+        },
+        "engManagerName": {
+          "title": "Engineering Manager Name",
+          "description": "Full name of the Engineering Manager who has reviewed and approved this submission.",
+          "type": "string",
+          "examples": ["Chris Lee"]
+        },
+        "engManagerEmail": {
+          "title": "Engineering Manager Email",
+          "type": "string",
+          "format": "email",
+          "examples": ["chris.lee@gsa.gov"]
+        },
+        "supportingDocLinks": {
+          "title": "Supporting Documentation Links",
+          "description": "Links to technical analysis, cost estimates, vendor quotes, proof-of-concept results, vendor roadmap confirmations, or any other evidence that supports this exception request. One link per line. Leave null if no supporting documents exist.",
+          "type": ["string", "null"],
+          "examples": [
+            "https://github.helix.gsa.gov/team/repo/docs/java-upgrade-analysis.md\nhttps://github.helix.gsa.gov/team/repo/docs/appdynamics-poc-results.md",
+            null
+          ]
+        },
+        "additionalContext": {
+          "title": "Additional Context",
+          "description": "Anything else the SRE team should know when evaluating this request that was not captured in the fields above. Leave null if nothing additional applies.",
+          "type": ["string", "null"],
+          "examples": [null]
+        },
+        "internalApprovalsConfirmed": {
+          "title": "Internal Approvals Confirmed",
+          "description": "Set to true only if both the Product Owner and Engineering Manager named above have reviewed and explicitly approved the submission of this exception request. Submissions where this is false will be returned without SRE review.",
+          "type": "boolean",
+          "examples": [true]
+        }
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "preScreening": {
+        "hasHadAssessment": "Yes — we have a scored assessment on record",
+        "assessmentTrack": "Track A — Full Product / Service",
+        "isPlatformBlocker": false
+      },
+      "productDetails": {
+        "submissionDate": "2026-04-08",
+        "productName": "FCS Status Dashboard",
+        "teamOrganization": "Status Dashboard Team",
+        "experienceArea": "Developer Experience",
+        "techLeadName": "Jane Smith",
+        "primaryContactEmail": "jane.smith@gsa.gov",
+        "portfolioLeadName": "Manoj Patel",
+        "portfolioLeadEmail": "manoj.patel@gsa.gov",
+        "priorAssessmentDate": "2026-04-06"
+      },
+      "criterion": {
+        "criterionId": "2.3 — Distributed Tracing",
+        "currentScore": 1,
+        "categoryAverage": 2.7
+      },
+      "reasonAndImpact": {
+        "constraintType": "Technical Limitation",
+        "detailedExplanation": "Our application is a legacy Java 7 system on WebLogic 10.3. OpenTelemetry requires Java 11+. Upgrading requires re-architecting WebLogic integration points — a 6-month effort we cannot staff in FY2026 Q2–Q3.",
+        "whatHaveYouTried": "1. OpenTelemetry Java agent — requires Java 11+, incompatible.\n2. AppDynamics APM agent — WebLogic 10.3 classloader instability confirmed by vendor.\n3. Datadog APM — same Java version constraint.\n4. Correlation ID logging — implemented as mitigation, does not meet the criterion.",
+        "operationalRiskSeverity": "Medium — noticeable impact; workarounds available",
+        "operationalRiskDescription": "Cross-service incident diagnosis is slower without traces. Estimated 2–3 cross-service incidents per month. The correlation ID mitigation brings diagnosis time to an acceptable level.",
+        "sreOperationalBurden": "Manual log correlation adds 1–2 hours per cross-service incident vs. trace-assisted diagnosis. Estimated 2–6 additional SRE hours per month. Runbook documentation will reduce the escalation rate to the product team."
+      },
+      "mitigation": {
+        "mitigationApproach": "1. Propagate X-Correlation-ID across all 4 services.\n2. Emit correlation ID in all structured log entries.\n3. Create Datadog saved search for correlation ID-based flow reconstruction.\n4. Document log-correlation procedure in SRE runbooks.\n5. Host knowledge transfer session with SRE team.",
+        "riskReductionDescription": "Provides ~70% of distributed tracing troubleshooting value for our 4-service topology. Reduces SRE incident diagnosis time from 3–5 hours to 1–2 hours per cross-service incident.",
+        "tenantImpact": "Indirect — tenants may experience slightly degraded reliability or slower incident resolution",
+        "tenantImpactDescription": null
+      },
+      "remediationPlan": {
+        "exceptionType": "Temporary",
+        "originalExceptionId": null,
+        "extensionProgressReport": null,
+        "conditionalTriggerEvent": null,
+        "conditionalTriggerDate": null,
+        "conditionalFallbackPlan": null,
+        "targetCompletionDate": "2026-07-01",
+        "remediationTimeline": "Q2 2026 — Java 11 upgrade design complete; OpenTelemetry integrated in dev for all 4 services\nQ3 2026 — Distributed tracing live in production; criterion 2.3 re-scored in quarterly review",
+        "resourcesRequired": "2 senior engineers × 4 sprints (8 FTE-sprints, Q2–Q3 2026). No additional budget.",
+        "externalDependencies": null,
+        "successCriteria": "1. Datadog distributed traces visible for all 3 critical user journeys.\n2. p99 latency traceable end-to-end in a single trace.\n3. Criterion 2.3 scores ≥ 3 in the next formal assessment."
+      },
+      "internalApprovals": {
+        "productOwnerName": "Alex Johnson",
+        "productOwnerEmail": "alex.johnson@gsa.gov",
+        "engManagerName": "Chris Lee",
+        "engManagerEmail": "chris.lee@gsa.gov",
+        "supportingDocLinks": "https://github.helix.gsa.gov/team/status-dashboard/docs/tracing-analysis.md",
+        "additionalContext": null,
+        "internalApprovalsConfirmed": true
+      }
+    }
+  ]
+}
