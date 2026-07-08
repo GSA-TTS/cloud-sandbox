@@ -1,0 +1,90 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: workspace_fix_missing_software
+  title: Workspace Fix Missing Software
+  description: Reinstall or repair missing software on your Ubuntu AWS WorkSpace. Select one or more software groups — already-installed packages are safely skipped.
+  tags:
+    - 'workspace'
+    - 'self-service'
+    - 'software'
+    - 'tier-user'
+spec:
+  owner: example-org/backstage-ops
+  type: Self-Service
+  parameters:
+    - title: Fix Missing Software
+      required:
+        - registration_code
+        - software_groups
+      properties:
+        workspace_username:
+          title: Your Username
+          type: string
+          ui:field: WorkspaceCurrentUser
+        registration_code:
+          title: Your Workspace
+          type: string
+          ui:field: WorkspacePicker
+        software_groups:
+          title: What software do you want to restore?
+          type: array
+          description: >
+            Select one or more software groups to reinstall. Already-installed packages are safely skipped — safe to run multiple times.
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - chrome
+              - docker
+              - java
+              - python
+              - nodejs
+              - postgresql
+              - github-cli
+              - dev-tools
+          enumNames:
+            - 'Google Chrome — browser'
+            - 'Docker — container engine + CLI + plugins'
+            - 'Java 17 — Amazon Corretto + OpenJDK'
+            - 'Python — Python 3.11, pip, full install'
+            - 'Node.js + npm — via apt'
+            - 'PostgreSQL — database server + client'
+            - 'GitHub CLI (gh) — command line GitHub'
+            - 'Dev Tools — git-lfs, maven, ant, zsh, subversion, dnsutils, flatpak, gnome-tweaks'
+          uniqueItems: true
+          ui:widget: checkboxes
+        cooldown_guard:
+          type: string
+          ui:field: WorkspaceCooldownGuard
+          ui:options:
+            cooldownMinutes: 20
+            actionKey: missing-software
+
+  steps:
+    - id: trigger_fix_software_workflow
+      name: Trigger Fix Missing Software
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.example.com?repo=bulkhead&owner=example-org
+        workflowId: workspace_self_service_fix_missing_software.yml
+        branchOrTagName: main
+        workflowInputs:
+          workspace_username: ${{ user.entity.metadata.name }}
+          registration_code: ${{ parameters.registration_code }}
+          software_groups: ${{ parameters.software_groups | join(',') }}
+
+  output:
+    text:
+      - title: Fix Missing Software Initiated
+        content: |
+          The software restore has been triggered for workspace **${{ user.entity.metadata.name }}**.
+
+          **Selected software groups:** ${{ parameters.software_groups | join(', ') }}
+
+          **What to expect:**
+          - Already-installed packages are skipped automatically — safe to run multiple times
+          - Fresh installs take approximately 5–10 minutes depending on what is missing
+          - If everything is already installed, the run completes in ~1–2 minutes
+
+          Monitor progress in the [GitHub Actions run log](https://github.example.com/example-org/bulkhead/actions).

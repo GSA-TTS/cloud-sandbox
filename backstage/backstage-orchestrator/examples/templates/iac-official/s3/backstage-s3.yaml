@@ -1,0 +1,158 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: backstage-s3-template
+  title: Create S3 Bucket
+  description: Provision and configure a new AWS S3 bucket.
+  tags:
+    - 'single-resource'
+    - 'product-serverless'
+    - 'product-containers'
+    - 'tier-developer'
+spec:
+  owner: example-org/platform-team
+  type: AWS Service
+  parameters:
+    - title: Name
+      required:
+        - s3_bucket_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        s3_bucket_name:
+          title: S3 Name
+          type: string
+          description: Enter the human-readable name of the S3 bucket
+          ui:field: S3BucketNameField
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+        enable_versioning:
+          title: Enable Versioning
+          type: boolean
+          description: Enable S3 object versioning (disable for ephemeral or export buckets)
+          default: true
+        enable_eks_access:
+          title: Enable EKS Cluster Access
+          type: boolean
+          description: >-
+            Attach an IAM bucket policy granting the environment's EKS nodegroup
+            read/write access to this bucket. The nodegroup role is derived
+            automatically from the environment's account.yaml in the repository.
+          default: false
+    - title: Advanced Settings
+      description: >-
+        These defaults match existing Platform S3 provisioning. Only change
+        them if you have a specific need.
+      properties:
+        show_advanced:
+          title: Show Advanced Options
+          type: boolean
+          description: Reveal module versioning and public access overrides
+          default: false
+      dependencies:
+        show_advanced:
+          oneOf:
+            - properties:
+                show_advanced:
+                  const: false
+            - properties:
+                show_advanced:
+                  const: true
+                module_version:
+                  title: Module Version
+                  type: string
+                  description: Tag version of the S3 module in Example-IaC-Modules (e.g. v1.0.0, v2.0.0)
+                  default: "v2.1.0"
+                enable_acls:
+                  title: Enable ACLs
+                  type: boolean
+                  description: Allow PutObject operations with ACL other than 'bucket-owner-full-control'
+                  default: false
+                block_public_acls:
+                  title: Block Public ACLs
+                  type: boolean
+                  description: Whether Amazon S3 should block public ACLs for this bucket
+                  default: true
+                block_public_policy:
+                  title: Block Public Policies
+                  type: boolean
+                  description: Whether Amazon S3 should block public bucket policies for this bucket
+                  default: true
+                ignore_public_acls:
+                  title: Ignore Public ACLs
+                  type: boolean
+                  description: Whether Amazon S3 should ignore public ACLs for this bucket
+                  default: true
+                restrict_public_buckets:
+                  title: Restrict Public Buckets
+                  type: boolean
+                  description: Whether Amazon S3 should restrict public bucket policies for this bucket
+                  default: true
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-s3-" + parameters.github_org + "-" + parameters.s3_bucket_name + "-" + parameters.deployment_env }}
+            task_queue: ${{ platform.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/s3/" + parameters.s3_bucket_name }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add S3: " + parameters.s3_bucket_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions an S3 bucket named " + parameters.s3_bucket_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
+              module_version: ${{ parameters.module_version }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "s3" }}
+              resource_config:
+                name: ${{ parameters.s3_bucket_name }}
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  platform_bucket_name: ${{ parameters.s3_bucket_name }}
+                  platform_bucket_env: ${{ parameters.deployment_env }}
+                  # access_log_s3_name is derived automatically from local.tenant_short_name,
+                  # which is injected into every module via the root.hcl generate block.
+                  block_public_acls: ${{ parameters.block_public_acls }}
+                  block_public_policy: ${{ parameters.block_public_policy }}
+                  enable_acls: ${{ parameters.enable_acls }}
+                  versioning: ${{ parameters.enable_versioning }}
+                  ignore_public_acls: ${{ parameters.ignore_public_acls }}
+                  restrict_public_buckets: ${{ parameters.restrict_public_buckets }}
+                  enable_eks_access: ${{ parameters.enable_eks_access }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

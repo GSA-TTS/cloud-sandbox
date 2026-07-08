@@ -1,0 +1,154 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: intakeform
+  title: Intake form
+  description: New tenant onboarding form.
+  tags:
+    - 'intake-and-provisioning'
+    - 'product-all-dev'
+    - 'tier-user'
+spec:
+  owner: example-org/backstage-ops
+  type: Intake and Provisioning
+  parameters:
+    - title: Project Information
+      description: Please provide project information about your project and key contacts.
+      required:
+        - project_name
+      properties:
+        request_type:
+          title: Request Type
+          type: string
+          description: Type of request (e.g., New Tenant, Resource Provisioning, etc.)
+        project_name:
+          title: Project Name
+          type: string
+          description: Enter the name of your project
+        project_initiative_name:
+          title: Project Initiative Name
+          type: string
+          description: Name of the project initiative
+        tenant_name:
+          title: Tenant Name
+          type: string
+          description: Name of the tenant
+        tenant_shortname:
+          title: Tenant Short Name
+          type: string
+          description: Short name for the tenant
+        expected_timeframe:
+          title: Expected Timeframe
+          type: string
+          description: Estimated timeframe for project completion
+        funded:
+          title: Funded
+          type: string
+          description: Is this project funded?
+    - title: Project Contact Information
+      properties:
+        gsa_it_technical_point_of_contact:
+          title: GSA IT Technical Point of Contact
+          type: string
+          description: Name or email of GSA IT technical contact
+        application_project_manager:
+          title: Application Project Manager
+          type: string
+          description: Name or email of application project manager
+        application_system_owner:
+          title: Application System Owner
+          type: string
+          description: Name or email of application system owner
+    - title: Detailed Project Information
+      properties:
+        current_challenges:
+          title: Current Challenges
+          type: string
+          description: Describe the current challenges your project aims to address
+          ui:widget: textarea
+        goals_objectives:
+          title: Goals and Objectives
+          type: string
+          description: Describe the goals and objectives of your project
+          ui:widget: textarea
+        value_outcome:
+          title: Value and Outcome
+          type: string
+          description: Expected value and outcome from this project
+          ui:widget: textarea
+    - title: Solution Details
+      description: Provide details about your solution and technical requirements.
+      properties:
+        # upload_solution_document:
+        #   title: Upload Solution Document (Optional)
+        #   type: string
+        #   description: Click to upload or drag and drop - PDF, DOC, DOCX, TXT, or other document formats (multiple files allowed)
+        #   ui:options:
+        #     aiAnalyzed: true
+        # solution_description:
+        #   title: Solution Description
+        #   type: string
+        #   description: Describe your solution, including its purpose, key features, technical requirements, and any other relevant details...
+        #   ui:widget: textarea
+        #   ui:options:
+        #     rows: 10
+        #     aiAnalyzed: true
+        # existing_tech_stack:
+        #   title: Existing Tech Stack (Optional)
+        #   type: string
+        #   description: Specify any technologies or services already in use that should be considered. Enter technologies (comma-separated)...
+        environments_required:
+          title: Environments Required
+          type: string
+          description: List of required environments
+          default: "dev"
+        environment_size:
+          title: Environment Size
+          type: string
+          description: Size of the environment (e.g., small, medium, large)
+        external_access_requirements:
+          title: External Access Requirements
+          type: string
+          description: Describe any external access requirements
+          ui:widget: textarea
+        domain_for_certificates:
+          title: Domain for Certificates
+          type: string
+          description: Domain name for SSL certificates
+        poc_infrastructure_notifications:
+          title: POC for Infrastructure Notifications
+          type: string
+          description: Point of contact for infrastructure notifications
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIntakeForm" }}
+            workflow_id: NewIntakeForm-${{ parameters.project_name }}
+            task_queue: ${{ platform.taskQueue }}
+            workflow_args:
+              request_type: ${{ parameters.request_type }}
+              project_name: ${{ parameters.project_name }}
+              project_initiative_name: ${{ parameters.project_initiative_name }}
+              tenant_name: ${{ parameters.tenant_name }}
+              tenant_shortname: ${{ parameters.tenant_shortname }}
+              expected_timeframe: ${{ parameters.expected_timeframe }}
+              funded: ${{ parameters.funded }}
+              gsa_it_technical_point_of_contact: ${{ parameters.gsa_it_technical_point_of_contact }}
+              application_project_manager: ${{ parameters.application_project_manager }}
+              application_system_owner: ${{ parameters.application_system_owner }}
+              current_challenges: ${{ parameters.current_challenges }}
+              goals_objectives: ${{ parameters.goals_objectives }}
+              value_outcome: ${{ parameters.value_outcome }}
+              environments_required: ${{ parameters.environments_required }}
+              environment_size: ${{ parameters.environment_size }}
+              external_access_requirements: ${{ parameters.external_access_requirements }}
+              domain_for_certificates: ${{ parameters.domain_for_certificates }}
+              poc_infrastructure_notifications: ${{ parameters.poc_infrastructure_notifications }}

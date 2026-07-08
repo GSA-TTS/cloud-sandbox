@@ -1,0 +1,96 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: databricks_add_team
+  title: Add Team to Databricks Workspace
+
+  description: >-
+    Add a new team to an existing Databricks workspace across all environments.
+
+    A Temporal workflow creates an Service Desk ticket and notifies the workspace owner via JSM
+    approval (email with Approve/Decline buttons). Once approved, a single pull request is
+    automatically opened against account-management adding the team to `workspace_teams`
+    in every environment's Terragrunt configuration (prd, stg, np, etc.).
+  tags:
+    - 'product-databricks-dev'
+    - 'data-self-service'
+spec:
+  owner: example-org/backstage-ops
+  type: Self-Service
+  parameters:
+    # ── Step 1: Workspace ────────────────────────────────────────────────────
+    - title: Select Workspace
+      required:
+        - workspace_name
+      properties:
+        workspace_name:
+          title: Workspace
+          type: string
+          description: >-
+            Select or enter a workspace name (e.g. sample-auto-sbx or sample-data-prd).
+            The team will be added to all environments for that workspace automatically.
+          ui:field: DatabricksWorkspacePicker
+          ui:options:
+            hideError: true
+
+    # ── Step 2: Team ─────────────────────────────────────────────────────────
+    - title: Team Details
+      required:
+        - team_name
+      properties:
+        team_name:
+          title: Team Name
+          type: string
+          description: >-
+            Name of the team to add (e.g. fleet_purchase_order, analytics).
+            Use underscores instead of spaces or hyphens.
+            Groups will be created per environment in the form
+            `{Workspace}_{Role}_{Team}_{env}` (e.g. FAS_EDA_Admins_fleet_purchase_order_prd).
+          pattern: '^[a-zA-Z0-9_]+$'
+          ui:autofocus: true
+
+        all_environments:
+          title: Add to all environments
+          type: boolean
+          default: true
+          description: >-
+            When checked, the team will be added to every environment of this workspace
+            (prd, stg, np, etc.) in a single PR.
+            Uncheck to add the team only to the specific environment you selected.
+
+        submitter_email:
+          title: Submitter Email
+          type: string
+          ui:field: UserEmailField
+
+  steps:
+    - id: backstage_request_with_input
+      name: Submit Add Team Request
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: AddTeamToWorkspace
+          workflow_id: DatabricksAddTeam-${{ parameters.workspace_name }}-${{ parameters.team_name }}-${{ parameters.submitter_email }}
+          task_queue: ${{ platform.taskQueue }}
+          await_result: false
+          wait_for_ticket_info: true
+          ticket_info_timeout_seconds: 20
+          workflow_args:
+            workspace_name: ${{ parameters.workspace_name }}
+            team_name: ${{ parameters.team_name }}
+            all_environments: ${{ parameters.all_environments }}
+            submitter_email: ${{ parameters.submitter_email }}
+
+  output:
+    text:
+      - title: Request Submitted
+        content: |
+          ${{ ('Your request to add team \'"' + parameters.team_name + '\'" to workspace \'"' + parameters.workspace_name + '\'" has been submitted as ' + steps["backstage_request_with_input"].output.body.jira_ticket + '.\n\nThe workspace owner will be notified for approval.\nOnce approved, a single pull request will be opened covering all environments.\nYou will be notified when the PR is ready.') if steps["backstage_request_with_input"].output.body.ticket_created else ('Your request to add team \'"' + parameters.team_name + '\'" to workspace \'"' + parameters.workspace_name + '\'" has been submitted.\n\nA ticket will be created in Service Desk and the workspace owner will be notified for approval.\nOnce approved, a single pull request will be opened covering all environments.\nYou will be notified when the PR is ready.') }}
+    links:
+      - title: '${{ "Service Desk Access Ticket: " + steps["backstage_request_with_input"].output.body.jira_ticket if steps["backstage_request_with_input"].output.body.ticket_created else "Service Desk Queue" }}'
+        url: '${{ steps["backstage_request_with_input"].output.body.jira_url if steps["backstage_request_with_input"].output.body.ticket_created else "https://support.example.gov/queues/data-access" }}'
+        icon: docs

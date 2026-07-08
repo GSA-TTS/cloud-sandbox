@@ -1,0 +1,91 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: internal-starter-example
+  title: "[EXAMPLE] Internal Starter Template"
+  description: >
+    A reference template demonstrating the conventions and patterns expected
+    for all Example Platform internal scaffolder templates. Delete or replace this template
+    once you have a real workflow to ship.
+  tags:
+    - platform-internal
+    - example
+spec:
+  owner: platform-cc/backstage-admins
+  type: internal-workflow
+
+  parameters:
+    - title: Basic Information
+      required:
+        - component_name
+        - description
+      properties:
+        component_name:
+          title: Component Name
+          type: string
+          description: Unique name for the new component (kebab-case).
+          pattern: '^[a-z][a-z0-9-]*$'
+          ui:autofocus: true
+        description:
+          title: Description
+          type: string
+          description: One-sentence description of the component.
+
+    - title: Repository
+      required:
+        - github_org
+        - github_repo
+      properties:
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The platform-cc org is pre-selected for internal tooling.
+          default: platform-cc
+          enum:
+            - platform-cc
+        github_repo:
+          title: Repository Name
+          type: string
+          description: Target repository that will receive the scaffolded content.
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.example.com
+            allowedOwners:
+              - platform-cc
+
+  steps:
+    - id: fetch-template
+      name: Render skeleton files
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          component_name: ${{ parameters.component_name }}
+          description: ${{ parameters.description }}
+          github_org: ${{ parameters.github_org }}
+
+    - id: publish
+      name: Create or update repository
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.example.com
+        description: ${{ parameters.description }}
+        repoUrl: ${{ parameters.github_repo }}
+        defaultBranch: main
+
+    - id: register
+      name: Register in catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}

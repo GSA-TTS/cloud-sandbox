@@ -1,0 +1,176 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: static_site_blueprint
+  title: Static Site (S3 + CloudFront)
+  description: >-
+    Provision a static website hosted on S3 with a CloudFront distribution.
+    Includes Origin Access Control, HTTPS enforcement, geo-restriction to US,
+    and optional SPA routing, WAF, and access logging.
+  tags:
+    - 'blueprint'
+    - 'product-containers-dev'
+    - 'tier-developer'
+spec:
+  owner: example-org/platform-team
+  type: Intake and Provisioning
+  parameters:
+    # ── Page 1: Required Configuration ──────────────────────────────────
+    - title: Required Configuration
+      required:
+        - site_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        site_name:
+          title: Site Name
+          type: string
+          description: >-
+            Name for the static site (lowercase, alphanumeric, hyphens only).
+            This will be used as the S3 bucket name.
+          ui:field: S3BucketNameField
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the site will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration
+          default: "iac"
+
+    # ── Page 2: Site Settings ───────────────────────────────────────────
+    - title: Site Settings
+      properties:
+        default_root_object:
+          title: Default Root Object
+          type: string
+          description: Default document served at the root URL
+          default: "index.html"
+        enable_spa_routing:
+          title: Enable SPA Routing
+          type: boolean
+          description: >-
+            Route 403/404 errors to index.html with a 200 response.
+            Enable this for single-page applications (React, Angular, Vue).
+          default: false
+        price_class:
+          title: CloudFront Price Class
+          type: string
+          description: >-
+            Edge location coverage (PriceClass_100 is most cost-effective for US-only traffic)
+          default: "PriceClass_100"
+          enum:
+            - PriceClass_100
+            - PriceClass_200
+            - PriceClass_All
+          enumNames:
+            - 'US, Canada & Europe (lowest cost)'
+            - 'US, Canada, Europe, Asia & Africa'
+            - 'All edge locations (best performance)'
+
+    # ── Page 3: Advanced Settings ───────────────────────────────────────
+    - title: Advanced Settings
+      properties:
+        show_advanced:
+          title: Show Advanced Options
+          type: boolean
+          description: Reveal caching, WAF, and logging options
+          default: false
+      dependencies:
+        show_advanced:
+          oneOf:
+            - properties:
+                show_advanced:
+                  const: false
+            - properties:
+                show_advanced:
+                  const: true
+                module_version:
+                  title: Module Version
+                  type: string
+                  description: Tag version of the static-site module in Example-IaC-Modules
+                  default: "v1.0.0"
+                default_ttl:
+                  title: Default TTL (seconds)
+                  type: number
+                  description: Default cache duration for objects
+                  default: 3600
+                max_ttl:
+                  title: Max TTL (seconds)
+                  type: number
+                  description: Maximum cache duration for objects
+                  default: 86400
+                viewer_protocol_policy:
+                  title: Viewer Protocol Policy
+                  type: string
+                  description: How CloudFront handles HTTP vs HTTPS
+                  default: "redirect-to-https"
+                  enum:
+                    - redirect-to-https
+                    - https-only
+                    - allow-all
+                  enumNames:
+                    - 'Redirect HTTP to HTTPS (recommended)'
+                    - 'HTTPS only (block HTTP)'
+                    - 'Allow all (HTTP and HTTPS)'
+                enable_logging:
+                  title: Enable Access Logging
+                  type: boolean
+                  description: >-
+                    Log CloudFront access requests to an S3 bucket.
+                    Requires a logging bucket to exist in the account.
+                  default: false
+
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: ${{ "NewStaticSite" }}
+          workflow_id: ${{ "NewStaticSite-" + parameters.github_org + "-" + parameters.site_name + "-" + parameters.deployment_env }}
+          task_queue: ${{ platform.taskQueue }}
+          workflow_args:
+            site_name: ${{ parameters.site_name }}
+            environment: ${{ parameters.deployment_env }}
+            repo_owner: ${{ parameters.github_org }}
+            repo_name: ${{ parameters.github_repo }}
+            branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/static-site/" + parameters.site_name }}
+            pr_title: '${{ "Add Static Site: " + parameters.site_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+            pr_body: '${{ "Provisions a static site (S3 + CloudFront) named " + parameters.site_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+            module_version: ${{ parameters.module_version }}
+            default_root_object: ${{ parameters.default_root_object }}
+            enable_custom_error_response: ${{ parameters.enable_spa_routing }}
+            price_class: ${{ parameters.price_class }}
+            default_ttl: ${{ parameters.default_ttl }}
+            max_ttl: ${{ parameters.max_ttl }}
+            viewer_protocol_policy: ${{ parameters.viewer_protocol_policy }}
+            enable_logging: ${{ parameters.enable_logging }}
+
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: '${{ "https://github.example.com/" + parameters.github_org + "/" + parameters.github_repo + "/pulls" }}'
+        icon: github

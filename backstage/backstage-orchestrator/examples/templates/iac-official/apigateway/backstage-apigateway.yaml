@@ -1,0 +1,107 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: backstage-apigateway-template
+  title: Create API Gateway
+  description: Provision and configure a new API Gateway.
+  tags:
+    - 'single-resource'
+    - 'product-serverless'
+    - 'product-containers'
+    - 'product-virtual-desktop'
+    - 'tier-developer'
+spec:
+  owner: example-org/platform-team
+  type: AWS Service
+  parameters:
+    - title: Name
+      required:
+        - apigateway_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        apigateway_name:
+          title: API Gateway Name
+          type: string
+          description: A unique name for your API Gateway
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+    - title: Optional API Gateway Parameters
+      properties:
+        api_description:
+          title: API Description
+          type: string
+          description: Description of the API Gateway
+        authorization:
+          title: Authorization
+          type: string
+          description: Authorization type for the API Gateway method
+        http_method:
+          title: HTTP Method
+          type: string
+          description: HTTP method for the API Gateway method
+        resource_path:
+          title: Resource Path
+          type: string
+          description: Path for the API resource
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-apigateway-" + parameters.github_org + "-" + parameters.apigateway_name + "-" + parameters.deployment_env }}
+            task_queue: ${{ platform.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/apigateway/" + parameters.apigateway_name }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add API Gateway: " + parameters.apigateway_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions an API Gateway named " + parameters.apigateway_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "apigateway" }}
+              resource_config:
+                name: ${{ parameters.apigateway_name }}
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  api_name: ${{ parameters.apigateway_name }}
+                  api_description: ${{ parameters.api_description }}
+                  authorization: ${{ parameters.authorization }}
+                  http_method: ${{ parameters.http_method }}
+                  resource_path: ${{ parameters.resource_path }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

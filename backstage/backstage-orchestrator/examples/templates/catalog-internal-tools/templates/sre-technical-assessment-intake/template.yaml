@@ -1,0 +1,592 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: sre-technical-assessment-intake
+  title: SRE Gate 2 — Production Readiness
+  description: >
+    Collects the information the SRE team needs to assess whether your product
+    is ready for production and SRE handoff. Select "New Product" for a service
+    approaching its first production deployment, or "Existing / Grandfathered
+    Product" for an established product entering or re-entering formal SRE
+    coverage. Most technical criteria (observability, IaC, CI/CD, security
+    config, documentation) will be evaluated automatically from the repository
+    URLs you provide. Only fill in what requires your team's direct knowledge.
+    Estimated time: 5–10 minutes.
+  tags:
+    - sre
+    - gate2
+    - assessment
+    - intake
+    - platform-internal
+    - internal-only
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  owner: group:platform-cc/backstage-admins
+  type: internal-workflow
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PARAMETERS  (each list item = one wizard step/page in the Backstage UI)
+  # Steps 5 and 6 are conditionally shown based on the track selected in Step 1.
+  # ─────────────────────────────────────────────────────────────────────────────
+  parameters:
+
+    # ── Step 1: Product Information ───────────────────────────────────────────
+    - title: Product Information
+      description: >
+        Basic identifying information about the product being assessed.
+        Select your assessment track first — it controls which sections appear later.
+      required:
+        - assessmentTrack
+        - productName
+        - teamOrganization
+        - experienceArea
+        - primaryContactEmail
+        - assessmentDate
+      properties:
+        assessmentDate:
+          title: Submission Date
+          type: string
+          format: date
+          description: Date you are submitting this form. Used to stamp the tracking ticket.
+        assessmentTrack:
+          title: Assessment Track
+          type: string
+          description: >
+            New Product — approaching first production deployment, requesting
+            SRE handoff acceptance. Existing / Grandfathered Product —
+            established product entering or re-entering formal SRE coverage.
+          enum:
+            - new-product
+            - existing-product
+          enumNames:
+            - "New Product"
+            - "Existing / Grandfathered Product"
+          ui:widget: radio
+          ui:autofocus: true
+        productName:
+          title: Product / Service Name
+          type: string
+        teamOrganization:
+          title: Team / Organization
+          type: string
+          description: e.g. Example Platform Sample API, Sample Status Dashboard Team
+        experienceArea:
+          title: Experience Area
+          type: string
+          enum:
+            - Developer Experience
+            - Data Experience
+            - Workloads Experience
+            - AI/ML Experience
+            - Integration Experience
+            - Foundational Experience
+        primaryContactEmail:
+          title: Primary Contact Email
+          type: string
+          format: email
+          description: >
+            Person the SRE team should contact with questions about this assessment.
+
+    # ── Step 2: Repository & Documentation URLs ───────────────────────────────
+    - title: Repository & Documentation URLs
+      description: >
+        Provide URLs for all repositories associated with this product.
+        The SRE team will run automated analysis against these repos to evaluate
+        CI/CD pipeline, IaC, container setup, observability configuration,
+        security posture, and documentation.
+        Leave a field blank if that repo type does not apply.
+      required:
+        - appRepo
+        - appBranch
+      properties:
+        appRepo:
+          title: Application Source Code Repository URL (SSH)
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+          description: >
+            Use SSH format. e.g., git@github.example.com:MyTeam/my-product.git
+            One URL per line if multiple repos.
+        appBranch:
+          title: Branch to assess
+          type: string
+          description: Usually "main" or "master".
+        iacRepo:
+          title: Infrastructure / IaC Repository URL (SSH)
+          type: string
+          description: >
+            SSH format. e.g., git@github.example.com:MyTeam/my-infra.git
+            Enter "Same as app repo" if co-located. Leave blank if not applicable.
+        gitopsRepo:
+          title: GitOps / Flux Repository URL
+          type: string
+          description: Any URL format (SSH or HTTPS). Leave blank if not using GitOps.
+        helmRepo:
+          title: Helm Chart Repository URL (SSH)
+          type: string
+          description: >
+            SSH format. Enter "Same as app repo" if co-located. Leave blank if not using Helm.
+        helmPath:
+          title: Helm Chart path within repo
+          type: string
+          description: e.g., charts/my-product
+        docsRepo:
+          title: Documentation / Wiki URL
+          type: string
+          description: Any URL — git repo (SSH or HTTPS), Confluence space, or wiki site. Can be the same as app repo.
+        jiraProjects:
+          title: Jira Project URL(s)
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+          description: >
+            One per line. Prefer the full URL (e.g., https://jira.example.gov/browse/MYTEAM);
+            a project key (e.g., MYTEAM) is also accepted. Leave blank if not using Jira.
+        repoAccessNotes:
+          title: Repository access notes
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+          description: >
+            If repos are private, explain how the SRE team should authenticate.
+            Leave blank if using standard SRE credentials.
+
+    # ── Step 3: Infrastructure & Tooling ─────────────────────────────────────
+    - title: Infrastructure & Tooling
+      description: >
+        Infrastructure coordinates and tool references for automated AWS,
+        Kubernetes, and DataDog queries.
+      required:
+        - awsAccountId
+        - awsRegion
+        - awsCliProfile
+        - deploymentPlatforms
+        - cicdPlatforms
+      properties:
+        awsAccountId:
+          title: AWS Account ID
+          type: string
+          description: 12-digit AWS account number.
+        awsRegion:
+          title: AWS Region
+          type: string
+          description: e.g., us-east-1
+        awsCliProfile:
+          title: AWS CLI Profile Name
+          type: string
+          description: >
+            Run: aws configure list-profiles
+            e.g., pipe, default, my-product-prod
+        deploymentPlatforms:
+          title: Deployment platform(s)
+          type: array
+          items:
+            type: string
+            enum:
+              - EKS (Kubernetes)
+              - ECS (Fargate / EC2)
+              - EC2 (Virtual Machines)
+              - Lambda (Serverless)
+              - Managed Service (RDS, S3, etc.)
+              - Not yet decided
+          uniqueItems: true
+          ui:widget: checkboxes
+        eksClusterName:
+          title: EKS Cluster Name
+          type: string
+          description: Leave blank if not using Kubernetes.
+        k8sNamespaces:
+          title: Kubernetes Namespace(s)
+          type: string
+          description: Comma-separate if multiple.
+        kubectlContext:
+          title: kubectl Context Name
+          type: string
+          description: >
+            Run: kubectl config get-contexts
+            e.g., arn:aws:eks:us-east-1:123456789:cluster/my-cluster.
+            Leave blank if not using Kubernetes.
+        datadogServiceTag:
+          title: DataDog Service Tag
+          type: string
+          description: >
+            The "service:" tag in DataDog for monitors, APM, SLOs. e.g., my-product-api
+        cicdPlatforms:
+          title: CI/CD Platform(s)
+          type: array
+          items:
+            type: string
+            enum:
+              - GitHub Actions
+              - Jenkins
+              - None — deployments are manual
+          uniqueItems: true
+          ui:widget: checkboxes
+        cicdPipelineRef:
+          title: CI/CD Pipeline Reference
+          type: string
+          description: >
+            GitHub Actions: workflow file path, e.g., .github/workflows/deploy.yml.
+            Jenkins: full job URL.
+
+    # ── Step 4: Production Readiness Context ──────────────────────────────────
+    - title: Production Readiness Context
+      description: Context the SRE team cannot infer from repositories.
+      required:
+        - targetDate
+        - onCallContact
+      properties:
+        targetDate:
+          title: Target date
+          type: string
+          format: date
+          description: >
+            New products: target SRE handoff / production go-live date.
+            Existing products: target SRE formal acceptance / re-assessment date.
+        onCallContact:
+          title: On-call / escalation contact
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+          description: >
+            Name and email (or phone). Include backup contact if available.
+        securityGaps:
+          title: Known security gaps or concerns
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+          description: >
+            Known security issues, incomplete hardening, or pending remediation.
+            Leave blank if none.
+        techDebt:
+          title: Known tech debt or architectural gaps
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+          description: >
+            Deferred reliability features or architectural shortcuts.
+            Leave blank if none.
+        additionalContext:
+          title: Anything else the SRE assessor should know?
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+          description: >
+            e.g., unusual deployment constraints, external dependencies, relevant
+            design docs not in repos.
+
+    # ── Step 5: Track-Specific Context ───────────────────────────────────────
+    # Uses JSON Schema `dependencies` + `oneOf` so RJSF shows only the fields
+    # relevant to the selected track. assessmentTrack is re-declared here so
+    # the dependency engine can read it; Backstage carries the value forward
+    # from Step 1 automatically.
+    # ─────────────────────────────────────────────────────────────────────────
+    - title: Track-Specific Context
+      description: >
+        The fields below are filtered to match the track you selected in Step 1.
+        Confirm your track in the dropdown to reveal the relevant questions.
+      required:
+        - assessmentTrack
+      properties:
+        assessmentTrack:
+          title: Assessment Track
+          type: string
+          description: Carried forward from Step 1 — confirm or update here.
+          enum:
+            - new-product
+            - existing-product
+          enumNames:
+            - "New Product"
+            - "Existing / Grandfathered Product"
+      dependencies:
+        assessmentTrack:
+          oneOf:
+            - properties:
+                assessmentTrack:
+                  const: new-product
+                runbookStatus:
+                  title: Has at least one operational runbook or DR plan been created?
+                  type: string
+                  enum:
+                    - "Yes — committed to the docs/wiki repo"
+                    - "In progress — draft exists but not complete"
+                    - "No — not yet started"
+                loadTestStatus:
+                  title: Has load or performance testing been completed?
+                  type: string
+                  enum:
+                    - "Yes — results are documented"
+                    - "In progress — testing underway"
+                    - "Planned — not yet started"
+                    - "N/A — traffic volume does not warrant load testing"
+                complianceRequirement:
+                  title: Is there an ATO, FISMA, FedRAMP, or other compliance requirement?
+                  type: string
+                  enum:
+                    - "Yes — ATO / FISMA"
+                    - "Yes — FedRAMP"
+                    - "Yes — other (describe in context field above)"
+                    - "No — no formal compliance requirement"
+                    - "Unknown"
+              required:
+                - runbookStatus
+                - loadTestStatus
+                - complianceRequirement
+            - properties:
+                assessmentTrack:
+                  const: existing-product
+                productionAge:
+                  title: How long has this product been in production?
+                  type: string
+                  enum:
+                    - Less than 6 months
+                    - 6 months – 1 year
+                    - 1 – 3 years
+                    - 3 – 5 years
+                    - More than 5 years
+                onCallRotationSize:
+                  title: Current on-call rotation size (number of engineers)
+                  type: string
+                  description: How many engineers share the on-call rotation for this product?
+                lastIncidentDate:
+                  title: Date of last significant production incident
+                  type: string
+                  format: date
+                  description: Leave blank if none in the last 12 months.
+                lastIncidentDuration:
+                  title: Duration of that outage
+                  type: string
+                  description: >
+                    e.g., "20 minutes", "~4 hours". Leave blank if no incident.
+                lastIncidentDescription:
+                  title: Incident description
+                  type: string
+                  ui:widget: textarea
+                  ui:options:
+                    rows: 3
+                  description: Brief explanation of what happened and root cause. Leave blank if no incident.
+                assessmentReason:
+                  title: Why is this product being formally assessed for production readiness now?
+                  type: string
+                  ui:widget: textarea
+                  ui:options:
+                    rows: 4
+                  description: >
+                    e.g., first formal SRE acceptance, post-refactor re-assessment, new
+                    team taking ownership, recurring incidents, annual review.
+              required:
+                - productionAge
+                - assessmentReason
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # STEPS — executed after the form is submitted
+  # ─────────────────────────────────────────────────────────────────────────────
+  steps:
+    - id: create-gate2-issue
+      name: Open SRE Gate 2 Tracking Ticket
+      action: github:issues:create
+      input:
+        repoUrl: github.example.com?owner=SRE&repo=sre-assessments
+        title: "[SRE Gate 2] ${{ parameters.productName }} — ${{ parameters.teamOrganization }} (${{ parameters.assessmentDate }})"
+        labels:
+          - sre-gate2
+          - production-readiness
+          - intake
+        assignees: []
+        body: |
+          ## SRE Gate 2: Production Readiness — ${{ parameters.productName }}
+
+          **Track:** ${{ 'New Product' if parameters.assessmentTrack === 'new-product' else 'Existing / Grandfathered Product' }}
+          **Primary Contact:** ${{ parameters.primaryContactEmail }}
+
+          ---
+
+          ## 1. Product Information
+
+          | Field | Value |
+          |---|---|
+          | Product / Service Name | ${{ parameters.productName }} |
+          | Team / Organization | ${{ parameters.teamOrganization }} |
+          | Experience Area | ${{ parameters.experienceArea }} |
+          | Primary Contact | ${{ parameters.primaryContactEmail }} |
+          | Assessment Track | ${{ 'New Product' if parameters.assessmentTrack === 'new-product' else 'Existing / Grandfathered Product' }} |
+
+          ---
+
+          ## 2. Repository & Documentation URLs
+
+          | Field | Value |
+          |---|---|
+          | App Repo (SSH) | ${{ parameters.appRepo }} |
+          | Branch | ${{ parameters.appBranch }} |
+          | IaC Repo | ${{ parameters.iacRepo or "N/A" }} |
+          | GitOps Repo | ${{ parameters.gitopsRepo or "N/A" }} |
+          | Helm Chart Repo | ${{ parameters.helmRepo or "N/A" }} |
+          | Helm Chart Path | ${{ parameters.helmPath or "N/A" }} |
+          | Docs Repo | ${{ parameters.docsRepo or "N/A" }} |
+          | Jira Project(s) | ${{ parameters.jiraProjects or "N/A" }} |
+          | Repo Access Notes | ${{ parameters.repoAccessNotes or "Standard SRE credentials" }} |
+
+          ---
+
+          ## 3. Infrastructure & Tooling
+
+          | Field | Value |
+          |---|---|
+          | AWS Account ID | ${{ parameters.awsAccountId }} |
+          | AWS Region | ${{ parameters.awsRegion }} |
+          | AWS CLI Profile | ${{ parameters.awsCliProfile }} |
+          | Deployment Platform(s) | ${{ parameters.deploymentPlatforms | join(", ") }} |
+          | EKS Cluster Name | ${{ parameters.eksClusterName or "N/A" }} |
+          | Kubernetes Namespace(s) | ${{ parameters.k8sNamespaces or "N/A" }} |
+          | kubectl Context | ${{ parameters.kubectlContext or "N/A" }} |
+          | DataDog Service Tag | ${{ parameters.datadogServiceTag or "N/A" }} |
+          | CI/CD Platform(s) | ${{ parameters.cicdPlatforms | join(", ") }} |
+          | CI/CD Pipeline Reference | ${{ parameters.cicdPipelineRef or "N/A" }} |
+
+          ---
+
+          ## 4. Production Readiness Context
+
+          **Target Date:** ${{ parameters.targetDate }}
+          **On-Call / Escalation Contact:**
+          ${{ parameters.onCallContact }}
+
+          **Known Security Gaps:**
+          ${{ parameters.securityGaps or "None provided" }}
+
+          **Known Tech Debt / Architectural Gaps:**
+          ${{ parameters.techDebt or "None provided" }}
+
+          **Additional Context:**
+          ${{ parameters.additionalContext or "None provided" }}
+
+          ---
+
+          {% if parameters.assessmentTrack === 'new-product' %}
+          ## 5. Pre-Launch Checklist
+
+          | Item | Status |
+          |---|---|
+          | Operational Runbook / DR Plan | ${{ parameters.runbookStatus }} |
+          | Load / Performance Testing | ${{ parameters.loadTestStatus }} |
+          | Compliance Requirement | ${{ parameters.complianceRequirement }} |
+          {% endif %}
+
+          {% if parameters.assessmentTrack === 'existing-product' %}
+          ## 5. Existing Operations Context
+
+          | Field | Value |
+          |---|---|
+          | Time in Production | ${{ parameters.productionAge }} |
+          | On-Call Rotation Size | ${{ parameters.onCallRotationSize or "Not provided" }} engineers |
+          | Last Incident Date | ${{ parameters.lastIncidentDate or "None reported" }} |
+          | Outage Duration | ${{ parameters.lastIncidentDuration or "N/A" }} |
+          | Incident Description | ${{ parameters.lastIncidentDescription or "N/A" }} |
+          | Reason for Assessment | ${{ parameters.assessmentReason }} |
+          {% endif %}
+
+          ---
+
+          ## AI Assessment Prompt
+
+          Once this issue is reviewed and access is confirmed, use the following
+          prompt to kick off the automated production readiness assessment:
+
+          ```
+          Please conduct a comprehensive SRE Gate 2 Production Readiness Assessment for ${{ parameters.productName }}.
+
+          ACCESS INFORMATION:
+          - App Repository: ${{ parameters.appRepo }} (branch: ${{ parameters.appBranch }})
+          - IaC Repository: ${{ parameters.iacRepo or "N/A" }}
+          - GitOps Repository: ${{ parameters.gitopsRepo or "N/A" }}
+          - AWS Account: ${{ parameters.awsAccountId }}, Region: ${{ parameters.awsRegion }}, Profile: ${{ parameters.awsCliProfile }}
+          - EKS Cluster: ${{ parameters.eksClusterName or "N/A" }}, Namespace: ${{ parameters.k8sNamespaces or "N/A" }}, Context: ${{ parameters.kubectlContext or "N/A" }}
+          - CI/CD: ${{ parameters.cicdPlatforms | join(", ") }}
+          - DataDog Service Tag: ${{ parameters.datadogServiceTag or "N/A" }}
+
+          ASSESSMENT APPROACH:
+          - Use SRE Framework's 42 criteria across 8 categories
+          - Score each criterion 0–4 based on DIRECT EVIDENCE ONLY
+          - Overall passing score: 3.0/4.0
+          - No individual category may score below 2.5
+
+          Track: ${{ 'New Product' if parameters.assessmentTrack === 'new-product' else 'Existing / Grandfathered Product' }}
+          Additional Context: ${{ parameters.additionalContext or "None" }}
+          ```
+
+          ---
+
+          ## Automation Config
+
+          <!-- automation-config-start -->
+          ```yaml
+          assessment_track: "${{ 'A' if parameters.assessmentTrack === 'new-product' else 'B' }}"
+          product:
+            name: "${{ parameters.productName }}"
+            team: "${{ parameters.teamOrganization }}"
+          infrastructure:
+            aws:
+              profile: "${{ parameters.awsCliProfile }}"
+              region: "${{ parameters.awsRegion }}"
+              account_id: "${{ parameters.awsAccountId }}"
+            kubernetes:
+              context: "${{ parameters.kubectlContext or '' }}"
+              namespace: "${{ parameters.k8sNamespaces or '' }}"
+              cluster: "${{ parameters.eksClusterName or '' }}"
+          repositories:
+            app:
+              url: "${{ parameters.appRepo }}"
+              branch: "${{ parameters.appBranch }}"
+            iac:
+              url: "${{ parameters.iacRepo or '' }}"
+            helm:
+              url: "${{ parameters.helmRepo or '' }}"
+              path: "${{ parameters.helmPath or '' }}"
+            gitops:
+              url: "${{ parameters.gitopsRepo or '' }}"
+          cicd:
+            platforms: ${{ parameters.cicdPlatforms | dump }}
+            pipeline_ref: "${{ parameters.cicdPipelineRef or '' }}"
+          monitoring:
+            datadog_service_tag: "${{ parameters.datadogServiceTag or '' }}"
+          contact:
+            primary_email: "${{ parameters.primaryContactEmail }}"
+            on_call: "${{ parameters.onCallContact | replace('\n', ' ') }}"
+          meta:
+            assessment_date: "${{ parameters.assessmentDate }}"
+            target_date: "${{ parameters.targetDate }}"
+            experience_area: "${{ parameters.experienceArea }}"
+          ```
+          <!-- automation-config-end -->
+
+          ---
+          *Auto-generated by Backstage SRE Gate 2 Production Readiness Form*
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # OUTPUT
+  # ─────────────────────────────────────────────────────────────────────────────
+  output:
+    links:
+      - title: View Gate 2 Ticket
+        url: ${{ steps['create-gate2-issue'].output.issueUrl }}
+        icon: github
+    text:
+      - title: What Happens Next
+        content: |
+          Your SRE Gate 2 Production Readiness submission has been received. Here's what to expect:
+
+          1. **SRE team review** — The team will confirm repository access and review your submission within 2 business days.
+          2. **Automated assessment run** — Using the access details you provided, the SRE team will run the automated assessment against your repositories and AWS environment.
+          3. **Assessment report delivered** — You'll receive a comprehensive report with scores across 8 categories and prioritised remediation recommendations.
+          4. **Gate 1 (Capacity Planning)** — If not already submitted, please complete the SRE Gate 1 Capacity Planning form (available in the Backstage catalog) and link it to this ticket.
+
+          **Questions?** Reach the SRE team at sre-team@example.gov or in Google Chat.

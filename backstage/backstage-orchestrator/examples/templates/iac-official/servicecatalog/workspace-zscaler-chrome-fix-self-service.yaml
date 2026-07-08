@@ -1,0 +1,85 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: workspace_zscaler_chrome_fix
+  title: Workspace Zscaler & Chrome Fix
+  description: Fix common issues on your AWS WorkSpace — Zscaler not connecting, or Chrome refusing to open due to a stale lock file.
+  tags:
+    - 'workspace'
+    - 'self-service'
+    - 'zscaler'
+    - 'chrome'
+    - 'tier-user'
+spec:
+  owner: example-org/backstage-ops
+  type: Self-Service
+  parameters:
+    - title: Workspace Fix
+      required:
+        - registration_code
+        - fix_type
+      properties:
+        workspace_username:
+          title: Your Username
+          type: string
+          ui:field: WorkspaceCurrentUser
+        registration_code:
+          title: Your Workspace
+          type: string
+          ui:field: WorkspacePicker
+        fix_type:
+          title: What do you want to fix?
+          type: array
+          description: Select one or both fixes to apply. You can run them together.
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - zscaler
+              - chrome-fix
+            enumNames:
+              - 'Zscaler — not connecting or missing'
+              - 'Chrome — stuck or won''t open (SingletonLock)'
+          uniqueItems: true
+          ui:widget: checkboxes
+        cooldown_guard:
+          type: string
+          ui:field: WorkspaceCooldownGuard
+          ui:options:
+            cooldownMinutes: 15
+            actionKey: zscaler-fix
+
+  steps:
+    - id: trigger_fix_workflow
+      name: Trigger Workspace Fix
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.example.com?repo=bulkhead&owner=example-org
+        workflowId: workspace_self_service_zscaler_chrome_fix.yml
+        branchOrTagName: main
+        workflowInputs:
+          workspace_username: ${{ user.entity.metadata.name }}
+          registration_code: ${{ parameters.registration_code }}
+          fix_type: ${{ parameters.fix_type | join(',') }}
+
+  output:
+    text:
+      - title: Fix Initiated
+        content: |
+          The following fix(es) have been triggered for user **${{ user.entity.metadata.name }}**: **${{ parameters.fix_type | join(' + ') }}**
+
+          **What happens next:**
+
+          **If Zscaler fix selected:**
+          1. Downloads the latest Zscaler installer from Artifactory
+          2. Reinstalls Zscaler with the correct configuration
+          3. Restarts the Zscaler tunnel service
+          *(Completes in ~3–5 minutes)*
+
+          **If Chrome fix selected:**
+          1. Gracefully stops any running Chrome processes
+          2. Removes the stale SingletonLock and SingletonSocket files
+          3. Cleans up any LibreOffice lock files
+          *(Completes in ~1–2 minutes)*
+
+          Once done, retry your application. If the issue persists, try the **Workspace Reboot** card or contact support.

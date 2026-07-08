@@ -1,0 +1,97 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: virtual-assistant-container-registry
+  title: Example Virtual Assistant ECR
+  description: This template deploys Example's Virtual Assistant ECR.
+  tags:
+    - 'blueprint'
+spec:
+  owner: example-org/iac-deployment
+  type: Blueprint
+  parameters:
+    - title: Example Virtual Assistant ECR
+      required:
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - stage
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'stage'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+    - title: Example Virtual Assistant ECR Parameters
+      required:
+        - aws_region
+        - stack_prefix
+        - backend_tag
+      properties:
+        aws_region:
+          title: AWS Region
+          type: string
+          description: The AWS region to deploy into
+          default: "us-east-1"
+        stack_prefix:
+          title: Stack Prefix
+          type: string
+          description: The stack prefix
+          default: ""
+        frontend_build_tag:
+          title: Backend Tag
+          type: string
+          description: The backend  tg
+          default: ""
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-ecr-" + parameters.github_org + "-" + parameters.ecr_names[0] + "-" + parameters.deployment_env }}
+            task_queue: ${{ platform.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/ecr/" + parameters.ecr_names[0] }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add ECR Repositories (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions ECR repositories in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "ecr" }}
+              resource_config:
+                name: ${{ parameters.ecr_names }}
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  ecr_names: ${{ parameters.ecr_names }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

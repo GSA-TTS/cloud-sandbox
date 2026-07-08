@@ -9,6 +9,15 @@ yarn-error.log*
 scripts/envs/*.env
 # Allow the example/template files
 !scripts/envs/*.env.example
+aws-access-key.json
+azure.env
+gcp-service-account-key.json
+
+# Kingfisher scan reports can contain raw findings when not redacted
+findings.toon
+toon
+kingfisher-*.toon
+kingfisher-*.json
 
 # Runtime data
 pids
@@ -84,3 +93,6 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+.opencode/generated/broker-providers.json
+backstage/docops-dev/
+backstage/iac-community-main/

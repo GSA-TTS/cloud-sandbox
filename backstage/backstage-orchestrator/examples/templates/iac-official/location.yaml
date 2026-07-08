@@ -1,0 +1,41 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: platform-iac-modules
+  description: A collection of the IaC templates used by the Example Platform Next Portal.
+  annotations:
+    backstage.io/view-url: https://github.example.com/example-org/Example-IaC-Modules/blob/main/modules/backstage-templates.yaml
+spec:
+  targets:
+    - ./component.yaml
+    - ./s3/backstage-s3.yaml
+    - ./sqs/backstage-sqs.yaml
+    - ./rds/backstage-rds.yaml
+    - ./ecr/backstage-ecr.yaml
+    # - ./bedrock/backstage-bedrock.yaml
+    - ./dynamodb/backstage-dynamodb.yaml
+    - ./lambda/backstage-lambda.yaml
+    - ./apigateway/backstage-apigateway.yaml
+    - ./elasticache/backstage-elasticache.yaml
+    - ./opensearch/backstage-opensearch.yaml
+    # Example Specific (/modules/example-specific)
+    - ./example-specific/example-virtual-asst-be.yaml
+    - ./example-specific/example-virtual-asst-fe.yaml
+    # - ./platform-specific/example-virtual-asst.ecr.yaml
+
+    # Service Catalog Templates (/modules/servicecatalog)
+    - ./servicecatalog/intake_template.yaml
+    - ./servicecatalog/account_blueprint.yaml
+    - ./servicecatalog/containers_blueprint.yaml
+    - ./servicecatalog/databricks_add_workspace.yaml
+    - ./servicecatalog/databricks_add_user.yaml
+    - ./servicecatalog/databricks_add_team.yaml
+    - ./servicecatalog/databricks_rob_acceptance.yaml
+    - ./servicecatalog/approve_databricks_access.yaml
+    - ./servicecatalog/virtual-assistant-blueprint.yaml
+    - ./servicecatalog/serverless-stack-blueprint.yaml
+    - ./servicecatalog/static-site-blueprint.yaml
+    - ./servicecatalog/Delete-Resource-Blueprint.yaml
+    - ./servicecatalog/workspace-reboot-self-service.yaml
+    - ./servicecatalog/workspace-zscaler-chrome-fix-self-service.yaml
+    - ./servicecatalog/workspace-fix-missing-software-self-service.yaml

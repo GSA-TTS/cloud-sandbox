@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: platform-tenant-portal-backend
+  title: Tenant Portal Backend
+  description: Backend service for Example Platform tenant, contact, status, and access request management.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  owner: group:default/backstage-admins
+  lifecycle: experimental
+  providesApis:
+    - tenant-portal-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: tenant-portal-api
+  title: Tenant Portal API
+  description: OpenAPI catalog example imported from the tenant portal backend.
+spec:
+  type: openapi
+  owner: group:default/backstage-admins
+  lifecycle: experimental
+  definition:
+    $text: ./openapi.yaml

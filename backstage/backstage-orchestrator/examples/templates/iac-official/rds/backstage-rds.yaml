@@ -1,0 +1,416 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: backstage-rds-template
+  title: Create RDS
+  description: Provision and configure a new AWS RDS DB.
+  tags:
+    - 'single-resource'
+    - 'product-containers'
+    - 'product-serverless'
+    - 'tier-techlead'
+spec:
+  owner: example-org/platform-team
+  type: AWS Service
+  parameters:
+    - title: Resource Info
+      required:
+        - rds_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        rds_name:
+          title: RDS Name
+          type: string
+          description: "Identifier for the RDS instance. Use lowercase letters, numbers, and hyphens only. Must start with a letter."
+          pattern: '^[a-z][a-z0-9-]*$'
+          ui:help: "Example: my-rds-instance. No spaces or underscores."
+          ui:options:
+            rows: 1
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the service will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
+          default: "iac"
+    - title: RDS Parameters
+      required:
+        - engine
+        - engine_version
+        - allocated_storage
+        - instance_class
+        - username
+        - db_name
+      properties:
+        db_name:
+          title: Database Name
+          type: string
+          description: "The name of the database to create inside the instance. Lowercase letters, numbers, and underscores only. No dashes."
+          pattern: '^[a-z][a-z0-9_]{0,62}$'
+          ui:help: "Example: name_of_db. Must start with a letter. Only lowercase, numbers, underscores."
+        engine:
+          title: Engine
+          type: string
+          description: The database engine to provision
+          default: postgres
+          enum:
+            - postgres
+            - mysql
+          enumNames:
+            - 'PostgreSQL'
+            - 'MySQL'
+        engine_version:
+          title: Engine Version
+          type: string
+          description: The engine version to provision
+        allocated_storage:
+          title: Allocated Storage (GB)
+          type: number
+          description: Storage in GB allocated to the DB
+          default: 20
+        instance_class:
+          title: Instance Class
+          type: string
+          description: The instance class for the DB
+          default: db.t3.micro
+          enum:
+            - db.t3.micro
+            - db.t3.small
+            - db.t3.medium
+            - db.t3.large
+            - db.t3.xlarge
+            - db.t3.2xlarge
+            - db.m5.large
+            - db.m5.xlarge
+            - db.m5.2xlarge
+            - db.m5.4xlarge
+            - db.r5.large
+            - db.r5.xlarge
+            - db.r5.2xlarge
+          enumNames:
+            - 'db.t3.micro (2 vCPU, 1 GB RAM)'
+            - 'db.t3.small (2 vCPU, 2 GB RAM)'
+            - 'db.t3.medium (2 vCPU, 4 GB RAM)'
+            - 'db.t3.large (2 vCPU, 8 GB RAM)'
+            - 'db.t3.xlarge (4 vCPU, 16 GB RAM)'
+            - 'db.t3.2xlarge (8 vCPU, 32 GB RAM)'
+            - 'db.m5.large (2 vCPU, 8 GB RAM)'
+            - 'db.m5.xlarge (4 vCPU, 16 GB RAM)'
+            - 'db.m5.2xlarge (8 vCPU, 32 GB RAM)'
+            - 'db.m5.4xlarge (16 vCPU, 64 GB RAM)'
+            - 'db.r5.large (2 vCPU, 16 GB RAM)'
+            - 'db.r5.xlarge (4 vCPU, 32 GB RAM)'
+            - 'db.r5.2xlarge (8 vCPU, 64 GB RAM)'
+        username:
+          title: Username
+          type: string
+          description: "Master username for the DB. Cannot be a reserved word (admin, root, master, postgres, rdsadmin)."
+          default: "dbadmin"
+          pattern: '^(?!admin$|root$|master$|postgres$|rdsadmin$)[a-z][a-z0-9_]{2,15}$'
+          ui:help: "Lowercase letters, numbers, underscores. 3-16 chars. Must start with a letter. Cannot be: admin, root, master, postgres, rdsadmin."
+      dependencies:
+        engine:
+          oneOf:
+            - properties:
+                engine:
+                  enum:
+                    - postgres
+                engine_version:
+                  enum:
+                    - '18.4'
+                    - '18.3'
+                    - '17.10'
+                    - '17.9'
+                    - '16.14'
+                    - '16.13'
+                    - '15.18'
+                    - '15.17'
+                    - '14.23'
+                    - '14.22'
+                  enumNames:
+                    - 'PostgreSQL 18.4'
+                    - 'PostgreSQL 18.3'
+                    - 'PostgreSQL 17.10'
+                    - 'PostgreSQL 17.9'
+                    - 'PostgreSQL 16.14'
+                    - 'PostgreSQL 16.13'
+                    - 'PostgreSQL 15.18'
+                    - 'PostgreSQL 15.17'
+                    - 'PostgreSQL 14.23'
+                    - 'PostgreSQL 14.22'
+            - properties:
+                engine:
+                  enum:
+                    - mysql
+                engine_version:
+                  enum:
+                    - '8.4.9'
+                    - '8.4.8'
+                    - '8.4.7'
+                    - '8.0.46'
+                    - '8.0.45'
+                    - '8.0.44'
+                  enumNames:
+                    - 'MySQL 8.4.9'
+                    - 'MySQL 8.4.8'
+                    - 'MySQL 8.4.7'
+                    - 'MySQL 8.0.46'
+                    - 'MySQL 8.0.45'
+                    - 'MySQL 8.0.44'
+    - title: RDS Network Info
+      properties:
+        subnet_grp_name:
+          title: Subnet Group Name
+          type: string
+          description: The group name of the subnet the DB should be provisioned in
+        subnet_grp_description:
+          title: Subnet Group Description
+          type: string
+          description: The description of the subnet the DB should be provisioned in
+        subnet_ids:
+          title: Subnet IDs
+          type: array
+          items:
+            type: string
+          ui:field: DelimitedTextArray
+          ui:options:
+            name: Subnet IDs
+            description: Optional - leave empty to auto-resolve from environment data sources
+        vpc_security_group_ids:
+          title: VPC Security Group IDs
+          type: array
+          items:
+            type: string
+          ui:field: DelimitedTextArray
+          ui:options:
+            name: VPC Security Group ID(s)
+            description: Optional - leave empty to auto-resolve from environment data sources
+    - title: Optional RDS Parameters
+      properties:
+        allow_major_version_upgrade:
+          title: Allow Major Version Upgrade
+          type: boolean
+          description: Allow major engine version upgrades when changing engine_version
+          default: false
+        apply_immediately:
+          title: Apply Immediately
+          type: boolean
+          description: Apply changes immediately rather than during the next maintenance window
+          default: false
+        auto_minor_version_upgrade:
+          title: Auto Minor Version Upgrade
+          type: boolean
+          description: Automatically apply minor engine upgrades during maintenance windows
+          default: false
+        availability_zone:
+          title: Availability Zone
+          type: string
+          description: The AZ for the RDS instance (e.g. us-east-1a). Leave blank for AWS to choose.
+        backup_retention_period:
+          title: Backup Retention Period
+          type: number
+          description: Number of days to retain automated backups (0-35). Set to 0 to disable.
+          default: 14
+        backup_window:
+          title: Backup Window
+          type: string
+          description: Daily UTC time range for automated backups (e.g. 04:00-05:00)
+          default: "04:00-05:00"
+        character_set_name:
+          title: Character Set Name
+          type: string
+          description: Character set for Oracle/SQL Server databases. Not applicable to PostgreSQL or MySQL.
+        copy_tags_to_snapshot:
+          title: Copy Tags to Snapshot
+          type: boolean
+          description: Copy all instance tags to snapshots
+          default: true
+        deletion_protection:
+          title: Deletion Protection
+          type: boolean
+          description: Prevent accidental deletion of the database instance
+          default: true
+        iam_database_authentication_enabled:
+          title: IAM Database Authentication
+          type: boolean
+          description: Enable IAM token-based authentication to the database
+          default: true
+        iops:
+          title: IOPS
+          type: number
+          description: Provisioned IOPS. Only applicable for io1/io2 storage types.
+        license_model:
+          title: License Model
+          type: string
+          description: License model for Oracle databases (license-included or bring-your-own-license)
+        maintenance_window:
+          title: Maintenance Window
+          type: string
+          description: Weekly UTC time range for system maintenance (e.g. sun:05:00-sun:06:00)
+          default: "sun:05:00-sun:06:00"
+        max_allocated_storage:
+          title: Max Allocated Storage (GB)
+          type: number
+          description: Upper limit for storage autoscaling. Set to 0 or leave blank to disable autoscaling.
+        multi_az:
+          title: Multi-AZ Deployment
+          type: boolean
+          description: Deploy a standby instance in a different AZ for high availability
+          default: false
+        option_group_name:
+          title: Option Group Name
+          type: string
+          description: Name of an existing DB option group to associate with the instance
+        parameter_group_name:
+          title: Parameter Group Name
+          type: string
+          description: Name of an existing DB parameter group to associate with the instance
+        performance_insights_enabled:
+          title: Performance Insights
+          type: boolean
+          description: Enable Performance Insights for database monitoring
+          default: true
+        performance_insights_retention_period:
+          title: Performance Insights Retention (days)
+          type: number
+          description: Days to retain Performance Insights data (7 or 731)
+          default: 7
+          enum:
+            - 7
+            - 731
+          enumNames:
+            - '7 days (free tier)'
+            - '731 days (2 years)'
+        replicas:
+          title: Read Replicas
+          type: number
+          description: Number of read replicas to create
+          default: 0
+        skip_final_snapshot:
+          title: Skip Final Snapshot
+          type: boolean
+          description: Skip creating a final DB snapshot when the instance is deleted. Set to false for production.
+          default: true
+        storage_encrypted:
+          title: Storage Encryption
+          type: boolean
+          description: Encrypt the database storage at rest using KMS
+          default: true
+        storage_type:
+          title: Storage Type
+          type: string
+          description: Storage type for the DB instance
+          default: gp3
+          enum:
+            - gp2
+            - gp3
+            - io1
+            - io2
+          enumNames:
+            - 'gp2 (General Purpose SSD)'
+            - 'gp3 (General Purpose SSD - recommended)'
+            - 'io1 (Provisioned IOPS SSD)'
+            - 'io2 (Provisioned IOPS SSD - latest gen)'
+    - title: Module Version
+      description: |
+        Override module versioning. Defaults are suitable for most deployments.
+      properties:
+        module_version:
+          title: Module Version
+          type: string
+          description: Tag version of the RDS module in Example-IaC-Modules (e.g. v1.0.1, v1.1.0)
+          default: "v1.1.0"
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+            workflow_name: ${{ "NewIAC" }}
+            workflow_id: ${{ "NewIAC-rds-" + parameters.github_org + "-" + parameters.rds_name + "-" + parameters.deployment_env }}
+            task_queue: ${{ platform.taskQueue }}
+            workflow_args:
+              branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/rds/" + parameters.rds_name }}
+              repo_owner: ${{ parameters.github_org }}
+              repo_name: ${{ parameters.github_repo }}
+              pr_title: '${{ "Add RDS Database: " + parameters.rds_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+              pr_body: '${{ "Provisions an RDS database named " + parameters.rds_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
+              module_version: ${{ parameters.module_version }}
+              env_config_path: ${{ "env/{environment}/env.hcl" }}
+              resource_type: ${{ "rds" }}
+              resource_config:
+                name: ${{ parameters.rds_name }}
+                environments: ${{ parameters.deployment_env }}
+                config:
+                  identifier: ${{ parameters.rds_name }}
+                  db_name: ${{ parameters.db_name }}
+                  #rds info parameters
+                  engine: ${{ parameters.engine }}
+                  engine_version: ${{ parameters.engine_version }}
+                  instance_class: ${{ parameters.instance_class }}
+                  allocated_storage: ${{ parameters.allocated_storage }}
+                  username: ${{ parameters.username }}
+                  #rds network parameters
+                  subnet_grp_name: ${{ parameters.subnet_grp_name }}
+                  subnet_grp_description: ${{ parameters.subnet_grp_description }}
+                  subnet_ids: ${{ parameters.subnet_ids }}
+                  vpc_security_group_ids: ${{ parameters.vpc_security_group_ids }}
+                  #rds optional parameters
+                  allow_major_version_upgrade: ${{ parameters.allow_major_version_upgrade }}
+                  apply_immediately: ${{ parameters.apply_immediately }}
+                  auto_minor_version_upgrade: ${{ parameters.auto_minor_version_upgrade }}
+                  availability_zone: ${{ parameters.availability_zone }}
+                  backup_retention_period: ${{ parameters.backup_retention_period }}
+                  backup_window: ${{ parameters.backup_window }}
+                  ca_cert_identifier: ${{ "rds-ca-rsa2048-g1" }} #temp hardcoding this value
+                  character_set_name: ${{ parameters.character_set_name }}
+                  copy_tags_to_snapshot: ${{ parameters.copy_tags_to_snapshot }}
+                  deletion_protection: ${{ parameters.deletion_protection }}
+                  enabled_cloudwatch_logs_exports: ${{ parameters.enabled_cloudwatch_logs_exports }}
+                  final_snapshot_identifier: ${{ parameters.final_snapshot_identifier }}
+                  iam_database_authentication_enabled: ${{ parameters.iam_database_authentication_enabled }}
+                  # instance_tags: ${{ parameters.instance_tags }}
+                  iops: ${{ parameters.iops }}
+                  license_model: ${{ parameters.license_model }}
+                  maintenance_window: ${{ parameters.maintenance_window }}
+                  max_allocated_storage: ${{ parameters.max_allocated_storage }}
+                  multi_az: ${{ parameters.multi_az }}
+                  option_group_name: ${{ parameters.option_group_name }}
+                  parameter_group_name: ${{ parameters.parameter_group_name }}
+                  performance_insights_enabled: ${{ parameters.performance_insights_enabled }}
+                  performance_insights_retention_period: ${{ parameters.performance_insights_retention_period }}
+                  replicas: ${{ parameters.replicas }}
+                  skip_final_snapshot: ${{ parameters.skip_final_snapshot }}
+                  storage_encrypted: ${{ parameters.storage_encrypted }}
+                  storage_type: ${{ parameters.storage_type }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

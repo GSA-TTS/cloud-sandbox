@@ -1,0 +1,83 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: delete_resource_blueprint
+  title: Delete Resource Blueprint
+  description: Delete a terragrunt.hcl resource from an IaC GitHub repository by creating a PR that removes the specified file.
+  tags:
+    - 'delete-resource'
+    - 'blueprint'
+spec:
+  owner: example-org/backstage-ops
+  type: Intake and Provisioning
+  parameters:
+    - title: Resource Deletion Configuration
+      required:
+        - github_org
+        - github_repo
+        - environment
+        - resource_type
+        - resource_name
+      properties:
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The GitHub organization that owns the IaC repository
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: The IaC repository name in the GitHub organization
+          default: "iac"
+        environment:
+          title: Environment
+          type: string
+          description: The environment where the resource lives
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        resource_type:
+          title: Resource Type
+          type: string
+          description: The type of resource to delete (e.g. sqs, rds, lambda, s3)
+        resource_name:
+          title: Resource Name
+          type: string
+          description: The name of the specific resource to delete (e.g. testing, my-queue)
+
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: ${{ "DeleteResource" }}
+          workflow_id: ${{ "DeleteResource-" + parameters.github_org + "-" + parameters.resource_type + "-" + parameters.resource_name + "-" + parameters.environment }}
+          task_queue: ${{ platform.taskQueue }}
+          workflow_args:
+            repo_owner: ${{ parameters.github_org }}
+            repo_name: ${{ parameters.github_repo }}
+            environment: ${{ parameters.environment }}
+            resource_type: ${{ parameters.resource_type }}
+            resource_name: ${{ parameters.resource_name }}
+            branch_name: ${{ parameters.github_org + "/" + parameters.environment + "/delete/" + parameters.resource_type + "-" + parameters.resource_name }}
+            pr_title: '${{ "Delete " + parameters.resource_type + ": " + parameters.resource_name + " (" + parameters.github_org + "/" + parameters.environment + ")" }}'
+            pr_body: '${{ "Deletes the " + parameters.resource_type + " resource named " + parameters.resource_name + " from the " + parameters.environment + " environment for " + parameters.github_org + "." }}'
+
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

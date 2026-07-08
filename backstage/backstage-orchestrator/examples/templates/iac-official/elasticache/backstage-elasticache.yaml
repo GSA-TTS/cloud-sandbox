@@ -1,0 +1,278 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: backstage-elasticache-template
+  title: Redis (ElastiCache)
+  description: Provision an AWS ElastiCache Redis cluster
+  tags:
+    - 'single-resource'
+    - 'product-containers'
+    - 'product-data'
+    - 'tier-techlead'
+spec:
+  owner: platform-team:shared
+  type: AWS Service
+  parameters:
+    - title: Resource Identity
+      required:
+        - elasticache_name
+        - deployment_env
+        - github_org
+        - github_repo
+      properties:
+        elasticache_name:
+          title: Cluster Name
+          type: string
+          description: "Name of the cluster. 1-40 characters, must start with a letter, only alphanumeric and hyphens, no trailing or consecutive hyphens."
+          maxLength: 40
+          pattern: "^[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*$"
+        deployment_env:
+          title: Environment
+          type: string
+          description: The environment the cluster will be deployed in
+          default: dev
+          enum:
+            - dev
+            - test
+            - staging
+            - prod
+          enumNames:
+            - 'dev'
+            - 'test'
+            - 'staging'
+            - 'prod'
+        github_org:
+          title: GitHub Organization
+          type: string
+          description: The organization in GitHub that should own the deployment
+          ui:field: GitOrgPicker
+        github_repo:
+          title: GitHub Repository Name
+          type: string
+          description: Enter the name of the organization's GitHub repository used for IaC configuration
+          default: "iac"
+    - title: Cluster Configuration
+      required:
+        - instance_type
+        - engine_version
+      properties:
+        instance_type:
+          title: Instance Type
+          type: string
+          description: ElastiCache node instance type
+          default: "cache.t3.micro"
+          enum:
+            - "cache.t3.micro"
+            - "cache.t3.small"
+            - "cache.t3.medium"
+            - "cache.m6g.large"
+            - "cache.m6g.xlarge"
+            - "cache.r6g.large"
+            - "cache.r6g.xlarge"
+        engine_version:
+          title: Engine Version
+          type: string
+          description: Redis engine version
+          default: "7.1"
+          enum:
+            - "7.1"
+            - "7.0"
+            - "6.2"
+        family:
+          title: Parameter Group Family
+          type: string
+          description: Redis parameter group family (must match engine version)
+          default: "redis7"
+          enum:
+            - "redis7"
+            - "redis6.x"
+        cluster_size:
+          title: Number of Nodes
+          type: number
+          description: Number of cache nodes in the cluster. Ignored when cluster mode is enabled.
+          default: 1
+          minimum: 1
+          maximum: 6
+        auth_token:
+          title: Auth Token
+          type: string
+          description: "Password for Redis AUTH. 16-128 characters; cannot contain / \" @ or %. Required for transit encryption. Stored in Secrets Manager automatically."
+          minLength: 16
+          maxLength: 128
+          pattern: "^[^/\"@%]+$"
+          ui:widget: password
+    - title: High Availability
+      properties:
+        multi_az_enabled:
+          title: Multi-AZ Enabled
+          type: boolean
+          description: Enable Multi-AZ support. If true, automatic failover must also be enabled.
+          default: false
+        automatic_failover_enabled:
+          title: Automatic Failover
+          type: boolean
+          description: Automatically promote a replica to primary on failure. Requires cluster_size > 1.
+          default: false
+        cluster_mode_enabled:
+          title: Cluster Mode
+          type: boolean
+          description: Enable native Redis cluster mode. Requires automatic failover enabled.
+          default: false
+        cluster_mode_num_node_groups:
+          title: Number of Shards
+          type: number
+          description: Number of node groups (shards) when cluster mode is enabled.
+          default: 0
+          minimum: 0
+        cluster_mode_replicas_per_node_group:
+          title: Replicas per Shard
+          type: number
+          description: Number of replica nodes in each shard. Valid values 0-5.
+          default: 0
+          minimum: 0
+          maximum: 5
+    - title: Security & Encryption
+      properties:
+        at_rest_encryption_enabled:
+          title: Encryption at Rest
+          type: boolean
+          description: Enable encryption of data stored on disk
+          default: true
+        transit_encryption_enabled:
+          title: Encryption in Transit (TLS)
+          type: boolean
+          description: Enable TLS for data in transit
+          default: true
+        kms_key_id:
+          title: KMS Key ID
+          type: string
+          description: KMS key ARN/ID to use for at-rest encryption. Leave empty to use AWS managed key.
+          default: ""
+        use_existing_security_groups:
+          title: Use Existing Security Groups
+          type: boolean
+          description: Set to true to skip SG creation and provide your own via the Temporal workflow
+          default: false
+    - title: Backup & Maintenance
+      properties:
+        snapshot_retention_limit:
+          title: Snapshot Retention (days)
+          type: number
+          description: Number of days to retain automatic snapshots. Set to 0 to disable.
+          default: 7
+          minimum: 0
+          maximum: 35
+        snapshot_window:
+          title: Snapshot Window (UTC)
+          type: string
+          description: Daily time range for automatic snapshots
+          default: "06:30-07:30"
+        maintenance_window:
+          title: Maintenance Window
+          type: string
+          description: Weekly maintenance window
+          default: "wed:03:00-wed:04:00"
+        apply_immediately:
+          title: Apply Immediately
+          type: boolean
+          description: Apply changes immediately instead of during the next maintenance window
+          default: true
+    - title: Advanced Options
+      description: "Networking (VPC, subnets, security groups) is auto-derived from your tenant's root.hcl configuration. Override here only if needed."
+      properties:
+        module_version:
+          title: Module Version
+          type: string
+          description: "The version tag to pin for this module. Only change if you need a specific older version."
+          default: "ELASTICACHE-v2.0.0"
+        vpc_id:
+          title: VPC ID (optional)
+          type: string
+          description: "VPC ID override. Leave empty to auto-derive from root.hcl."
+          default: ""
+        port:
+          title: Redis Port
+          type: number
+          description: Port number for the Redis cluster
+          default: 6379
+        replication_group_id:
+          title: Replication Group ID
+          type: string
+          description: "Custom replication group ID (1-40 alphanumeric chars/hyphens, must start with a letter, no trailing or consecutive hyphens). Leave empty to use the cluster name."
+          maxLength: 40
+          pattern: "^$|^[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*$"
+          default: ""
+        notification_topic_arn:
+          title: Notification Topic ARN
+          type: string
+          description: SNS topic ARN for ElastiCache event notifications
+          default: ""
+        alarm_cpu_threshold_percent:
+          title: CPU Alarm Threshold (%)
+          type: number
+          description: CPU utilization percentage to trigger alarm
+          default: 75
+          minimum: 1
+          maximum: 100
+        alarm_memory_threshold_percent:
+          title: Memory Alarm Threshold (%)
+          type: number
+          description: Memory utilization percentage to trigger alarm
+          default: 80
+  steps:
+    - id: backstage_request_with_input
+      name: backstage request with inputs
+      action: http:backstage:request
+      input:
+        method: 'POST'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
+        headers:
+          content-type: 'application/json'
+        body:
+          workflow_name: ${{ "NewIAC" }}
+          workflow_id: ${{ "NewIAC-elasticache-" + parameters.github_org + "-" + parameters.elasticache_name + "-" + parameters.deployment_env }}
+          task_queue: ${{ platform.taskQueue }}
+          workflow_args:
+            branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/elasticache/" + parameters.elasticache_name }}
+            repo_owner: ${{ parameters.github_org }}
+            repo_name: ${{ parameters.github_repo }}
+            pr_title: '${{ "Add ElastiCache Cluster: " + parameters.elasticache_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
+            pr_body: '${{ "Provisions an ElastiCache Redis cluster named " + parameters.elasticache_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + ". Connection details stored in Secrets Manager as " + parameters.elasticache_name + "-credentials." }}'
+            module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
+            module_version: ${{ parameters.module_version }}
+            env_config_path: ${{ "env/{environment}/env.hcl" }}
+            resource_type: ${{ "elasticache" }}
+            resource_config:
+              name: ${{ parameters.elasticache_name }}
+              environments: ${{ parameters.deployment_env }}
+              config:
+                name: ${{ parameters.elasticache_name }}
+                instance_type: ${{ parameters.instance_type }}
+                engine_version: ${{ parameters.engine_version }}
+                family: ${{ parameters.family }}
+                cluster_size: ${{ parameters.cluster_size }}
+                auth_token: ${{ parameters.auth_token }}
+                multi_az_enabled: ${{ parameters.multi_az_enabled }}
+                automatic_failover_enabled: ${{ parameters.automatic_failover_enabled }}
+                cluster_mode_enabled: ${{ parameters.cluster_mode_enabled }}
+                cluster_mode_num_node_groups: ${{ parameters.cluster_mode_num_node_groups }}
+                cluster_mode_replicas_per_node_group: ${{ parameters.cluster_mode_replicas_per_node_group }}
+                at_rest_encryption_enabled: ${{ parameters.at_rest_encryption_enabled }}
+                transit_encryption_enabled: ${{ parameters.transit_encryption_enabled }}
+                kms_key_id: ${{ parameters.kms_key_id }}
+                use_existing_security_groups: ${{ parameters.use_existing_security_groups }}
+                snapshot_retention_limit: ${{ parameters.snapshot_retention_limit }}
+                snapshot_window: ${{ parameters.snapshot_window }}
+                maintenance_window: ${{ parameters.maintenance_window }}
+                apply_immediately: ${{ parameters.apply_immediately }}
+                port: ${{ parameters.port }}
+                replication_group_id: ${{ parameters.replication_group_id }}
+                notification_topic_arn: ${{ parameters.notification_topic_arn }}
+                alarm_cpu_threshold_percent: ${{ parameters.alarm_cpu_threshold_percent }}
+                alarm_memory_threshold_percent: ${{ parameters.alarm_memory_threshold_percent }}
+                vpc_id: ${{ parameters.vpc_id }}
+  output:
+    links:
+      - title: 'Go to pull request'
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        icon: github

@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: platform-iac-modules
+  description: TF/TG config files and actions
+  annotations:
+    github.com/project-slug: example-org/Example-IaC-Modules
+    backstage.io/techdocs-ref: url:https://github.example.com/example-org/Example-IaC-Modules/blob/main/
+spec:
+  type: service
+  owner: example-org/platform-team
+  lifecycle: development
