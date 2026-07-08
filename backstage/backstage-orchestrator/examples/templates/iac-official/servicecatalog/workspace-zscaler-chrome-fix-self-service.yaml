@@ -11,7 +11,7 @@ metadata:
     - 'chrome'
     - 'tier-user'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Self-Service
   parameters:
     - title: Workspace Fix
@@ -54,7 +54,7 @@ spec:
       name: Trigger Workspace Fix
       action: github:actions:dispatch
       input:
-        repoUrl: github.helix.gsa.gov?repo=bulkhead&owner=fdp
+        repoUrl: github.example.com?repo=bulkhead&owner=example-org
         workflowId: workspace_self_service_zscaler_chrome_fix.yml
         branchOrTagName: main
         workflowInputs:

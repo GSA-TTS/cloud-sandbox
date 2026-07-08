@@ -14,19 +14,19 @@ metadata:
     - 'internal'
     - 'product-databricks-dev'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Internal
   parameters:
     - title: Request Details
       properties:
         jira_ticket:
-          title: FCSTS Ticket
+          title: Service Desk Ticket
           type: string
-          description: The FCSTS Jira ticket for this access request (auto-populated from link).
+          description: The Service Desk Jira ticket for this access request (auto-populated from link).
           ui:readonly: true
 
         jira_url:
-          title: FCSTS Ticket URL
+          title: Service Desk Ticket URL
           type: string
           ui:readonly: true
           ui:widget: hidden
@@ -58,7 +58,7 @@ spec:
           type: boolean
           description: >-
             Check to approve. Leave unchecked to decline.
-            The requesting user will be notified either way via the FCSTS ticket.
+            The requesting user will be notified either way via the Service Desk ticket.
           default: false
           ui:widget: checkbox
 
@@ -73,13 +73,13 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
           workflow_name: AddUserToWorkspaceOwnerApproval
           workflow_id: AddUserToWorkspaceOwnerApproval-${{ parameters.jira_ticket }}-${{ user.entity.spec.profile.email }}
-          task_queue: ${{ fcs.taskQueue }}
+          task_queue: ${{ platform.taskQueue }}
           await_result: true
           workflow_args:
             ticket_number: ${{ parameters.jira_ticket }}
@@ -88,6 +88,6 @@ spec:
 
   output:
     links:
-      - title: 'View FCSTS Ticket'
+      - title: 'View Service Desk Ticket'
         url: '${{ parameters.jira_url }}'
         icon: docs

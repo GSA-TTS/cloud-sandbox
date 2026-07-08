@@ -3,12 +3,12 @@ kind: Component
 metadata:
   name: catalog-internal-tools
   description: >
-    Internal Backstage scaffolding, templates, and tooling contributed by FCS
+    Internal Backstage scaffolding, templates, and tooling contributed by Example Platform
     platform teams. Content in this repository is never exposed to tenants.
   annotations:
-    github.com/project-slug: mcaas-cc/catalog-internal-tools
-    backstage.io/techdocs-ref: url:https://github.helix.gsa.gov/mcaas-cc/catalog-internal-tools/blob/main/
+    github.com/project-slug: platform-cc/catalog-internal-tools
+    backstage.io/techdocs-ref: url:https://github.example.com/platform-cc/catalog-internal-tools/blob/main/
 spec:
   type: library
-  owner: mcaas-cc/backstage-admins
+  owner: platform-cc/backstage-admins
   lifecycle: production

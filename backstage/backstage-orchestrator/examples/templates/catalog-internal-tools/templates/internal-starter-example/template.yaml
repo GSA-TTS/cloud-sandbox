@@ -5,13 +5,13 @@ metadata:
   title: "[EXAMPLE] Internal Starter Template"
   description: >
     A reference template demonstrating the conventions and patterns expected
-    for all FCS internal scaffolder templates. Delete or replace this template
+    for all Example Platform internal scaffolder templates. Delete or replace this template
     once you have a real workflow to ship.
   tags:
     - platform-internal
     - example
 spec:
-  owner: mcaas-cc/backstage-admins
+  owner: platform-cc/backstage-admins
   type: internal-workflow
 
   parameters:
@@ -39,10 +39,10 @@ spec:
         github_org:
           title: GitHub Organization
           type: string
-          description: The mcaas-cc org is pre-selected for internal tooling.
-          default: mcaas-cc
+          description: The platform-cc org is pre-selected for internal tooling.
+          default: platform-cc
           enum:
-            - mcaas-cc
+            - platform-cc
         github_repo:
           title: Repository Name
           type: string
@@ -50,9 +50,9 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - github.helix.gsa.gov
+              - github.example.com
             allowedOwners:
-              - mcaas-cc
+              - platform-cc
 
   steps:
     - id: fetch-template
@@ -70,7 +70,7 @@ spec:
       action: publish:github
       input:
         allowedHosts:
-          - github.helix.gsa.gov
+          - github.example.com
         description: ${{ parameters.description }}
         repoUrl: ${{ parameters.github_repo }}
         defaultBranch: main

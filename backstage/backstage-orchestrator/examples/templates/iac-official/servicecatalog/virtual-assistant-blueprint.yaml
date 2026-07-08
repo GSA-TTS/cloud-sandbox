@@ -11,7 +11,7 @@ metadata:
     - 'product-virtual-desktop'
     - 'tier-techlead'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Intake and Provisioning
   parameters:
     # Page 1: Required Fields
@@ -1803,13 +1803,13 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "NewVirtualAssistant" }}
             workflow_id: ${{ "NewVirtualAssistant-" + parameters.github_org + "-" + parameters.agent_name + "-" + parameters.deployment_env }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
               agent_name: ${{ parameters.agent_name }}
               module_version: ${{ parameters.module_version }}
@@ -2088,5 +2088,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
         icon: github

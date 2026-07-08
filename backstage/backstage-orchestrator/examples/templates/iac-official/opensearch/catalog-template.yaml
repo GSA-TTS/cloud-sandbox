@@ -12,9 +12,9 @@ entries:
         - opensearch
         - data-tier
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: opensearch
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: opensearch
       links:
         - url: "https://console.aws.amazon.com/aos/home?region=us-east-1#/opensearch/domains/{{name}}"
           title: AWS Console
@@ -38,9 +38,9 @@ entries:
         - logging
         - cloudwatch
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: cloudwatch-logs
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: cloudwatch-logs
       links:
         - url: "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups"
           title: AWS Console
@@ -62,10 +62,10 @@ entries:
         - secret
         - credentials
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: secretsmanager
-        fcs.gsa.gov/secret-name: "{{name}}-credentials"
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: secretsmanager
+        example.gov/secret-name: "{{name}}-credentials"
       links:
         - url: "https://console.aws.amazon.com/secretsmanager/secret?name={{name}}-credentials&region=us-east-1"
           title: AWS Console
@@ -87,9 +87,9 @@ entries:
         - iam
         - service-linked-role
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: iam-service-linked-role
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: iam-service-linked-role
     spec:
       type: iam-role
       lifecycle: "{{lifecycle}}"

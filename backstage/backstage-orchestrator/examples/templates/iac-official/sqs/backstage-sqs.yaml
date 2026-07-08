@@ -11,7 +11,7 @@ metadata:
     - 'product-containers'
     - 'tier-developer'
 spec:
-  owner: fdp/fcs-next
+  owner: example-org/platform-team
   type: AWS Service
   parameters:
     - title: Name
@@ -103,20 +103,20 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "NewIAC" }}
             workflow_id: ${{ "NewIAC-sqs-" + parameters.github_org + "-" + parameters.queue_name + "-" + parameters.deployment_env }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
               branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/sqs/" + parameters.queue_name }}
               repo_owner: ${{ parameters.github_org }}
               repo_name: ${{ parameters.github_repo }}
               pr_title: '${{ "Add SQS Queue: " + parameters.queue_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
               pr_body: '${{ "Provisions an SQS queue named " + parameters.queue_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
-              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
               env_config_path: ${{ "env/{environment}/env.hcl" }}
               resource_type: ${{ "sqs" }}
               resource_config:
@@ -136,5 +136,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
         icon: github

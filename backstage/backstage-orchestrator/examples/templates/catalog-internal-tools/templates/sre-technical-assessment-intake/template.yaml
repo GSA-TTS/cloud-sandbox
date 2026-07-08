@@ -22,7 +22,7 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:
-  owner: group:mcaas-cc/backstage-admins
+  owner: group:platform-cc/backstage-admins
   type: internal-workflow
 
   # ─────────────────────────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ spec:
         teamOrganization:
           title: Team / Organization
           type: string
-          description: e.g. FCS API Exchange, Status Dashboard Team
+          description: e.g. Example Platform Sample API, Sample Status Dashboard Team
         experienceArea:
           title: Experience Area
           type: string
@@ -107,7 +107,7 @@ spec:
           ui:options:
             rows: 3
           description: >
-            Use SSH format. e.g., git@github.helix.gsa.gov:MyTeam/my-product.git
+            Use SSH format. e.g., git@github.example.com:MyTeam/my-product.git
             One URL per line if multiple repos.
         appBranch:
           title: Branch to assess
@@ -117,7 +117,7 @@ spec:
           title: Infrastructure / IaC Repository URL (SSH)
           type: string
           description: >
-            SSH format. e.g., git@github.helix.gsa.gov:MyTeam/my-infra.git
+            SSH format. e.g., git@github.example.com:MyTeam/my-infra.git
             Enter "Same as app repo" if co-located. Leave blank if not applicable.
         gitopsRepo:
           title: GitOps / Flux Repository URL
@@ -143,7 +143,7 @@ spec:
           ui:options:
             rows: 3
           description: >
-            One per line. Prefer the full URL (e.g., https://jira.gsa.gov/browse/MYTEAM);
+            One per line. Prefer the full URL (e.g., https://jira.example.gov/browse/MYTEAM);
             a project key (e.g., MYTEAM) is also accepted. Leave blank if not using Jira.
         repoAccessNotes:
           title: Repository access notes
@@ -394,7 +394,7 @@ spec:
       name: Open SRE Gate 2 Tracking Ticket
       action: github:issues:create
       input:
-        repoUrl: github.helix.gsa.gov?owner=SRE&repo=sre-assessments
+        repoUrl: github.example.com?owner=SRE&repo=sre-assessments
         title: "[SRE Gate 2] ${{ parameters.productName }} — ${{ parameters.teamOrganization }} (${{ parameters.assessmentDate }})"
         labels:
           - sre-gate2
@@ -589,4 +589,4 @@ spec:
           3. **Assessment report delivered** — You'll receive a comprehensive report with scores across 8 categories and prioritised remediation recommendations.
           4. **Gate 1 (Capacity Planning)** — If not already submitted, please complete the SRE Gate 1 Capacity Planning form (available in the Backstage catalog) and link it to this ticket.
 
-          **Questions?** Reach the SRE team at sre-team@gsa.gov or in Google Chat.
+          **Questions?** Reach the SRE team at sre-team@example.gov or in Google Chat.

@@ -225,7 +225,7 @@ AWS and third-party service dependencies extracted from approval documentation.
 | Service Name | GSA Approved In GEAR                             |
 | ------------ | ------------------------------------------------ |
 | TensorFlow   | Approved for Pilot                               |
-| Jupyter      | [Yes](https://ea.gsa.gov/#!/itstandards/1876%20) |
+| Jupyter      | [Yes](https://example.gov/approved-services/jupyter) |
 | Apache Spark | Approved                                         |
 | Docker       | Approved                                         |
 | MXNet        | Not Yet                                          |
@@ -332,7 +332,7 @@ AWS and third-party service dependencies extracted from approval documentation.
 | Service Name | GSA Approved In GEAR                             |
 | ------------ | ------------------------------------------------ |
 | TensorFlow   | Approved for Pilot                               |
-| Jupyter      | [Yes](https://ea.gsa.gov/#!/itstandards/1876%20) |
+| Jupyter      | [Yes](https://example.gov/approved-services/jupyter) |
 | Apache Spark | Approved                                         |
 | Docker       | Approved                                         |
 | MXNet        | Not Yet                                          |

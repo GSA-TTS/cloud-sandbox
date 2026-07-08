@@ -21,7 +21,7 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:
-  owner: group:mcaas-cc/backstage-admins
+  owner: group:platform-cc/backstage-admins
   type: internal-workflow
 
   parameters:
@@ -60,7 +60,7 @@ spec:
         teamOrganization:
           title: Team / Organization
           type: string
-          description: e.g. FCS API Exchange, Status Dashboard Team
+          description: e.g. Example Platform Sample API, Sample Status Dashboard Team
         experienceArea:
           title: Experience Area
           type: string
@@ -344,7 +344,7 @@ spec:
       name: Open SRE Gate 1 Tracking Ticket
       action: github:issues:create
       input:
-        repoUrl: github.helix.gsa.gov?owner=SRE&repo=sre-assessments
+        repoUrl: github.example.com?owner=SRE&repo=sre-assessments
         title: "[SRE Gate 1] ${{ parameters.productName }} — ${{ parameters.teamOrganization }}"
         labels:
           - sre-gate1
@@ -374,7 +374,7 @@ spec:
           ## 2. Weekly Operational Hours
 
           > Use the total below with the automation level to calculate the capacity score
-          > via the [SRE Capacity Planning Scoring Matrix](https://github.helix.gsa.gov/SRE/sre-framework/blob/main/docs/09-capacity-planning-calculation.md).
+          > via the [SRE Capacity Planning Scoring Matrix](https://github.example.com/SRE/sre-framework/blob/main/docs/09-capacity-planning-calculation.md).
 
           | Category | Hours / Week |
           |---|---|
@@ -471,4 +471,4 @@ spec:
           2. **Capacity score report** — You'll receive a report with your score (1–5), the decision (accept / conditional / remediation required), and prioritised recommendations.
           3. **Gate 2** — Once Gate 1 is complete, submit the SRE Gate 2 Production Readiness form from the Backstage catalog. Gate 2 is where repository URLs and infrastructure access details are collected.
 
-          **Questions?** Reach the SRE team at sre-team@gsa.gov.
+          **Questions?** Reach the SRE team at sre-team@example.gov.

@@ -10,9 +10,9 @@ entries:
       tags:
         - "{{resource_type}}"
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: "{{resource_type}}"
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: "{{resource_type}}"
     spec:
       type: "{{resource_type}}"
       lifecycle: "{{lifecycle}}"

@@ -2,18 +2,18 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: fcs-virt-asst-fe
-  title: FCP Virtual Assistant FE
-  description: This template deploys FCP's Virtual Assistant Frontend.
+  name: virtual-assistant-frontend
+  title: Example Virtual Assistant FE
+  description: This template deploys Example's Virtual Assistant Frontend.
   tags:
     - 'blueprint'
     - 'product-containers'
     - 'tier-developer'
 spec:
-  owner: fcs-fcp-org/iac-deployment
+  owner: example-org/iac-deployment
   type: Blueprint
   parameters:
-    - title: FCP Virtual Assistant Frontend
+    - title: Example Virtual Assistant Frontend
       required:
         - deployment_env
         - github_org
@@ -44,7 +44,7 @@ spec:
           type: string
           description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
           default: "iac"
-    - title: FCP Virtual Assistant Frontend Parameters
+    - title: Example Virtual Assistant Frontend Parameters
       required:
         - aws_region
         - stack_prefix
@@ -87,27 +87,27 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "NewIAC" }}
             workflow_id: ${{ "NewIAC-virt-asst-fe-" + parameters.github_org + "-" + parameters.stack_prefix + "-" + parameters.deployment_env }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
               branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/virt-asst-fe/" + parameters.stack_prefix }}
               repo_owner: ${{ parameters.github_org }}
               repo_name: ${{ parameters.github_repo }}
               pr_title: '${{ "Add Virtual Assistant FE: " + parameters.stack_prefix + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
               pr_body: '${{ "Provisions a Virtual Assistant Frontend named " + parameters.stack_prefix + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
-              module_source_base: ${{ "git@github.helix.gsa.gov:fcs-fcp-org/iac.git/" }}
+              module_source_base: ${{ "git@github.example.com:example-org/iac.git/" }}
               env_config_path: ${{ "env/{environment}/env.hcl" }}
               resource_type: ${{ "virt-asst-fe" }}
-              tenant: ${{ "FCP" }}
+              tenant: ${{ "Example" }}
               resource_config:
                 environments: ${{ parameters.deployment_env }}
                 config:
-                  name: ${{ "fcp-virt-asst-fe" }}
+                  name: ${{ "example-virt-asst-fe" }}
                   aws_region: ${{ parameters.aws_region }}
                   stack_prefix: ${{ parameters.stack_prefix }}
                   frontend_build_tag: ${{ parameters.frontend_build_tag }}
@@ -116,5 +116,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
         icon: github

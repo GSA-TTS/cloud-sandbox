@@ -12,7 +12,7 @@ metadata:
     - 'product-data'
     - 'tier-developer'
 spec:
-  owner: fdp/fcs-next
+  owner: example-org/platform-team
   type: AWS Service
   parameters:
     - title: Name
@@ -69,7 +69,7 @@ spec:
         module_version:
           title: Module Version
           type: string
-          description: Tag version of the DynamoDB module in FCS-IaC-Modules (e.g. v1.0.0, v2.0.0)
+          description: Tag version of the DynamoDB module in Example-IaC-Modules (e.g. v1.0.0, v2.0.0)
           default: "v1.0.4"
         autoscale_max_read_capacity:
           title: Autoscale Max Read Capacity
@@ -193,20 +193,20 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "NewIAC" }}
             workflow_id: ${{ "NewIAC-dynamodb-" + parameters.github_org + "-" + parameters.dynamodb_name + "-" + parameters.deployment_env }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
               branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/dynamodb/" + parameters.dynamodb_name }}
               repo_owner: ${{ parameters.github_org }}
               repo_name: ${{ parameters.github_repo }}
               pr_title: '${{ "Add DynamoDB Table: " + parameters.dynamodb_name + " (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
               pr_body: '${{ "Provisions a DynamoDB table named " + parameters.dynamodb_name + " in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
-              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
               module_version: ${{ parameters.module_version }}
               env_config_path: ${{ "env/{environment}/env.hcl" }}
               resource_type: ${{ "dynamodb" }}
@@ -246,5 +246,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
         icon: github

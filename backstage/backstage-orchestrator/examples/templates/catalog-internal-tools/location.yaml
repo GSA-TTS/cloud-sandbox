@@ -3,7 +3,7 @@ kind: Location
 metadata:
   name: catalog-internal-tools
   description: >
-    Aggregates all internal FCS platform templates and tooling registered in
+    Aggregates all internal Example Platform platform templates and tooling registered in
     catalog-internal-tools. Add new template paths to spec.targets as they are
     contributed. This file is registered as a static location in the Backstage
     app-config (cc-flux-config).

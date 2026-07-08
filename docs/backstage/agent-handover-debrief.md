@@ -15,12 +15,12 @@
 *   **Symlink Loss:** The `bundle.tar.gz` artifact loses the `node_modules/app` -> `packages/app` symlink when unpacked in CF. We added a runtime repair script in `vcap-env.js` to recreate this symlink dynamically so `@backstage/plugin-app-backend` can serve the frontend successfully.
 
 ## 3. Current State
-*   The application manifest (`manifest.yml`) and `app-config.production.yaml` are correctly scoped to the public route: `https://backstage-fcs-sso-portal.app.cloud.gov`.
+*   The application manifest (`manifest.yml`) and `app-config.production.yaml` are correctly scoped to the public route: `https://backstage-sandbox-portal.app.cloud.gov`.
 *   The `deploy-workspace` compiles successfully, respects the 2GB Cloud Foundry sandbox limit, and bypasses out-of-space staging errors.
 *   The `cloud-gov-identity-provider` has been brokered to the app as `backstage-sso` with the correct `redirect_uris` callback configured.
 
 ## 4. Next Steps for Incoming Agent
-1. **Validate OIDC Authentication Flow:** Once the portal starts, attempt to log in via cloud.gov SSO. Check the Cloud Foundry logs (`cf logs backstage-fcs-sso-portal`) to ensure the callback routing completes successfully and identity tokens map properly to Backstage users.
+1. **Validate OIDC Authentication Flow:** Once the portal starts, attempt to log in via cloud.gov SSO. Check the Cloud Foundry logs (`cf logs backstage-sandbox-portal`) to ensure the callback routing completes successfully and identity tokens map properly to Backstage users.
 2. **Fix Missing Catalog Example Data Warnings:** The logs continuously throw warnings: `file /home/vcap/app/examples/entities.yaml does not exist`. This happens because `app-config.production.yaml` is pointing to local files that aren't included in the production `bundle.tar.gz`.
    *   *Action:* Remove the `locations:` block pointing to `./examples/...` in `app-config.production.yaml` and replace it with a remote URL (like a GitHub URL) that hosts your catalog entities.
 3. **Database Migrations:** Monitor the logs to verify that the PostgreSQL database connection string is properly formed by `vcap-env.js` and that Backstage successfully applies its schema migrations.

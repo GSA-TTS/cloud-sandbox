@@ -252,7 +252,7 @@ User Guide: [https://docs.aws.amazon.com/elasticsearch-service/latest/developerg
 1. Best practices should enforce that only security keys be stored within the AWS Secrets Manager and not any other confidential information for other services or entities
 2. The use of this service should be performed using IAM Roles and AWS Resource Policies.
 3. The use of this service requires the implementation of KMS as [defined](https://docs.google.com/document/d/1QLTi6EaQVE1pGqyq9lGmqCisWY9DiEmYa-w-NXIjZeE/edit) by for use with GSA.
-4. Use of Third Party API keys is limited to approved application and services as listed on ea.gsa.gov.
+4. Use of Third Party API keys is limited to approved application and services as listed on example.gov/approved-services.
 5. The use of secrets manager is limited to only application and system relevant information i.e. passwords, database strings, license codes, API keys, etc. Secrets manager cannot be used to store PII, P
 
 ## AWS SnowBall Edge
@@ -286,7 +286,7 @@ User Guide: [https://docs.aws.amazon.com/elasticsearch-service/latest/developerg
 
 1. AWS Storage Gateway requires the use of an unvetted appliance that communicates bidirectionally with AWS. This appliance would need to be included in the applicable ATO boundary and subject to securit
 2. The use of this service should be performed using IAM Roles and AWS Resource Policies.
-3. Data in scope must be encrypted everywhere, at rest, in transit and in S3. Data in transit between hosts and storage gateway should be encrypted using protocols such as SMB V3, FCS 4.1 etc or agents
+3. Data in scope must be encrypted everywhere, at rest, in transit and in S3. Data in transit between hosts and storage gateway should be encrypted using protocols such as SMB V3, Example Platform 4.1 etc or agents
 4. Service is NOT approved for use cases involving pci/pii until service acquires FedRAMP ATO.
 5. Service is NOT approved for use cases involving data transfer from GSA on-premise environment.
 
@@ -379,8 +379,8 @@ Provide lin
 
 ### Use Caveats
 
-1. **Complete safety board [review](https://feedback.gsa.gov/jfe/form/SV_5tgn61GaufYZOlg).**
-2. \*\*Complete the [AI Security Review Checklist](https://docs.google.com/spreadsheets/d/1cekVRPvWjGEIW1IXISkdy01muwE5KskkECTn0BaPKw8/edit?usp=drive_link) and submit to [Seceng@gsa.gov](mailto:Seceng@gsa.
+1. **Complete safety board [review](https://example.gov/safety-review).**
+2. \*\*Complete the [AI Security Review Checklist](https://example.gov/security-review-checklist) and submit to [Seceng@example.gov](mailto:Seceng@gsa.
 3. **VPC Configuration:**
    - Implement a **VPC** with **public and private subnets**.
    - Use a **NAT Gateway** to restrict and control internet access to Amazon Bedrock resources.
@@ -544,7 +544,7 @@ Developer Guide: https://docs.aws.amazon.com/sagemaker
 
 ### Use Caveats
 
-1. Usage of the certificates must be consistent with the [GSA SSL / TLS Procedural Guide](https://insite.gsa.gov/portal/getMediaData?mediaId=536145)
+1. Usage of the certificates must be consistent with the [TLS Procedural Guide](https://example.gov/tls-procedural-guide)
 2. End user is in charge of safely maintaining and rotating private keys for imported certificates.
 3. DNS based domain name validation is preferred and recommended to be used.
 

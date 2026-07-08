@@ -10,7 +10,7 @@ metadata:
     - 'product-databricks-dev'
     - 'tier-techlead'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Intake and Provisioning
   parameters:
     - title: Important Disclaimers
@@ -32,7 +32,7 @@ spec:
             • COMPLIANCE: Lab/sandbox workspaces are NOT suitable for: production workloads, live or copied production data, otherwise sensitive data, or integration/exchanges with external data sources.
             • TEMPORARY USE: These lab workspaces are designed for short-term experimentation and learning purposes only. They are subject to be shutdown after 14 days, and any data or code resident within will be deleted.
 
-            If you need a fully-governed Databricks Workspace that is suitable for long-term development and/or production use, please engage with the [FCS Cloud Advisory for Intake](https://backstage.dev.cc.mcaas.fcs.gsa.gov/create/templates/default/intakeform).
+            If you need a fully-governed Databricks Workspace that is suitable for long-term development and/or production use, please engage with the [Example Platform Cloud Advisory for Intake](https://backstage.example.gov/create/templates/default/intakeform).
           ui:disabled: true
         user_acknowledgement:
           title: I acknowledge this is for lab/sandbox use only
@@ -100,15 +100,15 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
           workflow_name: ${{ "NewDataWorkspace" }}
           workflow_id: NewDataWorkspace-${{ parameters.workspace_name }}
-          task_queue: ${{ "fcsnext-development" }}
+          task_queue: ${{ "platform-development" }}
           workflow_args:
-            repo_owner: ${{ "fdp" }}
+            repo_owner: ${{ "example-org" }}
             repo_name: ${{ "account-management" }}
             workspace_name: ${{ parameters.workspace_name }}
             workspace_name_display: ${{ parameters.workspace_name_display }}
@@ -116,5 +116,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/fdp/account-management/pulls"}}
+        url: ${{"https://github.example.com/example-org/account-management/pulls"}}
         icon: github

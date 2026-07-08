@@ -4,22 +4,22 @@ metadata:
   name: databricks_rob_acceptance
   title: Databricks Workspace — Rules of Behavior Acceptance
   description: >
-    Review and accept (or decline) the FCS Databricks Rules of Behavior.
+    Review and accept (or decline) the Example Platform Databricks Rules of Behavior.
     This form is sent to you as part of a workspace access request.
     Your Backstage identity (GitHub SSO) is recorded for audit purposes.
   tags:
     - 'internal'
     - 'rob'
 spec:
-  owner: fdp/fcs-next
+  owner: example-org/platform-team
   type: Internal
   parameters:
     - title: Your Access Request
       properties:
         jira_ticket:
-          title: FCSTS Ticket
+          title: Service Desk Ticket
           type: string
-          description: The FCSTS Jira ticket for this access request (auto-populated from link).
+          description: The Service Desk Jira ticket for this access request (auto-populated from link).
           ui:readonly: true
         jira_url:
           title: Ticket URL
@@ -58,7 +58,7 @@ spec:
         - rob_accepted
       properties:
         rob_accepted:
-          title: I have read and agree to the FCS Rules of Behavior linked above.
+          title: I have read and agree to the Example Platform Rules of Behavior linked above.
           type: boolean
           ui:field: DatabricksRoBCheckbox
           default: false
@@ -70,7 +70,7 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
@@ -83,7 +83,7 @@ spec:
 
   output:
     links:
-      - title: 'View FCSTS Ticket'
+      - title: 'View Service Desk Ticket'
         url: '${{ parameters.jira_url }}'
         icon: docs
       - title: 'Open Databricks Workspace'

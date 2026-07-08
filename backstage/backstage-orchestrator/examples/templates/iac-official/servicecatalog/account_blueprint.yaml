@@ -2,20 +2,20 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: mcaas_account_blueprint
-  title: FCS Account & Network Provisioning
+  name: account_blueprint
+  title: Example Platform Account & Network Provisioning
   description: |
-    Provision a new FCS account with automatic
+    Provision a new Example Platform account with automatic
     VPC subnet configuration, networking automation, and infrastructure setup.
   tags:
-    - 'mcaas'
+    - 'platform'
     - 'vpc'
     - 'containers-dev'
     - 'intake-and-provisioning'
     - 'product-all-dev'
     - 'tier-techlead'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Intake and Provisioning
 
   parameters:
@@ -31,10 +31,10 @@ spec:
         account_name:
           title: Account Name
           type: string
-          pattern: '^mcaas-[a-z0-9]+-[a-z]+$'
+          pattern: '^platform-[a-z0-9]+-[a-z]+$'
           description: |
-            Format: mcaas-{code}-{environment}
-            Examples: mcaas-abc-dev, mcaas-acme-prod
+            Format: platform-{code}-{environment}
+            Examples: platform-abc-dev, platform-acme-prod
 
         tenant_short_name:
           title: Tenant Short Name
@@ -42,19 +42,19 @@ spec:
           pattern: '^[a-z]{3,}$'
           description: |
             3+ letter tenant identifier
-            Used in DNS: {tenant_short_name}.mcaas.fcs.gsa.gov (for production)
+            Used in DNS: {tenant_short_name}.platform.example.gov (for production)
 
         product_name:
           title: Product Name
           type: string
           description: Product or business unit name
           enum:
-            - mcaas
-            - prod_mcaas
+            - platform
+            - prod_platform
           enumNames:
-            - 'MCaaS'
-            - 'MCaaS (legacy prod prefix)'
-          default: "mcaas"
+            - 'Platform'
+            - 'Platform (legacy prod prefix)'
+          default: "platform"
 
         project_name:
           title: Project Name
@@ -142,8 +142,8 @@ spec:
           pattern: '^[a-z]{3,}$'
           description: |
             Required for production environments only
-            Used to create Route53 hosted zone: {tenant_code}.mcaas.fcs.gsa.gov
-            Example: "abc" → abc.mcaas.fcs.gsa.gov
+            Used to create Route53 hosted zone: {tenant_code}.platform.example.gov
+            Example: "abc" → abc.platform.example.gov
 
         account_budget:
           title: Monthly Budget Limit (USD)
@@ -155,12 +155,12 @@ spec:
 
   steps:
     - id: validate-inputs
-      name: Validate MCaaS Configuration
+      name: Validate Platform Configuration
       action: debug:log
       input:
         message: |
           ═══════════════════════════════════════════════════════════════
-          MCaaS Account & VPC Provisioning Request
+          Platform Account & VPC Provisioning Request
           ═══════════════════════════════════════════════════════════════
 
           📋 Account Information:
@@ -177,27 +177,27 @@ spec:
             • Availability Zones: ${{ parameters.num_azs or 'Default for tier' }}
 
           💾 GitHub Configuration:
-            • Organization: fdp
+            • Organization: example-org
             • Repository: account-management
-            • Branch: ${{ 'MCAAS-' + parameters.account_name }}
+            • Branch: ${{ 'PLATFORM-' + parameters.account_name }}
 
           ═══════════════════════════════════════════════════════════════
 
-    - id: trigger-mcaas-workflow
-      name: Trigger MCaaS VPC Provisioning
+    - id: trigger-platform-workflow
+      name: Trigger Platform VPC Provisioning
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
           workflow_name: ${{ "NewContainers" }}
-          workflow_id: "${{ 'mcaas-' + parameters.account_name + '-' + parameters.environment_tier }}"
-          task_queue: "${{ 'fcsnext-' + ('development' if parameters.environment_tier == 'dev' else ('staging' if parameters.environment_tier == 'staging' else 'production')) }}"
+          workflow_id: "${{ 'platform-' + parameters.account_name + '-' + parameters.environment_tier }}"
+          task_queue: "${{ 'platform-' + ('development' if parameters.environment_tier == 'dev' else ('staging' if parameters.environment_tier == 'staging' else 'production')) }}"
           workflow_args:
             # Core Account Information
-            ticket_number: "${{ 'MCAAS-' + parameters.account_name }}"
+            ticket_number: "${{ 'PLATFORM-' + parameters.account_name }}"
             account_name: ${{ parameters.account_name }}
             tenant_short_name: ${{ parameters.tenant_short_name }}
             tenant_id: ${{ parameters.tenant_short_name }}
@@ -212,9 +212,9 @@ spec:
             appenv_letter: "${{ 'D' if parameters.environment_tier == 'dev' else ('S' if parameters.environment_tier == 'staging' else 'P') }}"
 
             # GitHub Configuration
-            branch_name: ${{ 'MCAAS-' + parameters.account_name }}
-            pr_title: '${{ "Provision MCaaS Account: " + parameters.account_name + " (fdp/" + parameters.environment_tier + ")" }}'
-            pr_body: '${{ "Provisions a new MCaaS account named " + parameters.account_name + " for tenant " + parameters.tenant_short_name + " in the " + parameters.environment_tier + " environment." }}'
+            branch_name: ${{ 'PLATFORM-' + parameters.account_name }}
+            pr_title: '${{ "Provision Platform Account: " + parameters.account_name + " (example-org/" + parameters.environment_tier + ")" }}'
+            pr_body: '${{ "Provisions a new Platform account named " + parameters.account_name + " for tenant " + parameters.tenant_short_name + " in the " + parameters.environment_tier + " environment." }}'
 
             # Backstage Configuration (Phase 2 Automation)
             backstage_config:
@@ -223,17 +223,17 @@ spec:
               tenant_code: ${{ parameters.tenant_code or none }}
               num_azs: ${{ parameters.num_azs or none }}
               vpc_cidr_block: ${{ parameters.vpc_cidr_block or none }}
-              endpoint_base: ${{ "https://github.helix.gsa.gov" }}
-              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+              endpoint_base: ${{ "https://github.example.com" }}
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
 
   output:
     links:
       - title: 'View Temporal Workflow Status'
-        url: "${{ 'https://temporal-ui.internal/namespaces/default/workflows/mcaas-' + parameters.account_name + '-' + parameters.environment_tier }}"
+        url: "${{ 'https://temporal-ui.internal/namespaces/default/workflows/platform-' + parameters.account_name + '-' + parameters.environment_tier }}"
         icon: watch
       - title: 'View GitHub Pull Request'
-        url: ${{ "https://github.helix.gsa.gov/fdp/account-management/pulls" }}
+        url: ${{ "https://github.example.com/example-org/account-management/pulls" }}
         icon: github
       - title: 'Account Documentation'
-        url: "${{ 'https://backstage.fcs.gsa.gov/docs/default/component/' + parameters.account_name }}"
+        url: "${{ 'https://backstage.example.gov/docs/default/component/' + parameters.account_name }}"
         icon: docs

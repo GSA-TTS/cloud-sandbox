@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "sre-exception-request",
   "title": "SRE Exception Request",
-  "description": "Structured input for the FCS SRE Production Acceptance Exception Request process. Provide this schema to an AI along with your product context (assessment results, architecture notes, team constraints) and ask it to produce a completed JSON document that conforms to this schema. Submit the resulting JSON via the Backstage SRE Exception Request form.",
+  "description": "Structured input for the Example Platform SRE Production Acceptance Exception Request process. Provide this schema to an AI along with your product context (assessment results, architecture notes, team constraints) and ask it to produce a completed JSON document that conforms to this schema. Submit the resulting JSON via the Backstage SRE Exception Request form.",
   "type": "object",
   "required": [
     "preScreening",
@@ -78,17 +78,17 @@
           "title": "Product / Service Name",
           "description": "The full name of the product or service for which the exception is being requested. Use the same name as in the assessment record.",
           "type": "string",
-          "examples": ["FCS Status Dashboard", "API Exchange", "AMI Patching Automation"]
+          "examples": ["Example Platform Sample Status Dashboard", "Sample API", "AMI Patching Automation"]
         },
         "teamOrganization": {
           "title": "Team / Organization",
           "description": "The team or organizational unit responsible for this product.",
           "type": "string",
-          "examples": ["Status Dashboard Team", "FCS API Exchange", "Base Ops Platform Team"]
+          "examples": ["Sample Status Dashboard Team", "Example Platform Sample API", "Example Operations Team"]
         },
         "experienceArea": {
           "title": "Experience Area",
-          "description": "The FCS Experience Area this product belongs to. Choose the one that best describes the product's primary domain.",
+          "description": "The Example Platform Experience Area this product belongs to. Choose the one that best describes the product's primary domain.",
           "type": "string",
           "enum": [
             "Developer Experience",
@@ -110,7 +110,7 @@
           "description": "Email address of the submitting technical lead. The SRE team will send acknowledgement, clarification requests, and the decision to this address.",
           "type": "string",
           "format": "email",
-          "examples": ["jane.smith@gsa.gov"]
+          "examples": ["jane.smith@example.gov"]
         },
         "portfolioLeadName": {
           "title": "Portfolio Lead Name",
@@ -123,7 +123,7 @@
           "description": "Email address of the Portfolio Lead. The SRE team uses this to route the endorsement request directly.",
           "type": "string",
           "format": "email",
-          "examples": ["manoj.patel@gsa.gov"]
+          "examples": ["manoj.patel@example.gov"]
         },
         "priorAssessmentDate": {
           "title": "Most Recent Assessment Date",
@@ -323,7 +323,7 @@
           "title": "Tenant Impact Description",
           "description": "Required if tenantImpact is 'Direct'. Describe what tenants will experience and how the mitigation reduces that impact. Leave null if None or Indirect.",
           "type": ["string", "null"],
-          "examples": [null, "Tenants may experience up to 30 minutes of degraded service (elevated error rates) in the event of a failed deployment. The manual rollback procedure caps this at 30 minutes. We will proactively communicate via the Status Dashboard during any degradation event."]
+          "examples": [null, "Tenants may experience up to 30 minutes of degraded service (elevated error rates) in the event of a failed deployment. The manual rollback procedure caps this at 30 minutes. We will proactively communicate via the Sample Status Dashboard during any degradation event."]
         }
       }
     },
@@ -452,7 +452,7 @@
           "title": "Product Owner Email",
           "type": "string",
           "format": "email",
-          "examples": ["alex.johnson@gsa.gov"]
+          "examples": ["alex.johnson@example.gov"]
         },
         "engManagerName": {
           "title": "Engineering Manager Name",
@@ -464,14 +464,14 @@
           "title": "Engineering Manager Email",
           "type": "string",
           "format": "email",
-          "examples": ["chris.lee@gsa.gov"]
+          "examples": ["chris.lee@example.gov"]
         },
         "supportingDocLinks": {
           "title": "Supporting Documentation Links",
           "description": "Links to technical analysis, cost estimates, vendor quotes, proof-of-concept results, vendor roadmap confirmations, or any other evidence that supports this exception request. One link per line. Leave null if no supporting documents exist.",
           "type": ["string", "null"],
           "examples": [
-            "https://github.helix.gsa.gov/team/repo/docs/java-upgrade-analysis.md\nhttps://github.helix.gsa.gov/team/repo/docs/appdynamics-poc-results.md",
+            "https://github.example.com/team/repo/docs/java-upgrade-analysis.md\nhttps://github.example.com/team/repo/docs/appdynamics-poc-results.md",
             null
           ]
         },
@@ -500,13 +500,13 @@
       },
       "productDetails": {
         "submissionDate": "2026-04-08",
-        "productName": "FCS Status Dashboard",
-        "teamOrganization": "Status Dashboard Team",
+        "productName": "Example Platform Sample Status Dashboard",
+        "teamOrganization": "Sample Status Dashboard Team",
         "experienceArea": "Developer Experience",
         "techLeadName": "Jane Smith",
-        "primaryContactEmail": "jane.smith@gsa.gov",
+        "primaryContactEmail": "jane.smith@example.gov",
         "portfolioLeadName": "Manoj Patel",
-        "portfolioLeadEmail": "manoj.patel@gsa.gov",
+        "portfolioLeadEmail": "manoj.patel@example.gov",
         "priorAssessmentDate": "2026-04-06"
       },
       "criterion": {
@@ -543,10 +543,10 @@
       },
       "internalApprovals": {
         "productOwnerName": "Alex Johnson",
-        "productOwnerEmail": "alex.johnson@gsa.gov",
+        "productOwnerEmail": "alex.johnson@example.gov",
         "engManagerName": "Chris Lee",
-        "engManagerEmail": "chris.lee@gsa.gov",
-        "supportingDocLinks": "https://github.helix.gsa.gov/team/status-dashboard/docs/tracing-analysis.md",
+        "engManagerEmail": "chris.lee@example.gov",
+        "supportingDocLinks": "https://github.example.com/team/status-dashboard/docs/tracing-analysis.md",
         "additionalContext": null,
         "internalApprovalsConfirmed": true
       }

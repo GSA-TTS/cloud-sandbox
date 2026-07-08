@@ -12,7 +12,7 @@ metadata:
     - 'product-containers-dev'
     - 'tier-developer'
 spec:
-  owner: fdp/fcs-next
+  owner: example-org/platform-team
   type: Intake and Provisioning
   parameters:
     # ── Page 1: Required Configuration ──────────────────────────────────
@@ -106,7 +106,7 @@ spec:
                 module_version:
                   title: Module Version
                   type: string
-                  description: Tag version of the static-site module in FCS-IaC-Modules
+                  description: Tag version of the static-site module in Example-IaC-Modules
                   default: "v1.0.0"
                 default_ttl:
                   title: Default TTL (seconds)
@@ -145,13 +145,13 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
           workflow_name: ${{ "NewStaticSite" }}
           workflow_id: ${{ "NewStaticSite-" + parameters.github_org + "-" + parameters.site_name + "-" + parameters.deployment_env }}
-          task_queue: ${{ fcs.taskQueue }}
+          task_queue: ${{ platform.taskQueue }}
           workflow_args:
             site_name: ${{ parameters.site_name }}
             environment: ${{ parameters.deployment_env }}
@@ -172,5 +172,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: '${{ "https://github.helix.gsa.gov/" + parameters.github_org + "/" + parameters.github_repo + "/pulls" }}'
+        url: '${{ "https://github.example.com/" + parameters.github_org + "/" + parameters.github_repo + "/pulls" }}'
         icon: github

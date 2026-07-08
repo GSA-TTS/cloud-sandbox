@@ -4,7 +4,7 @@
 # Official documentation: https://backstage.io/docs/deployment/
 
 applications:
-  - name: backstage-fcs-sso-portal
+  - name: backstage-sandbox-portal
     path: deploy-workspace
     memory: 2048M # Max limit on sandbox orgs
     disk_quota: 4096M # Increased to 4GB to provide plenty of compression buffer space on cloud.gov
@@ -29,8 +29,8 @@ applications:
       NPM_CONFIG_TMP: '/home/vcap/app/.npm-tmp' # Redirect npm temp folder to writable disk
 
       # Set Backstage's public URLs. Note: update with your cloud.gov app route
-      APP_CONFIG_app_baseUrl: https://backstage-fcs-sso-portal.app.cloud.gov
-      APP_CONFIG_backend_baseUrl: https://backstage-fcs-sso-portal.app.cloud.gov
+      APP_CONFIG_app_baseUrl: https://backstage-sandbox-portal.app.cloud.gov
+      APP_CONFIG_backend_baseUrl: https://backstage-sandbox-portal.app.cloud.gov
 
       # Optional: Ingestion rate limiting tuning for large catalogs
       BACKSTAGE_CATALOG_SCAN_INTERVAL: '30m'

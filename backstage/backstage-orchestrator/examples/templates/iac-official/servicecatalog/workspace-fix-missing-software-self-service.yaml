@@ -10,7 +10,7 @@ metadata:
     - 'software'
     - 'tier-user'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Self-Service
   parameters:
     - title: Fix Missing Software
@@ -66,7 +66,7 @@ spec:
       name: Trigger Fix Missing Software
       action: github:actions:dispatch
       input:
-        repoUrl: github.helix.gsa.gov?repo=bulkhead&owner=fdp
+        repoUrl: github.example.com?repo=bulkhead&owner=example-org
         workflowId: workspace_self_service_fix_missing_software.yml
         branchOrTagName: main
         workflowInputs:
@@ -87,4 +87,4 @@ spec:
           - Fresh installs take approximately 5–10 minutes depending on what is missing
           - If everything is already installed, the run completes in ~1–2 minutes
 
-          Monitor progress in the [GitHub Actions run log](https://github.helix.gsa.gov/fdp/bulkhead/actions).
+          Monitor progress in the [GitHub Actions run log](https://github.example.com/example-org/bulkhead/actions).

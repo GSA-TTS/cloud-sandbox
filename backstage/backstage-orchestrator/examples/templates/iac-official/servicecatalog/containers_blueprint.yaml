@@ -10,7 +10,7 @@ metadata:
     - 'product-containers-dev'
     - 'tier-techlead'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Intake and Provisioning
   parameters:
     - title: Name
@@ -35,8 +35,8 @@ spec:
         # github_org:
         #   title: GitHub Organization
         #   type: string
-        #   description: Enter the target organization's GitHub name (defaulted to MCaaS)
-        #   default: "MCaaS"
+        #   description: Enter the target organization's GitHub name (defaulted to Platform)
+        #   default: "Platform"
         # github_repo:
         #   title: GitHub Repository Name
         #   type: string
@@ -56,18 +56,18 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "SubmitTenantCSVWorkflow" }}
             workflow_id: ${{ "SubmitTenantCSVWorkflow-" + parameters.tenant_id + "-" + parameters.deployment_env }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
-              branch_name: ${{ "MCaaS/" + parameters.deployment_env + "/containers/" + parameters.tenant_id }}
-              repo_owner: ${{ "MCaaS" }}
+              branch_name: ${{ "Platform/" + parameters.deployment_env + "/containers/" + parameters.tenant_id }}
+              repo_owner: ${{ "Platform" }}
               repo_name: ${{ "auto-tenant" }}
-              pr_title: '${{ "Add MCaaS Tenant: " + parameters.tenant_id + " (" + parameters.deployment_env + ")" }}'
+              pr_title: '${{ "Add Platform Tenant: " + parameters.tenant_id + " (" + parameters.deployment_env + ")" }}'
               pr_body: '${{ "Provisions containers tenant " + parameters.tenant_id + " in the " + parameters.deployment_env + " environment." }}'
               environments: ${{ parameters.deployment_env }}
               tenant_id: ${{ parameters.tenant_id }}
@@ -75,5 +75,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/MCaaS/auto-tenant/pulls"}}
+        url: ${{"https://github.example.com/Platform/auto-tenant/pulls"}}
         icon: github

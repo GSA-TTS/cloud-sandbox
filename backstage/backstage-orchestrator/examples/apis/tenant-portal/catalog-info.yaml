@@ -1,9 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: fcs-tenant-portal-backend
-  title: FCS Tenant Portal Backend
-  description: Backend service for FCS tenant, contact, status, and access request management.
+  name: platform-tenant-portal-backend
+  title: Tenant Portal Backend
+  description: Backend service for Example Platform tenant, contact, status, and access request management.
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:
@@ -11,13 +11,13 @@ spec:
   owner: group:default/backstage-admins
   lifecycle: experimental
   providesApis:
-    - fcs-tenant-portal-api
+    - tenant-portal-api
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: fcs-tenant-portal-api
-  title: FCS Tenant Portal API
+  name: tenant-portal-api
+  title: Tenant Portal API
   description: OpenAPI catalog example imported from the tenant portal backend.
 spec:
   type: openapi

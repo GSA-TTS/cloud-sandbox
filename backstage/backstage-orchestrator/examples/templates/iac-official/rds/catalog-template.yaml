@@ -12,9 +12,9 @@ entries:
         - rds
         - data-tier
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: rds
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: rds
       links:
         - url: "https://console.aws.amazon.com/rds/home?region=us-east-1#database:id={{name}}"
           title: AWS Console
@@ -36,10 +36,10 @@ entries:
         - secret
         - credentials
       annotations:
-        fcs.gsa.gov/environment: "{{environment}}"
-        fcs.gsa.gov/terragrunt-path: "{{resource_dir}}"
-        fcs.gsa.gov/aws-resource-type: secretsmanager
-        fcs.gsa.gov/secret-name: "{{name}}-credentials"
+        example.gov/environment: "{{environment}}"
+        example.gov/terragrunt-path: "{{resource_dir}}"
+        example.gov/aws-resource-type: secretsmanager
+        example.gov/secret-name: "{{name}}-credentials"
       links:
         - url: "https://console.aws.amazon.com/secretsmanager/secret?name={{name}}-credentials&region=us-east-1"
           title: AWS Console

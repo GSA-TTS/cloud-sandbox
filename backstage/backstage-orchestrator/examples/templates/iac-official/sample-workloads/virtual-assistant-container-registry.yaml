@@ -2,16 +2,16 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: fcs-virt-asst-ecr
-  title: FCP Virtual Assistant ECR
-  description: This template deploys FCP's Virtual Assistant ECR.
+  name: virtual-assistant-container-registry
+  title: Example Virtual Assistant ECR
+  description: This template deploys Example's Virtual Assistant ECR.
   tags:
     - 'blueprint'
 spec:
-  owner: fcs-fcp-org/iac-deployment
+  owner: example-org/iac-deployment
   type: Blueprint
   parameters:
-    - title: FCP Virtual Assistant ECR
+    - title: Example Virtual Assistant ECR
       required:
         - deployment_env
         - github_org
@@ -42,7 +42,7 @@ spec:
           type: string
           description: Enter the name of the organization's GitHub repository used for IaC configuration (defaulted to iac)
           default: "iac"
-    - title: FCP Virtual Assistant ECR Parameters
+    - title: Example Virtual Assistant ECR Parameters
       required:
         - aws_region
         - stack_prefix
@@ -69,20 +69,20 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "NewIAC" }}
             workflow_id: ${{ "NewIAC-ecr-" + parameters.github_org + "-" + parameters.ecr_names[0] + "-" + parameters.deployment_env }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
               branch_name: ${{ parameters.github_org + "/" + parameters.deployment_env + "/ecr/" + parameters.ecr_names[0] }}
               repo_owner: ${{ parameters.github_org }}
               repo_name: ${{ parameters.github_repo }}
               pr_title: '${{ "Add ECR Repositories (" + parameters.github_org + "/" + parameters.deployment_env + ")" }}'
               pr_body: '${{ "Provisions ECR repositories in the " + parameters.deployment_env + " environment for " + parameters.github_org + "." }}'
-              module_source_base: ${{ "git@github.helix.gsa.gov:fdp/FCS-IaC-Modules.git/" }}
+              module_source_base: ${{ "git@github.example.com:example-org/Example-IaC-Modules.git/" }}
               env_config_path: ${{ "env/{environment}/env.hcl" }}
               resource_type: ${{ "ecr" }}
               resource_config:
@@ -93,5 +93,5 @@ spec:
   output:
     links:
       - title: 'Go to pull request'
-        url: ${{"https://github.helix.gsa.gov/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
+        url: ${{"https://github.example.com/"+parameters.github_org+"/"+parameters.github_repo+"/pulls"}}
         icon: github

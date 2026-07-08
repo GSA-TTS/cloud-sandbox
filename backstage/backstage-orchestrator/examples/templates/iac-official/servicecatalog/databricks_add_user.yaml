@@ -7,7 +7,7 @@ metadata:
   description: >-
     Add one or more users to an existing Databricks workspace.
 
-    An FCSTS Jira ticket is created and the workspace owner is notified by email to
+    An Service Desk Jira ticket is created and the workspace owner is notified by email to
     approve or decline the request. Once approved, each requested user receives a link
     to accept the Rules of Behavior for their role. Access is provisioned automatically
     as each user accepts.
@@ -15,7 +15,7 @@ metadata:
     - 'product-databricks-dev'
     - 'data-self-service'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Self-Service
   parameters:
     # ── Step 1: Workspace ────────────────────────────────────────────────────
@@ -27,11 +27,11 @@ spec:
           title: Please enter your Databricks Workspace Name
           type: string
           description: |
-            **Enter the workspace name or paste its URL** (e.g. `fcsd-auto-sbx`).
+            **Enter the workspace name or paste its URL** (e.g. `sample-auto-sbx`).
 
             The name is the part between `gsa-` and `.cloud.databricks.com` in the workspace URL.
 
-            **Can't find it?** Ask your workspace owner or [contact the FCS Data Platform team](mailto:fcs-data-platform@gsa.gov).
+            **Can't find it?** Ask your workspace owner or [contact the Example Platform Data Platform team](mailto:platform-data-platform@example.gov).
           ui:field: DatabricksWorkspacePicker
           ui:options:
             hideError: true
@@ -61,7 +61,7 @@ spec:
             | **Analyst** *(default)* | No | Read authorized catalog sources as input to analyses; write analysis output to temporary locations |
             | **Consumer** | No | Interface with data in curated presentations (dashboards) or AI-mediated interactions |
 
-            [Role documentation →](https://docops.myfcs.itplaybook.gsa.gov/docs/product_portfolio/data_experience/data_processing/documentation/databricks/overview/roles_and_responsibilities/)
+            [Role documentation →](https://docs.example.gov/docs/product_portfolio/data_experience/data_processing/documentation/databricks/overview/roles_and_responsibilities/)
           enum:
             - Owner
             - Steward
@@ -117,12 +117,12 @@ spec:
           ui:options:
             hideError: true
 
-        missing_active_fcs_id_users:
+        missing_active_identity_users:
           title: ''
           type: array
-          description: Derived list of requested users who still need active FCS ID follow-up.
+          description: Derived list of requested users who still need active Example Platform ID follow-up.
           default: []
-          ui:field: DatabricksMissingActiveFcsIdUsersField
+          ui:field: DatabricksMissingActiveIdentityUsersField
           items:
             type: string
 
@@ -138,20 +138,20 @@ spec:
           ui:field: UserEmailField
 
       dependencies:
-        missing_active_fcs_id_users:
+        missing_active_identity_users:
           oneOf:
             - properties:
-                missing_active_fcs_id_users:
+                missing_active_identity_users:
                   maxItems: 0
             - properties:
-                missing_active_fcs_id_users:
+                missing_active_identity_users:
                   minItems: 1
                 supervisor_email:
                   title: Supervisor Email
                   type: string
                   description: >-
-                    Required when one or more requested users do not have an active FCS ID yet.
-                    This email is captured on the FCSTS ticket for FCS Account Creation follow-up after owner approval.
+                    Required when one or more requested users do not have an active Example Platform ID yet.
+                    This email is captured on the Service Desk ticket for Example Platform Account Creation follow-up after owner approval.
                   pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
                 supervisor_name:
                   title: Supervisor Name (optional)
@@ -168,11 +168,11 @@ spec:
         link to accept after the workspace owner approves the request.
       properties:
         rob_accepted:
-          title: I have read and agree to the FCS Rules of Behavior.
+          title: I have read and agree to the Example Platform Rules of Behavior.
           type: boolean
           description: >-
             Only required if you are one of the users added.
-            If so, open and accept both the general FCS Rules of Behavior and the agreement
+            If so, open and accept both the general Example Platform Rules of Behavior and the agreement
             for your role to skip the post-approval acceptance step.
             Otherwise, each user will receive a personal link after the owner approves.
           ui:field: DatabricksRoBCheckbox
@@ -184,13 +184,13 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
           workflow_name: AddUserToWorkspaceJiraCentric
           workflow_id: DatabricksAddUser_${{ parameters.workspace_name }}_${{ parameters.user_emails | join(',') }}_${{ parameters.role }}_${{ parameters.team_name }}
-          task_queue: ${{ fcs.taskQueue }}
+          task_queue: ${{ platform.taskQueue }}
           await_result: false
           wait_for_ticket_info: true
           ticket_info_timeout_seconds: 60
@@ -199,7 +199,7 @@ spec:
             team_name: ${{ parameters.team_name }}
             role: ${{ parameters.role }}
             user_emails: ${{ parameters.user_emails }}
-            missing_active_fcs_id_users: ${{ parameters.missing_active_fcs_id_users }}
+            missing_active_identity_users: ${{ parameters.missing_active_identity_users }}
             supervisor_email: ${{ parameters.supervisor_email }}
             supervisor_name: ${{ parameters.supervisor_name }}
             notify_user: ${{ parameters.notify_user }}
@@ -210,8 +210,8 @@ spec:
     text:
       - title: Request Submitted
         content: |
-          ${{ ('Your access request has been submitted as ' + steps["backstage_request_with_input"].output.body.jira_ticket + '.\n\nThe workspace owner will be notified to approve it.\nAny requested user who has not already accepted the Rules of Behavior will receive a personal link and must accept it before access is set up.\nYou will be notified once access has been set up.\n\nYou can check the status of your request at any time by opening the FCSTS ticket linked below.') if steps["backstage_request_with_input"].output.body.ticket_created else ('Your access request has been submitted. A ticket will be created in FCSTS and the workspace owner will be notified to approve it.\nAny requested user who has not already accepted the Rules of Behavior will receive a personal link and must accept it before access is set up.\nYou will be notified once access has been set up.\n\nYou can check the status of your request in the FCSTS service desk linked below.') }}
+          ${{ ('Your access request has been submitted as ' + steps["backstage_request_with_input"].output.body.jira_ticket + '.\n\nThe workspace owner will be notified to approve it.\nAny requested user who has not already accepted the Rules of Behavior will receive a personal link and must accept it before access is set up.\nYou will be notified once access has been set up.\n\nYou can check the status of your request at any time by opening the Service Desk ticket linked below.') if steps["backstage_request_with_input"].output.body.ticket_created else ('Your access request has been submitted. A ticket will be created in Service Desk and the workspace owner will be notified to approve it.\nAny requested user who has not already accepted the Rules of Behavior will receive a personal link and must accept it before access is set up.\nYou will be notified once access has been set up.\n\nYou can check the status of your request in the Service Desk service desk linked below.') }}
     links:
-      - title: '${{ "FCSTS Access Ticket: " + steps["backstage_request_with_input"].output.body.jira_ticket if steps["backstage_request_with_input"].output.body.ticket_created else "FCSTS Queue" }}'
-        url: '${{ steps["backstage_request_with_input"].output.body.jira_url if steps["backstage_request_with_input"].output.body.ticket_created else "https://gsa-standard.atlassian-us-gov-mod.net/jira/servicedesk/projects/FCSTS/queues" }}'
+      - title: '${{ "Service Desk Access Ticket: " + steps["backstage_request_with_input"].output.body.jira_ticket if steps["backstage_request_with_input"].output.body.ticket_created else "Service Desk Queue" }}'
+        url: '${{ steps["backstage_request_with_input"].output.body.jira_url if steps["backstage_request_with_input"].output.body.ticket_created else "https://support.example.gov/queues/data-access" }}'
         icon: docs

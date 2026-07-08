@@ -10,7 +10,7 @@ metadata:
     - 'product-all-dev'
     - 'tier-user'
 spec:
-  owner: fdp/backstage-ops
+  owner: example-org/backstage-ops
   type: Intake and Provisioning
   parameters:
     - title: Project Information
@@ -126,13 +126,13 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'proxy/awsExecuteEndpoint/execute_fcsnext'
+        path: 'proxy/awsExecuteEndpoint/execute_platform'
         headers:
           content-type: 'application/json'
         body:
             workflow_name: ${{ "NewIntakeForm" }}
             workflow_id: NewIntakeForm-${{ parameters.project_name }}
-            task_queue: ${{ fcs.taskQueue }}
+            task_queue: ${{ platform.taskQueue }}
             workflow_args:
               request_type: ${{ parameters.request_type }}
               project_name: ${{ parameters.project_name }}

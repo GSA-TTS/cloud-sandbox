@@ -31,7 +31,7 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:
-  owner: group:mcaas-cc/backstage-admins
+  owner: group:platform-cc/backstage-admins
   type: internal-workflow
 
   # ─────────────────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ spec:
       description: >
         Use an AI assistant (Copilot, ChatGPT, Claude) to pre-fill this entire
         form. Give it the exception-request-schema.json file from the
-        catalog-internal-tools repo along with your product context, and ask it
+        catalog templates repo along with your product context, and ask it
         to produce a completed JSON document. Paste the result here and click
         "Parse & Validate" — all fields on the following steps will be
         pre-populated for your review.
@@ -143,7 +143,7 @@ spec:
         teamOrganization:
           title: Team / Organization
           type: string
-          description: e.g. FCS API Exchange, Status Dashboard Team
+          description: e.g. Example Platform Sample API, Sample Status Dashboard Team
           ui:field: JsonPopulatedField
           ui:options:
             jsonPath: "productDetails.teamOrganization"
@@ -670,7 +670,7 @@ spec:
       name: Open SRE Exception Request Ticket
       action: github:issues:create
       input:
-        repoUrl: github.helix.gsa.gov?owner=SRE&repo=sre-assessments
+        repoUrl: github.example.com?owner=SRE&repo=sre-assessments
         title: "[SRE Exception] ${{ parameters.productName }} — ${{ parameters.criterionId }}"
         labels:
           - sre-exception
@@ -934,5 +934,5 @@ spec:
 
           ⚠️ If your submission targets a **Category 4 (Security & Compliance)** criterion, the SRE team will redirect your request to the remediation-support track. A Category 4 exception cannot unblock the intake process — the security gaps must be fixed and re-assessed.
 
-          **Questions?** Reach the SRE team at sre-team@gsa.gov or in the **#sre-team** Google Chat space.
+          **Questions?** Reach the SRE team at sre-team@example.gov or in the **#sre-team** Google Chat space.
           **Office Hours:** Tuesdays 2–3 PM EST
