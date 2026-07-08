@@ -9,6 +9,9 @@ yarn-error.log*
 scripts/envs/*.env
 # Allow the example/template files
 !scripts/envs/*.env.example
+aws-access-key.json
+azure.env
+gcp-service-account-key.json
 
 # Runtime data
 pids

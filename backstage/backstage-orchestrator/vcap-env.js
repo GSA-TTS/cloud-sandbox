@@ -99,36 +99,46 @@ try {
       );
     }
 
-    if (!process.env.BACKSTAGE_SESSION_SECRET) {
-      const secretMaterial = [
-        ssoService?.credentials?.client_secret,
-        dbService?.credentials?.password,
-      ]
-        .filter(Boolean)
-        .join(':');
+    const secretMaterial = [
+      ssoService?.credentials?.client_secret,
+      dbService?.credentials?.password,
+    ]
+      .filter(Boolean)
+      .join(':');
 
-      if (secretMaterial) {
-        process.env.BACKSTAGE_SESSION_SECRET = crypto
-          .createHash('sha256')
-          .update(`backstage-session:${secretMaterial}`)
-          .digest('hex');
-        console.log(
-          '[cloud.gov VCAP_SERVICES] Derived Backstage session secret from bound service credentials.',
-        );
-      } else {
-        console.warn(
-          '[cloud.gov VCAP_SERVICES] Unable to derive BACKSTAGE_SESSION_SECRET; OIDC login may fail.',
-        );
-      }
-    }
+    ensureSessionSecret(secretMaterial);
   } else {
     console.log(
       '[cloud.gov VCAP_SERVICES] VCAP_SERVICES is not defined. Skipping Cloud Foundry binding.',
     );
+    ensureSessionSecret();
   }
 } catch (error) {
   console.error(
     '[cloud.gov VCAP_SERVICES] Error parsing VCAP_SERVICES:',
     error.message,
+  );
+  ensureSessionSecret();
+}
+
+function ensureSessionSecret(secretMaterial) {
+  if (process.env.BACKSTAGE_SESSION_SECRET) {
+    return;
+  }
+
+  if (secretMaterial) {
+    process.env.BACKSTAGE_SESSION_SECRET = crypto
+      .createHash('sha256')
+      .update(`backstage-session:${secretMaterial}`)
+      .digest('hex');
+    console.log(
+      '[cloud.gov VCAP_SERVICES] Derived Backstage session secret from bound service credentials.',
+    );
+    return;
+  }
+
+  process.env.BACKSTAGE_SESSION_SECRET = crypto.randomBytes(32).toString('hex');
+  console.warn(
+    '[cloud.gov VCAP_SERVICES] BACKSTAGE_SESSION_SECRET was not set and no binding material was available; generated an ephemeral session secret.',
   );
 }

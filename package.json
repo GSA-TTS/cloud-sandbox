@@ -99,6 +99,7 @@
     "secrets:scan": "gitleaks detect --redact --no-banner --config .gitleaks.toml",
     "secrets:scan:staged": "gitleaks protect --staged --redact --no-banner --config .gitleaks.toml --exit-code 1",
     "secrets:scan:log": "gitleaks detect --redact --no-banner --config .gitleaks.toml --log-opts='--all'",
+    "husky": "husky",
     "prepare": "husky"
   },
   "dependencies": {

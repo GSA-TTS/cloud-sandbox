@@ -48,14 +48,14 @@ COPY --chown=node:node backstage.json ./
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV=production
 
-# This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS="--no-node-snapshot"
+# This disables node snapshot for the Scaffolder and constrains heap consistently with the buildpack deployment.
+ENV NODE_OPTIONS="--max-old-space-size=1536 --no-node-snapshot"
 
-# Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
-# The skeleton contains the package.json of each package in the monorepo,
-# and along with yarn.lock and the root package.json, that's enough to run yarn install.
-COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
-RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+# The committed backend bundle contains the workspace package manifests and built assets.
+# Extract it before installing production dependencies so fresh-clone Docker builds do not
+# depend on a separate ignored install artifact.
+COPY --chown=node:node packages/backend/dist/bundle.tar.gz ./
+RUN tar xzf bundle.tar.gz
 
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
     yarn workspaces focus --all --production && rm -rf "$(yarn cache clean)"
@@ -63,8 +63,8 @@ RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid
 # This will include the examples, if you don't need these simply remove this line
 COPY --chown=node:node examples ./examples
 
-# Then copy the rest of the backend bundle, along with any other files we might want.
-COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+# Then copy runtime config, along with any other files we might want.
+COPY --chown=node:node app-config*.yaml vcap-env.js ./
+RUN rm bundle.tar.gz
 
-CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+CMD ["node", "-r", "./vcap-env.js", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]

@@ -14,4 +14,3 @@ package-lock.json
 # inside packages/app or packages/backend during staging.
 packages/
 !packages/backend/dist/bundle.tar.gz
-!packages/backend/dist/skeleton.tar.gz
