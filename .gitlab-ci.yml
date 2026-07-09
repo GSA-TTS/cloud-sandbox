@@ -18,8 +18,8 @@
 # REQUIRED CI/CD VARIABLES (set in GitLab project Settings → CI/CD → Variables)
 # ─────────────────────────────────────────────────────────────────────────────
 # CF_API                   https://api.fr.cloud.gov
-# CF_ORG                   gsa-tts-iae-lava-beds
-# CF_SPACE                 dev
+# CF_ORG                   <cf-org>
+# CF_SPACE                 <cf-space>
 # CF_USERNAME              <cf service account username>
 # CF_PASSWORD              <cf service account password>   [masked]
 #

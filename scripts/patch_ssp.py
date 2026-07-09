@@ -234,14 +234,14 @@ sc['props'] += [
   {"name": "system-type", "ns": "https://fedramp.gov/ns/oscal", "value": "subsystem",
    "remarks": "SSP §8: The SSB is a Subsystem per Table 8-1/8-2. It receives controls from cloud.gov (leveraged) and provides controls to the provisioned CSP resources (as receiver). cloud.gov provides: PE (all), CP-6/7 (disaster recovery), MA (platform maintenance), AU-8 (timestamps), SC-8 (platform TLS), IA-2 (MFA via UAA). See Table 8-1 Systems Providing Controls."},
   {"name": "fully-operational-date", "ns": "https://fedramp.gov/ns/oscal", "value": "2026-04-14T00:00:00Z",
-   "remarks": "Date csb-aws was first deployed and registered as csb-aws-sandbox in gsa-tts-iae-lava-beds/dev."},
+   "remarks": "Date csb-aws was first deployed and registered as csb-aws-sandbox in <cf-org>/<cf-space>."},
 ]
 
 # SSP §9.5 / §10 network/data-flow descriptions — update with SSP narrative
 sc['authorization-boundary']['description'] = (
     "SSP §9.2 Table 9-2 — Authorization Boundary Definition: "
     "The authorization boundary encompasses (1) the three CSB broker CF applications (csb-aws, csb-gcp [pending], csb-azure [pending]) "
-    "running in the gsa-tts-iae-lava-beds/dev CF space on cloud.gov; (2) the shared csb-sql MySQL backing database "
+    "running in the <cf-org>/<cf-space> CF space on cloud.gov; (2) the shared csb-sql MySQL backing database "
     "(aws-rds micro-mysql plan on cloud.gov, GUID <cf-service-guid>, "
     "host: <cloud.gov-managed-rds-host>); "
     "(3) the OpenTofu brokerpak binaries and provider plugins bundled within each broker application. "
@@ -327,7 +327,7 @@ si['users'] = [
         "cf logs <csb-app> (view broker logs via Loggregator)",
       ]},
    ],
-   "remarks": "SSP §9.4 Table 9-4. Internal GSA user with SpaceDeveloper role in gsa-tts-iae-lava-beds/dev. Authentication: cf login -a api.fr.cloud.gov --sso → GSA SecureAuth SAML 2FA → CF UAA OAuth2 token (described in SSP §9.4 'To authenticate via the cloud.gov CLI'). Cannot access production resources directly. PS-2 sensitivity: Moderate (system management functions)."},
+   "remarks": "SSP §9.4 Table 9-4. Internal GSA user with SpaceDeveloper role in <cf-org>/<cf-space>. Authentication: cf login -a api.fr.cloud.gov --sso → GSA SecureAuth SAML 2FA → CF UAA OAuth2 token (described in SSP §9.4 'To authenticate via the cloud.gov CLI'). Cannot access production resources directly. PS-2 sensitivity: Moderate (system management functions)."},
   {"uuid": "user-0002-tts-techops-orgadmin",
    "title": "TTS TechOps / Ops Admin (OrgAdmin + SpaceManager)",
    "props": [
@@ -393,7 +393,7 @@ si['users'] = [
         "Prowler security scans (read-only AWS/GCP/Azure API access)",
       ]},
    ],
-   "remarks": "SSP §10.7.3 Pipeline Design, §10.7.9 Code Change and Release Management. Automation service account used by GitHub Actions for CI/CD deployments. Credentials stored as GitHub Secrets (encrypted). Rotated whenever a team member with access leaves, per SSP §10.7.7 Secret and Key Management. This account has SpaceDeveloper privileges — it can only affect the gsa-tts-iae-lava-beds/dev space."},
+   "remarks": "SSP §10.7.3 Pipeline Design, §10.7.9 Code Change and Release Management. Automation service account used by GitHub Actions for CI/CD deployments. Credentials stored as GitHub Secrets (encrypted). Rotated whenever a team member with access leaves, per SSP §10.7.7 Secret and Key Management. This account has SpaceDeveloper privileges — it can only affect the <cf-org>/<cf-space> space."},
 ]
 
 si['props'] = [
@@ -413,7 +413,7 @@ si['components'] = [
   # This System
   {"uuid": "comp-ssp-0001-this-system-0001", "type": "this-system",
    "title": "TTS Cloud Sandbox SSB — Multi-Cloud Supplementary Service Broker",
-   "description": "SSP §9.2 Table 9-2 Asset: The TTS Cloud Sandbox SSB system as depicted in the authorization boundary. Comprises three CSB broker CF applications (csb-aws, csb-gcp [pending], csb-azure [pending]) and the csb-sql MySQL backing database, all hosted in the gsa-tts-iae-lava-beds/dev CF space on cloud.gov.",
+   "description": "SSP §9.2 Table 9-2 Asset: The TTS Cloud Sandbox SSB system as depicted in the authorization boundary. Comprises three CSB broker CF applications (csb-aws, csb-gcp [pending], csb-azure [pending]) and the csb-sql MySQL backing database, all hosted in the <cf-org>/<cf-space> CF space on cloud.gov.",
    "status": {"state": "operational"},
    "responsible-roles": [
      {"role-id": "system-owner", "party-uuids": ["p0000001-sys-owner-gsa-tts00001"]},
@@ -421,7 +421,7 @@ si['components'] = [
   # CSB broker app (AWS)
   {"uuid": "comp-ssp-0002-csb-aws-00000001", "type": "software",
    "title": "csb-aws — Cloud Service Broker App (AWS broker, CF Application)",
-   "description": "SSP §9.2 Asset Type: API service written in Go and Terraform (OpenTofu fork), based on cloud-service-broker v2.6.10. Presents the OSBAPI v2 endpoint authenticated via HTTP Basic Auth. Loaded with csb-brokerpak-aws v0.1.0 providing sandbox-8h plans for S3, RDS PostgreSQL/MySQL, ElastiCache Redis, SQS. Registered as space-scoped CF service broker 'csb-aws-sandbox' in gsa-tts-iae-lava-beds/dev. Route: automatically assigned by cloud.gov on cf push (e.g. csb-aws-<random>.app.cloud.gov). Deployed via cf push using binary buildpack (binary_buildpack). Memory: 1G (1 instance). Referenced in SSP §9.2 (API service in Go and Terraform) and §10.7.2 (IAC Implementation).",
+   "description": "SSP §9.2 Asset Type: API service written in Go and Terraform (OpenTofu fork), based on cloud-service-broker v2.6.10. Presents the OSBAPI v2 endpoint authenticated via HTTP Basic Auth. Loaded with csb-brokerpak-aws v0.1.0 providing sandbox-8h plans for S3, RDS PostgreSQL/MySQL, ElastiCache Redis, SQS. Registered as space-scoped CF service broker 'csb-aws-sandbox' in <cf-org>/<cf-space>. Route: automatically assigned by cloud.gov on cf push (e.g. csb-aws-<random>.app.cloud.gov). Deployed via cf push using binary buildpack (binary_buildpack). Memory: 1G (1 instance). Referenced in SSP §9.2 (API service in Go and Terraform) and §10.7.2 (IAC Implementation).",
    "props": [
      {"name": "asset-type",      "ns": "https://fedramp.gov/ns/oscal", "value": "software"},
      {"name": "vendor-name",     "ns": "https://fedramp.gov/ns/oscal", "value": "GSA TTS (fork of cloud-foundry/cloud-service-broker)"},
@@ -503,7 +503,7 @@ si['components'] = [
   # CF UAA
   {"uuid": "comp-ssp-0007-cf-uaa-00000001", "type": "service",
    "title": "CF UAA — Cloud Foundry User Account and Authentication Service (Leveraged from cloud.gov)",
-   "description": "SSP §9.2 Asset Type: A Cloud Foundry service that performs user authentication and authorization. Per SSP §9.2: authenticates local cloud.gov users; proxies authentication for users whose accounts are provisioned by external identity providers (via SAML — GSA SecureAuth). UAA issues OAuth2 JWT tokens used by cf CLI for all subsequent API calls. Manages CF RBAC: SpaceDeveloper, SpaceManager, SpaceAuditor, OrgManager, OrgAdmin roles within gsa-tts-iae-lava-beds org. Referenced in SSP §9.4 authentication flows.",
+   "description": "SSP §9.2 Asset Type: A Cloud Foundry service that performs user authentication and authorization. Per SSP §9.2: authenticates local cloud.gov users; proxies authentication for users whose accounts are provisioned by external identity providers (via SAML — GSA SecureAuth). UAA issues OAuth2 JWT tokens used by cf CLI for all subsequent API calls. Manages CF RBAC: SpaceDeveloper, SpaceManager, SpaceAuditor, OrgManager, OrgAdmin roles within <cf-org> org. Referenced in SSP §9.4 authentication flows.",
    "props": [
      {"name": "asset-type",                "ns": "https://fedramp.gov/ns/oscal", "value": "service"},
      {"name": "leveraged-authorization-uuid", "value": "5a9c98ab-8e5e-433d-a7bd-515c07cd1497"},

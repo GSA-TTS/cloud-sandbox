@@ -42,7 +42,7 @@ Use these facts as the default working context unless the repo proves otherwise.
 ### Cloud Foundry Target
 
 - API: `api.fr.cloud.gov`
-- Org: `gsa-tts-iae-lava-beds`
+- Org: `<cf-org>`
 - Space: `dev`
 
 ### Broker Deployment Context
