@@ -33,10 +33,20 @@ try {
   if (process.env.VCAP_SERVICES) {
     const vcapServices = JSON.parse(process.env.VCAP_SERVICES);
 
-    // Locate the specific backstage-db service
     const allServices = Object.values(vcapServices).flat();
-    const dbService = allServices.find(s => s.name === 'backstage-db');
-    const ssoService = allServices.find(s => s.name === 'backstage-sso');
+    const dbServiceName = process.env.BACKSTAGE_DB_SERVICE_NAME;
+    const ssoServiceName = process.env.BACKSTAGE_SSO_SERVICE_NAME;
+    const dbService = allServices.find(s =>
+      dbServiceName
+        ? s.name === dbServiceName
+        : s.label === 'aws-rds' || s.offering_name === 'aws-rds',
+    );
+    const ssoService = allServices.find(s =>
+      ssoServiceName
+        ? s.name === ssoServiceName
+        : s.label === 'cloud-gov-identity-provider' ||
+          s.offering_name === 'cloud-gov-identity-provider',
+    );
 
     if (ssoService) {
       const ssoCredentials = ssoService.credentials || {};
@@ -80,19 +90,7 @@ try {
       process.env.POSTGRES_PASSWORD = password;
       process.env.POSTGRES_DB = db;
 
-      console.log(
-        '------------------------------------------------------------',
-      );
-      console.log(
-        '[cloud.gov VCAP_SERVICES] Successfully bound RDS credentials:',
-      );
-      console.log(`- Database Host: ${process.env.POSTGRES_HOST}`);
-      console.log(`- Database Port: ${process.env.POSTGRES_PORT}`);
-      console.log(`- Database User: ${process.env.POSTGRES_USER}`);
-      console.log(`- Database Name: ${process.env.POSTGRES_DB}`);
-      console.log(
-        '------------------------------------------------------------',
-      );
+      console.log('[cloud.gov VCAP_SERVICES] Successfully loaded RDS credentials.');
     } else {
       console.warn(
         '[cloud.gov VCAP_SERVICES] No postgres or aws-rds bindings found. Relying on local env vars.',

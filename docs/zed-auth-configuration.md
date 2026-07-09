@@ -6,7 +6,7 @@ see `docs/local-agent-workflows.md`.
 
 ## Prerequisites
 
-- `cf` logged into `gsa-tts-iae-lava-beds / dev`
+- `cf` logged into `<cf-org>/<cf-space>`
 - A scratch app such as `scratch-app`
 - Zed installed locally
 

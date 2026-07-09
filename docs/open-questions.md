@@ -20,7 +20,7 @@ Yes least privilege service accounts per broker. The IAM profile/policy should b
 
 Would need to work out the ideal boundary, a priviledged set of engineers should be responsible to managing and deploying. But Service Brokered Services should be mountable in other cf spaces so the credentials should be stored in a way that they can be easily injected into other spaces (e.g. prod) if we want to use the same broker for prod provisioning. This is another reason to prefer CredHub over env vars in the manifest.
 
-4. **User-level provisioning permissions** — Can any developer in the `gsa-tts-iae-lava-beds` org provision sandbox services, or is provisioning gated to specific SpaceDeveloper roles? Should we add a CF quota to limit concurrent instances per user?
+4. **User-level provisioning permissions** — Can any developer in the `<cf-org>` org provision sandbox services, or is provisioning gated to specific SpaceDeveloper roles? Should we add a CF quota to limit concurrent instances per user?
 
 Yes we should implement all of the CF qouta and role-base access controls at our dispol as `configurable` using groups to allow for provisioning sets of resources, cost should have budget limits ideally informing the user before provisioning. Default Time-to-live (TTL) should be configurable with a 59minute/~1hr default and a max of 8hrs. We should also have a renewal policy that allows for one 4hr extension.
 

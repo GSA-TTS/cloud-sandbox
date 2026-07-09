@@ -106,7 +106,7 @@ ACTIVE  (TTL clock running, cost telemetry active)
 
 ### AWS (`submodules/csb-brokerpak-aws`)
 
-Broker: `csb-aws-sandbox` — deployed and registered in `gsa-tts-iae-lava-beds / dev`
+Broker: `csb-aws-sandbox` — deployed and registered in `<cf-org>/<cf-space>`
 App: `csb-aws` (route auto-assigned by cloud.gov, e.g. `csb-aws-<random>.app.cloud.gov`) · Memory: 1G · Buildpack: binary
 
 | Service                      | Plan            | CF Marketplace Status | Constraints                |
@@ -127,7 +127,7 @@ App: `csb-aws` (route auto-assigned by cloud.gov, e.g. `csb-aws-<random>.app.clo
 
 ### GCP (`submodules/csb-brokerpak-gcp`)
 
-Broker: `csb-gcp-sandbox` — deployed and registered in `gsa-tts-iae-lava-beds / dev`
+Broker: `csb-gcp-sandbox` — deployed and registered in `<cf-org>/<cf-space>`
 App: `csb-gcp` (route auto-assigned by cloud.gov, e.g. `csb-gcp-<random>.app.cloud.gov`) · Memory: 1G · Buildpack: binary
 
 | Service                     | Plan         | CF Marketplace Status | Constraints                          |
@@ -303,7 +303,7 @@ Each deploy job is **version-pinned** to its submodule's `manifest.yml` version 
 ### Prerequisites
 
 - [Cloud Foundry CLI (`cf`)](https://docs.cloudfoundry.org/cf-cli/)
-- Access to a cloud.gov organization (`gsa-tts-iae-lava-beds`, `dev` space)
+- Access to a cloud.gov organization (`<cf-org>`, `dev` space)
 - Node.js 18+ and `pnpm` (Gatsby documentation site)
 - AWS CLI, Azure Developer CLI (`azd`), and Google Cloud SDK for credential provisioning
 

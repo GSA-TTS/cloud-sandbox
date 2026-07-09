@@ -15,7 +15,7 @@ outputting valid API configurations for both Zed and OpenCode.
 
 ## 0. Prerequisites
 
-- `cf` logged into `gsa-tts-iae-lava-beds / dev`
+- `cf` logged into `<cf-org>/<cf-space>`
 - A scratch app bound to the instances: `bash scripts/local-agent-vcap.sh <app> <instance>`
 - For OpenCode: `pnpm run opencode:broker-session -- <command>`
 
@@ -330,7 +330,7 @@ Re-authenticate with:
 cf login -a api.fr.cloud.gov --sso
 ```
 
-Then select org `gsa-tts-iae-lava-beds` and space `dev`.
+Then select org `<cf-org>` and space `<cf-space>`.
 
 ### Service instance binding fails
 

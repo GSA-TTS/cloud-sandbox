@@ -34,12 +34,12 @@ on behalf of GSA TTS engineers. It inherits FedRAMP Moderate P-ATO controls from
 C4Context
     title System Context — TTS Cloud Sandbox Multi-Cloud SSB
 
-    Person(ttsEng, "TTS Engineer", "GSA SpaceDeveloper with CF role in gsa-tts-iae-lava-beds/dev. Provisions and manages sandbox cloud resources via cf CLI.")
+    Person(ttsEng, "TTS Engineer", "GSA SpaceDeveloper with CF role in <cf-org>/<cf-space>. Provisions and manages sandbox cloud resources via cf CLI.")
     Person(ttsOps, "TTS TechOps / Ops Admin", "GSA CF org admin. Manages broker registration, service catalog approvals, and quota governance.")
     Person(auditor, "ISSO / Security Auditor", "Reviews OSCAL compliance documents, Prowler findings, and CF audit logs.")
 
     System_Boundary(ssb, "TTS Cloud Sandbox SSB (Authorization Boundary)") {
-        System(csb, "Cloud Service Broker Platform", "3 × CSB v2.6.10 CF apps (csb-aws, csb-gcp, csb-azure) + csb-sql MySQL backing DB. Implements OSBAPI. Brokers sandbox-tier cloud resources via OpenTofu brokerpaks. Deployed on cloud.gov org: gsa-tts-iae-lava-beds, space: dev.")
+        System(csb, "Cloud Service Broker Platform", "3 × CSB v2.6.10 CF apps (csb-aws, csb-gcp, csb-azure) + csb-sql MySQL backing DB. Implements OSBAPI. Brokers sandbox-tier cloud resources via OpenTofu brokerpaks. Deployed on cloud.gov org: <cf-org>, space: <cf-space>.")
     }
 
     System_Ext(cloudgov, "cloud.gov (FedRAMP P-ATO FR1920000001)", "GSA TTS PaaS — Cloud Foundry. Provides container hosting, network boundary, UAA/SecureAuth authentication, CF RBAC, Loggregator, RDS-backed database services. All PE/CP/MA controls fully inherited.")
@@ -83,7 +83,7 @@ flowchart TB
         direction TB
         subgraph CG["cloud.gov FedRAMP P-ATO FR1920000001 (Inherited)"]
             direction LR
-            subgraph SPACE["CF Org: gsa-tts-iae-lava-beds / Space: dev"]
+            subgraph SPACE["CF Org: <cf-org> / Space: <cf-space>"]
                 CSB_AWS["csb-aws\n(CF App, 1G)"]
                 CSB_GCP["csb-gcp\n(CF App, planned)"]
                 CSB_AZR["csb-azure\n(CF App, planned)"]
@@ -263,7 +263,7 @@ C4Container
     System_Ext(azrCSP, "Azure (Sandbox RG)", "External CSP [planned]. Hosts sandbox PostgreSQL, SQL, Redis, Storage, Event Hubs.")
     System_Ext(github, "GitHub.com", "Source control and CI/CD. GitHub Actions deploys updated broker apps.")
 
-    Container_Boundary(cg, "cloud.gov — CF Org: gsa-tts-iae-lava-beds / Space: dev") {
+    Container_Boundary(cg, "cloud.gov — CF Org: <cf-org> / Space: <cf-space>") {
 
         Container(csbAWS, "csb-aws", "Go binary + AWS brokerpak (.brokerpak)", "Cloud Service Broker for AWS. Exposes OSBAPI v2 endpoint authenticated via HTTP Basic Auth. Loaded with csb-brokerpak-aws providing sandbox-8h plans for S3, RDS, ElastiCache, SQS. Registers as space-scoped CF service broker 'csb-aws-sandbox'. Running at csb-aws-*.app.cloud.gov.")
 
@@ -390,7 +390,7 @@ C4Deployment
             Container(cgCAPI, "CF Cloud Controller API", "REST API", "Manages orgs/spaces/apps/services. Records all CF events in audit log. Enforces SpaceDeveloper role requirement for broker registration.")
             Container(cgLogg, "Loggregator + ELK", "CF Doppler + logs.fr.cloud.gov", "Aggregates all app STDOUT/STDERR. Searchable at logs.fr.cloud.gov. Retains logs per cloud.gov P-ATO data retention policy.")
         }
-        Deployment_Node(cgOrg, "CF Org: gsa-tts-iae-lava-beds / Space: dev", "Isolated CF Space") {
+        Deployment_Node(cgOrg, "CF Org: <cf-org> / Space: <cf-space>", "Isolated CF Space") {
             Deployment_Node(diegoAWS, "Diego Cell (Garden Container)", "linux/amd64 container, 1G RAM") {
                 Container(csbAWSApp, "csb-aws", "CSB v2.6.10 + brokerpak-aws v0.1.0", "Space-scoped OSBAPI broker 'csb-aws-sandbox'. Binary buildpack. Env: AWS_*, DB_*, GSB_SERVICE_* vars. Route: csb-aws-<random>.app.cloud.gov (auto-assigned by cloud.gov)")
             }
@@ -539,7 +539,7 @@ sequenceDiagram
     CLI->>UAA4: POST /oauth/token (grant_type=password, code=<OTP>)
     UAA4-->>CLI: OAuth2 access_token + refresh_token (JWT)
     CLI-->>Dev: Authenticated. Select org/space.
-    Dev->>CLI: Target org: gsa-tts-iae-lava-beds, space: dev
+    Dev->>CLI: Target org: <cf-org>, space: <cf-space>
     CLI->>CFAPI3: All subsequent API calls use Bearer <access_token>
     note over CLI,CFAPI3: IA-2(1) — MFA enforced for all network access to privileged CF commands
 ```
