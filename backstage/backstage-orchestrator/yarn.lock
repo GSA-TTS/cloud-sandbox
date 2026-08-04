@@ -8418,6 +8418,7 @@ apg-lite@^1.0.3, apg-lite@^1.0.4:
   version "0.0.0"
   dependencies:
     "@backstage/cli" "^0.36.3"
+    "@backstage/core-app-api" "^1.20.2"
     "@backstage/core-components" "^0.18.11"
     "@backstage/core-plugin-api" "^1.12.7"
     "@backstage/frontend-defaults" "^0.5.3"
@@ -12956,9 +12957,9 @@ homedir-polyfill@^1.0.1:
     parse-passwd "^1.0.0"
 
 hono@^4.11.4:
-  version "4.12.28"
-  resolved "https://registry.npmjs.org/hono/-/hono-4.12.28.tgz#c2e12c32027f0e9fb8b0cef2ecfb73050c2ca62e"
-  integrity sha512-YwUvVpSF7m1yOblFPrU3Hbo8XhPheBoiyfGuII6z19LnOr6JpDnyyp7LFNrfV56wS8tpvtBFGRISHN02pDdLOA==
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.13.0.tgz#ac1ba1650b4fd9cbe53e17bea0525f53cb65813d"
+  integrity sha512-jhunvfHWxd7J5EFfSgH4xsYJzSe/lfqbUCxiyyeaQasUsXeEHXtzVid+7EOGByc5JnFa23SSFL3Y2RV/z1T+eQ==
 
 hookified@^1.10.0:
   version "1.15.1"
