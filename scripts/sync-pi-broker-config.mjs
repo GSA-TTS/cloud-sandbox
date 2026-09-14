@@ -63,13 +63,24 @@ for (const [provider, value] of Object.entries(modelsPatch.providers || {})) {
 }
 
 let passedModels = null;
-if (validationReportFile && validationReportFile !== "-" && fs.existsSync(validationReportFile)) {
-  const validationReport = readJson(validationReportFile, { results: [] });
-  passedModels = new Set(
-    (validationReport.results || [])
-      .filter((result) => result.run_status === "passed" && result.pi_provider && result.broker_model_id)
-      .map((result) => `${result.pi_provider}/${result.broker_model_id}`),
-  );
+const validationReportFiles = validationReportFile
+  .split(",")
+  .map((file) => file.trim())
+  .filter((file) => file && file !== "-");
+if (validationReportFiles.length > 0) {
+  passedModels = new Set();
+  for (const reportFile of validationReportFiles) {
+    if (!fs.existsSync(reportFile)) {
+      continue;
+    }
+
+    const validationReport = readJson(reportFile, { results: [] });
+    for (const result of validationReport.results || []) {
+      if (result.run_status === "passed" && result.pi_provider && result.broker_model_id) {
+        passedModels.add(`${result.pi_provider}/${result.broker_model_id}`);
+      }
+    }
+  }
 }
 
 const enabledModels = [];

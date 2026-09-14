@@ -205,7 +205,7 @@ printf '%s' "$bedrock_json" | jq -r '
   "export AWS_ACCESS_KEY_ID=\(.credential.inline.access_key_id | @sh)\n" +
   "export AWS_SECRET_ACCESS_KEY=\(.credential.inline.secret_access_key | @sh)\n" +
   "export AWS_REGION=\(.endpoint.region | @sh)\n" +
-  "unset AWS_PROFILE AWS_SESSION_TOKEN AWS_SECURITY_TOKEN\n"
+  "unset AWS_PROFILE AWS_SESSION_TOKEN AWS_SECURITY_TOKEN AWS_BEARER_TOKEN_BEDROCK\n"
 ' > "$bedrock_env_file"
 chmod 600 "$bedrock_env_file"
 

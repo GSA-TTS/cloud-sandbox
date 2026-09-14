@@ -253,7 +253,7 @@ validate_bedrock() {
   pi_dir="$(prepare_pi_dir bedrock)"
   listed_file="${tmp_dir}/bedrock-models.txt"
   (
-    unset AWS_PROFILE AWS_SESSION_TOKEN AWS_SECURITY_TOKEN
+    unset AWS_PROFILE AWS_SESSION_TOKEN AWS_SECURITY_TOKEN AWS_BEARER_TOKEN_BEDROCK
     export AWS_ACCESS_KEY_ID="$access_key"
     export AWS_SECRET_ACCESS_KEY="$secret_key"
     export AWS_REGION="$region"
@@ -271,7 +271,7 @@ validate_bedrock() {
     output_file="${tmp_dir}/bedrock-$(slugify "$model").txt"
     exit_code=0
     (
-      unset AWS_PROFILE AWS_SESSION_TOKEN AWS_SECURITY_TOKEN
+      unset AWS_PROFILE AWS_SESSION_TOKEN AWS_SECURITY_TOKEN AWS_BEARER_TOKEN_BEDROCK
       export AWS_ACCESS_KEY_ID="$access_key"
       export AWS_SECRET_ACCESS_KEY="$secret_key"
       export AWS_REGION="$region"
