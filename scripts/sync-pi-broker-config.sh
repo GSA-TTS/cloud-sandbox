@@ -86,6 +86,7 @@ chmod 700 "$PI_DIR"
 
 auth_file="${PI_DIR}/auth.json"
 models_file="${PI_DIR}/models.json"
+settings_file="${PI_DIR}/settings.json"
 backup_suffix="$(date -u +%Y%m%dT%H%M%SZ)"
 
 backup_if_exists() {
@@ -121,6 +122,16 @@ models_from_pi_table() {
   ' | model_array_from_lines
 }
 
+intersect_model_arrays() {
+  local allowed_json="$1"
+  local listed_json="$2"
+  jq -n \
+    --argjson allowed "$allowed_json" \
+    --argjson listed "$listed_json" \
+    '($listed | map(.id) | INDEX(.)) as $listed_by_id |
+     [$allowed[] | select($listed_by_id[.id])]'
+}
+
 discover_bedrock_models() {
   local env_file="$1"
   local output_file="$2"
@@ -153,13 +164,17 @@ fi
 bedrock_json="$(normalize_binding "$BEDROCK_INSTANCE")"
 vertex_json="$(normalize_binding "$VERTEX_INSTANCE")"
 gemini_raw_json="$(bash "${SCRIPT_DIR}/local-agent-vcap.sh" "$APP_NAME" "$GEMINI_INSTANCE")"
+gemini_json="$(normalize_binding "$GEMINI_INSTANCE")"
 azure_raw_json="$(bash "${SCRIPT_DIR}/local-agent-vcap.sh" "$APP_NAME" "$AZURE_OPENAI_INSTANCE")"
 foundry_json="$(normalize_binding "$FOUNDRY_INSTANCE")"
 
 gemini_api_key="$(printf '%s' "$gemini_raw_json" | jq -r '.credentials.api_key')"
-gemini_base_url="$(printf '%s' "$gemini_raw_json" | jq -r '.credentials.base_url // .credentials.endpoint // empty')"
+gemini_base_url="$(printf '%s' "$gemini_json" | jq -r '.endpoint.base_url // empty')"
 if [[ -z "$gemini_base_url" ]]; then
-  echo "ERROR: Gemini binding did not include base_url or endpoint." >&2
+  gemini_base_url="$(printf '%s' "$gemini_raw_json" | jq -r '.credentials.api_endpoint // empty')"
+fi
+if [[ -z "$gemini_base_url" ]]; then
+  echo "ERROR: Gemini binding did not include base_url, endpoint, or api_endpoint." >&2
   exit 1
 fi
 gemini_models="$(fetch_gemini_models "$gemini_base_url" "$gemini_api_key")"
@@ -199,16 +214,16 @@ chmod 600 "$vertex_env_file"
 
 bedrock_discovery_output="${work_dir}/bedrock-models.txt"
 if discovered_models="$(discover_bedrock_models "$bedrock_env_file" "$bedrock_discovery_output")" && [[ "$(printf '%s' "$discovered_models" | jq 'length')" -gt 0 ]]; then
-  bedrock_models="$discovered_models"
-  printf '  discovered AWS Bedrock models from provider catalog: %s\n' "$(printf '%s' "$bedrock_models" | jq 'length')"
+  bedrock_models="$(intersect_model_arrays "$bedrock_models" "$discovered_models")"
+  printf '  matched AWS Bedrock broker-granted models in provider catalog: %s\n' "$(printf '%s' "$bedrock_models" | jq 'length')"
 else
   printf '  warning: AWS Bedrock catalog discovery failed; using broker binding model list.\n' >&2
 fi
 
 vertex_discovery_output="${work_dir}/vertex-models.txt"
 if discovered_models="$(discover_vertex_models "$vertex_env_file" "$vertex_discovery_output")" && [[ "$(printf '%s' "$discovered_models" | jq 'length')" -gt 0 ]]; then
-  vertex_models="$discovered_models"
-  printf '  discovered Google Vertex models from provider catalog: %s\n' "$(printf '%s' "$vertex_models" | jq 'length')"
+  vertex_models="$(intersect_model_arrays "$vertex_models" "$discovered_models")"
+  printf '  matched Google Vertex broker-granted models in provider catalog: %s\n' "$(printf '%s' "$vertex_models" | jq 'length')"
 else
   printf '  warning: Google Vertex catalog discovery failed; using broker binding model list.\n' >&2
 fi
@@ -296,16 +311,18 @@ jq -n \
 
 backup_if_exists "$auth_file"
 backup_if_exists "$models_file"
+backup_if_exists "$settings_file"
 
 node "$SCRIPT_DIR/sync-pi-broker-config.mjs" \
   "$auth_file" \
   "$models_file" \
+  "$settings_file" \
   "$models_patch" \
   "$gemini_auth" \
   "$azure_auth" \
   "$foundry_auth"
 
-chmod 600 "$auth_file" "$models_file"
+chmod 600 "$auth_file" "$models_file" "$settings_file"
 
 printf 'Updated Pi config at %s\n' "$PI_DIR"
 printf '  auth.json providers: sandbox-gemini, sandbox-azure-openai, sandbox-foundry\n'
