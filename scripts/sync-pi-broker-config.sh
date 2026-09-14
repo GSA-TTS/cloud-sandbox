@@ -22,6 +22,10 @@ Instance overrides:
   AZURE_OPENAI_INSTANCE     Required unless --skip-azure-openai is added later
   FOUNDRY_INSTANCE          Required unless --skip-foundry is added later
 
+Optional validation scoping:
+  PI_VALIDATION_REPORT      Path to a validate-pi-broker-models.sh JSON report.
+                            When set, enabledModels is limited to passed models.
+
 CF target:
   DEPLOY_CF_ORG and DEPLOY_CF_SPACE are optional. When both are set, the script
   retargets Cloud Foundry before reading service bindings.
@@ -318,6 +322,7 @@ node "$SCRIPT_DIR/sync-pi-broker-config.mjs" \
   "$models_file" \
   "$settings_file" \
   "$models_patch" \
+  "${PI_VALIDATION_REPORT:--}" \
   "$gemini_auth" \
   "$azure_auth" \
   "$foundry_auth"

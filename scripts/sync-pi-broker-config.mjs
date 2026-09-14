@@ -2,10 +2,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const [authFile, modelsFile, settingsFile, modelsPatchFile, ...authPatchFiles] = process.argv.slice(2);
+const [authFile, modelsFile, settingsFile, modelsPatchFile, validationReportFile = "", ...authPatchFiles] = process.argv.slice(2);
 
 if (!authFile || !modelsFile || !settingsFile || !modelsPatchFile) {
-  console.error("Usage: sync-pi-broker-config.mjs <auth.json> <models.json> <settings.json> <models-patch.json> [auth-patch...]");
+  console.error("Usage: sync-pi-broker-config.mjs <auth.json> <models.json> <settings.json> <models-patch.json> [validation-report.json] [auth-patch...]");
   process.exit(1);
 }
 
@@ -62,11 +62,26 @@ for (const [provider, value] of Object.entries(modelsPatch.providers || {})) {
   }
 }
 
+let passedModels = null;
+if (validationReportFile && validationReportFile !== "-" && fs.existsSync(validationReportFile)) {
+  const validationReport = readJson(validationReportFile, { results: [] });
+  passedModels = new Set(
+    (validationReport.results || [])
+      .filter((result) => result.run_status === "passed" && result.pi_provider && result.broker_model_id)
+      .map((result) => `${result.pi_provider}/${result.broker_model_id}`),
+  );
+}
+
 const enabledModels = [];
 for (const [provider, value] of Object.entries(modelsPatch.providers || {})) {
   for (const model of value.models || []) {
-    if (model?.id) {
-      enabledModels.push(`${provider}/${model.id}`);
+    if (!model?.id) {
+      continue;
+    }
+
+    const modelId = `${provider}/${model.id}`;
+    if (!passedModels || passedModels.has(modelId)) {
+      enabledModels.push(modelId);
     }
   }
 }
