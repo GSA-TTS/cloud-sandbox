@@ -2,7 +2,7 @@
 # scripts/create-broker-db.sh
 #
 # Creates the MySQL backing database for CSB brokers in the current CF space.
-# Uses the cloud.gov aws-rds micro-mysql plan (available in gsa-tts-iae-lava-beds/dev).
+# Uses the cloud.gov aws-rds micro-mysql plan in the currently targeted space.
 #
 # Usage:
 #   ./scripts/create-broker-db.sh [instance-name]
@@ -17,6 +17,10 @@ PLAN="micro-mysql"
 
 echo "→ Checking CF authentication..."
 cf target > /dev/null 2>&1 || { echo "ERROR: Not logged in to CF. Run: cf login -a api.fr.cloud.gov --sso"; exit 1; }
+
+if [[ -n "${DEPLOY_CF_ORG:-}" && -n "${DEPLOY_CF_SPACE:-}" ]]; then
+  cf target -o "${DEPLOY_CF_ORG}" -s "${DEPLOY_CF_SPACE}" >/dev/null
+fi
 
 CF_ORG=$(cf target | awk '/org:/{print $2}')
 CF_SPACE=$(cf target | awk '/space:/{print $2}')

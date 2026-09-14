@@ -17,20 +17,20 @@ set +x  # Never echo secrets
 
 MYSQL_INST="${MSYQL_INSTANCE:-csb-sql}"
 
-# ── Build a temp CF manifest with env vars injected ──────────────────────────
+# ── Build a temp CF manifest without secrets; env is set after push ──────────
 cfmf="/tmp/cf-manifest-$$.yml"
 touch "$cfmf"
 trap "rm -f $cfmf" EXIT
 chmod 600 "$cfmf"
 cat "${MANIFEST}" > "$cfmf"
 
-app_indent=$(sed -n 's/^\([[:space:]]*\)- name: .*/\1/p' "$cfmf" | head -n 1)
-child_indent="${app_indent}  "
-value_indent="${child_indent}  "
+ensure_cf_target() {
+  if [[ -n "${DEPLOY_CF_ORG:-}" && -n "${DEPLOY_CF_SPACE:-}" ]]; then
+    cf target -o "${DEPLOY_CF_ORG}" -s "${DEPLOY_CF_SPACE}" >/dev/null
+  fi
+}
 
-yaml_quote() { python3 -c 'import json, sys; print(json.dumps(sys.argv[1]))' "$1"; }
-
-add_env() { printf '%s%s: %s\n' "$value_indent" "$1" "$(yaml_quote "$2")" >> "$cfmf"; }
+set_app_env() { ensure_cf_target; cf set-env "${APP_NAME}" "$1" "$2" >/dev/null; }
 
 managed_optional_env_vars=(
   DATABRICKS_HOST
@@ -68,37 +68,38 @@ managed_optional_env_vars=(
   GSB_SERVICE_CSB_DATABRICKS_MODEL_SERVING_PLANS
 )
 
-if [[ -n "$(tail -c 1 "$cfmf" 2>/dev/null || true)" ]]; then
-  printf '\n' >> "$cfmf"
-fi
+# ── Step A: push without starting ────────────────────────────────────────────
+echo "  → cf push --no-start (manifest: $cfmf)"
+ensure_cf_target
+cf push --no-start -f "${cfmf}" --var app="${APP_NAME}"
 
-printf '%senv:\n' "$child_indent" >> "$cfmf"
-add_env "SECURITY_USER_NAME"                    "${SECURITY_USER_NAME}"
-add_env "SECURITY_USER_PASSWORD"                "${SECURITY_USER_PASSWORD}"
-add_env "BROKERPAK_UPDATES_ENABLED"             "${BROKERPAK_UPDATES_ENABLED:-true}"
-add_env "TERRAFORM_UPGRADES_ENABLED"            "${TERRAFORM_UPGRADES_ENABLED:-true}"
-add_env "CSB_DISABLE_TF_UPGRADE_PROVIDER_RENAMES" "${CSB_DISABLE_TF_UPGRADE_PROVIDER_RENAMES:-false}"
-add_env "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES" "${GSB_COMPATIBILITY_ENABLE_BETA_SERVICES:-true}"
+ensure_cf_target
 
-# Provider-specific credentials
-[[ -n "${AWS_ACCESS_KEY_ID:-}"     ]] && add_env "AWS_ACCESS_KEY_ID"       "${AWS_ACCESS_KEY_ID}"
-[[ -n "${AWS_SECRET_ACCESS_KEY:-}" ]] && add_env "AWS_SECRET_ACCESS_KEY"   "${AWS_SECRET_ACCESS_KEY}"
-[[ -n "${DATABRICKS_HOST:-}"       ]] && add_env "DATABRICKS_HOST"         "${DATABRICKS_HOST}"
-[[ -n "${DATABRICKS_TOKEN:-}"      ]] && add_env "DATABRICKS_TOKEN"        "${DATABRICKS_TOKEN}"
-add_env "AWS_BUDGET_ALERT_EMAIL" "${AWS_BUDGET_ALERT_EMAIL- }"
-[[ -n "${GOOGLE_CREDENTIALS:-}"    ]] && add_env "GOOGLE_CREDENTIALS"      "${GOOGLE_CREDENTIALS}"
-[[ -n "${GOOGLE_PROJECT:-}"        ]] && add_env "GOOGLE_PROJECT"           "${GOOGLE_PROJECT}"
-add_env "GCP_BUDGET_ALERT_EMAIL" "${GCP_BUDGET_ALERT_EMAIL- }"
-add_env "AZURE_BUDGET_CONTACT_EMAIL" "${AZURE_BUDGET_CONTACT_EMAIL- }"
-add_env "AZURE_BUDGET_WEBHOOK_URL" "${AZURE_BUDGET_WEBHOOK_URL- }"
-[[ -n "${ARM_LOCATION:-}"          ]] && add_env "ARM_LOCATION"            "${ARM_LOCATION}"
-[[ -n "${ARM_TENANT_ID:-}"         ]] && add_env "ARM_TENANT_ID"           "${ARM_TENANT_ID}"
-[[ -n "${ARM_SUBSCRIPTION_ID:-}"   ]] && add_env "ARM_SUBSCRIPTION_ID"     "${ARM_SUBSCRIPTION_ID}"
-[[ -n "${ARM_CLIENT_ID:-}"         ]] && add_env "ARM_CLIENT_ID"           "${ARM_CLIENT_ID}"
-[[ -n "${ARM_CLIENT_SECRET:-}"     ]] && add_env "ARM_CLIENT_SECRET"       "${ARM_CLIENT_SECRET}"
-[[ -n "${GSB_PROVISION_DEFAULTS:-}" ]] && add_env "GSB_PROVISION_DEFAULTS" "${GSB_PROVISION_DEFAULTS}"
+# Set broker env after push so cf does not echo secrets in the manifest diff.
+echo "  → setting broker environment on ${APP_NAME}..."
+set_app_env "SECURITY_USER_NAME" "${SECURITY_USER_NAME}"
+set_app_env "SECURITY_USER_PASSWORD" "${SECURITY_USER_PASSWORD}"
+set_app_env "BROKERPAK_UPDATES_ENABLED" "${BROKERPAK_UPDATES_ENABLED:-true}"
+set_app_env "TERRAFORM_UPGRADES_ENABLED" "${TERRAFORM_UPGRADES_ENABLED:-true}"
+set_app_env "CSB_DISABLE_TF_UPGRADE_PROVIDER_RENAMES" "${CSB_DISABLE_TF_UPGRADE_PROVIDER_RENAMES:-false}"
+set_app_env "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES" "${GSB_COMPATIBILITY_ENABLE_BETA_SERVICES:-true}"
+[[ -n "${AWS_ACCESS_KEY_ID:-}" ]] && set_app_env "AWS_ACCESS_KEY_ID" "${AWS_ACCESS_KEY_ID}"
+[[ -n "${AWS_SECRET_ACCESS_KEY:-}" ]] && set_app_env "AWS_SECRET_ACCESS_KEY" "${AWS_SECRET_ACCESS_KEY}"
+[[ -n "${DATABRICKS_HOST:-}" ]] && set_app_env "DATABRICKS_HOST" "${DATABRICKS_HOST}"
+[[ -n "${DATABRICKS_TOKEN:-}" ]] && set_app_env "DATABRICKS_TOKEN" "${DATABRICKS_TOKEN}"
+set_app_env "AWS_BUDGET_ALERT_EMAIL" "${AWS_BUDGET_ALERT_EMAIL- }"
+[[ -n "${GOOGLE_CREDENTIALS:-}" ]] && set_app_env "GOOGLE_CREDENTIALS" "${GOOGLE_CREDENTIALS}"
+[[ -n "${GOOGLE_PROJECT:-}" ]] && set_app_env "GOOGLE_PROJECT" "${GOOGLE_PROJECT}"
+set_app_env "GCP_BUDGET_ALERT_EMAIL" "${GCP_BUDGET_ALERT_EMAIL- }"
+set_app_env "AZURE_BUDGET_CONTACT_EMAIL" "${AZURE_BUDGET_CONTACT_EMAIL- }"
+set_app_env "AZURE_BUDGET_WEBHOOK_URL" "${AZURE_BUDGET_WEBHOOK_URL- }"
+[[ -n "${ARM_LOCATION:-}" ]] && set_app_env "ARM_LOCATION" "${ARM_LOCATION}"
+[[ -n "${ARM_TENANT_ID:-}" ]] && set_app_env "ARM_TENANT_ID" "${ARM_TENANT_ID}"
+[[ -n "${ARM_SUBSCRIPTION_ID:-}" ]] && set_app_env "ARM_SUBSCRIPTION_ID" "${ARM_SUBSCRIPTION_ID}"
+[[ -n "${ARM_CLIENT_ID:-}" ]] && set_app_env "ARM_CLIENT_ID" "${ARM_CLIENT_ID}"
+[[ -n "${ARM_CLIENT_SECRET:-}" ]] && set_app_env "ARM_CLIENT_SECRET" "${ARM_CLIENT_SECRET}"
+[[ -n "${GSB_PROVISION_DEFAULTS:-}" ]] && set_app_env "GSB_PROVISION_DEFAULTS" "${GSB_PROVISION_DEFAULTS}"
 
-# Plan overrides — only emit if non-empty
 for plan_var in \
   GSB_SERVICE_CSB_AWS_S3_BUCKET_PLANS \
   GSB_SERVICE_CSB_AWS_POSTGRESQL_PLANS \
@@ -122,21 +123,19 @@ for plan_var in \
   GSB_SERVICE_CSB_AZURE_OPENAI_PLANS \
   GSB_SERVICE_CSB_DATABRICKS_MODEL_SERVING_PLANS; do
   val="${!plan_var:-}"
-  [[ -n "${val}" ]] && add_env "${plan_var}" "${val}"
+  [[ -n "${val}" ]] && set_app_env "${plan_var}" "${val}"
 done
-
-# ── Step A: push without starting ────────────────────────────────────────────
-echo "  → cf push --no-start (manifest: $cfmf)"
-cf push --no-start -f "${cfmf}" --var app="${APP_NAME}"
 
 for managed_var in "${managed_optional_env_vars[@]}"; do
   if [[ -z "${!managed_var:-}" ]]; then
+    ensure_cf_target
     cf unset-env "${APP_NAME}" "${managed_var}" >/dev/null 2>&1 || true
   fi
 done
 
 # ── Step B: bind MySQL backing DB ─────────────────────────────────────────────
 echo "  → binding ${MYSQL_INST} to ${APP_NAME}..."
+ensure_cf_target
 cf bind-service "${APP_NAME}" "${MYSQL_INST}"
 
 # ── Step C: extract DB credentials from VCAP_SERVICES → explicit env vars ────
@@ -145,6 +144,7 @@ cf bind-service "${APP_NAME}" "${MYSQL_INST}"
 echo "  → extracting DB credentials from VCAP_SERVICES binding..."
 _VCAP_TMP=$(mktemp)
 trap "rm -f $cfmf $_VCAP_TMP" EXIT
+ensure_cf_target
 cf env "${APP_NAME}" > "${_VCAP_TMP}" 2>&1
 
 DB_HOST=$(python3 -c "
@@ -226,16 +226,17 @@ if [[ -z "${DB_HOST}" ]]; then
   echo "    Then: cf restage ${APP_NAME}"
 else
   echo "  → setting DB env vars on ${APP_NAME} (host: ${DB_HOST})..."
-  cf set-env "${APP_NAME}" DB_HOST     "${DB_HOST}"
-  cf set-env "${APP_NAME}" DB_USERNAME "${DB_USERNAME}"
-  cf set-env "${APP_NAME}" DB_PASSWORD "${DB_PASSWORD}"
-  cf set-env "${APP_NAME}" DB_PORT     "${DB_PORT}"
-  cf set-env "${APP_NAME}" DB_NAME     "${DB_NAME}"
-  cf set-env "${APP_NAME}" DB_TYPE     "mysql"
+  set_app_env DB_HOST "${DB_HOST}"
+  set_app_env DB_USERNAME "${DB_USERNAME}"
+  set_app_env DB_PASSWORD "${DB_PASSWORD}"
+  set_app_env DB_PORT "${DB_PORT}"
+  set_app_env DB_NAME "${DB_NAME}"
+  set_app_env DB_TYPE "mysql"
 fi
 
 # ── Step D: start ─────────────────────────────────────────────────────────────
 echo "  → starting ${APP_NAME}..."
+ensure_cf_target
 if ! cf start "${APP_NAME}"; then
   echo ""
   echo "  ✗ App failed to start. Recent logs:"
@@ -244,8 +245,10 @@ if ! cf start "${APP_NAME}"; then
 fi
 
 # ── Step E: register service broker ──────────────────────────────────────────
+ensure_cf_target
 ROUTE=$(LANG=EN cf app "${APP_NAME}" | awk '/routes:/{print $2}')
 echo "  → registering service broker '${BROKER_NAME}' at https://${ROUTE}..."
+ensure_cf_target
 cf create-service-broker "${BROKER_NAME}" \
   "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" \
   "https://${ROUTE}" \

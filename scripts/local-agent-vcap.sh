@@ -29,6 +29,10 @@ APP_NAME=${1:-}
 SERVICE_INSTANCE=${2:-}
 SERVICE_LABEL=${3:-}
 
+if [[ -n "${DEPLOY_CF_ORG:-}" && -n "${DEPLOY_CF_SPACE:-}" ]]; then
+  cf target -o "$DEPLOY_CF_ORG" -s "$DEPLOY_CF_SPACE" >/dev/null
+fi
+
 if [[ -z "$APP_NAME" || -z "$SERVICE_INSTANCE" ]]; then
   usage >&2
   exit 1
@@ -153,6 +157,38 @@ function synthesizeNormalized(entry) {
         format: "api_key",
         inline: {
           api_key: credentials.api_key ?? null,
+        },
+        secret_ref: null,
+      },
+    };
+  }
+
+  if (label === "csb-azure-foundry") {
+    return {
+      version: "v1",
+      provider: "azure",
+      provisioner_family: "azure_foundry_identity",
+      connection_type: "runtime",
+      endpoint: {
+        base_url: credentials.endpoint ?? null,
+        region: null,
+        api_version: credentials.api_version ?? null,
+      },
+      access: {
+        mode: "api_key",
+        expires_at: credentials.ttl_expires_at ?? null,
+      },
+      grant: {
+        kind: "scoped_key",
+        least_privilege_unit: "deployment",
+        allowed_models: [credentials.model_name].filter(Boolean),
+      },
+      credential: {
+        format: "api_key",
+        inline: {
+          api_key: credentials.api_key ?? null,
+          deployment_name: credentials.deployment_name ?? null,
+          model_name: credentials.model_name ?? null,
         },
         secret_ref: null,
       },

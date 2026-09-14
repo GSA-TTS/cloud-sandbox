@@ -4,7 +4,7 @@
 # Builds and deploys the CSB Azure brokerpak to the current CF space.
 #
 # Prerequisites:
-#   1. cf login -a api.fr.cloud.gov --sso  (targeted to gsa-tts-iae-lava-beds / dev)
+#   1. Log in to Cloud Foundry and target the intended org/space.
 #   2. Copy scripts/envs/azure.env.example → scripts/envs/azure.env and fill values
 #   3. Run: pnpm run broker:db   (creates csb-sql MySQL instance if not present)
 #
@@ -52,6 +52,10 @@ unset GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS GSB_SERVICE_CSB_GOOGLE_VERTEX_
 
 # shellcheck source=/dev/null
 set -a; source "${ENV_FILE}"; set +a
+
+if [[ -n "${DEPLOY_CF_ORG:-}" && -n "${DEPLOY_CF_SPACE:-}" ]]; then
+  cf target -o "${DEPLOY_CF_ORG}" -s "${DEPLOY_CF_SPACE}" >/dev/null
+fi
 
 # Compact multiline JSON plan values to single lines (required by make build)
 # shellcheck source=lib/compact-json-env.sh
@@ -142,7 +146,7 @@ source "${SCRIPT_DIR}/lib/patch-provider-display-name.sh"
 
 # ── Step 1: Build brokerpak ──────────────────────────────────────────────────
 echo "==> [1/4] Building Azure brokerpak..."
-(cd "${SUBMODULE}" && make build)
+(cd "${SUBMODULE}" && make --silent build)
 
 # ── Step 2: Ensure backing DB exists ─────────────────────────────────────────
 echo "==> [2/4] Checking broker state database (${MYSQL_INSTANCE:-csb-sql})..."
