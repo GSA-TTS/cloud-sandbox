@@ -14,6 +14,53 @@ cf marketplace
 
 These commands usually identify whether the problem is auth, app health, broker registration, or catalog visibility.
 
+## Broker Cost-Saving Shutdown And Restart
+
+To save app runtime costs while retaining broker state, stop only the broker apps.
+Do not delete `csb-sql` or brokered service instances unless you intend to destroy
+state or backing cloud resources.
+
+Stop broker apps:
+
+```bash
+cf login -a api.fr.cloud.gov --sso
+cf target
+cf stop csb-aws
+cf stop csb-gcp
+cf stop csb-azure
+```
+
+Confirm broker apps are stopped and storage is retained:
+
+```bash
+cf apps
+cf service csb-sql
+cf services
+```
+
+Restart broker apps from the existing deployed droplets:
+
+```bash
+cf login -a api.fr.cloud.gov --sso
+cf target
+cf start csb-aws
+cf start csb-gcp
+cf start csb-azure
+cf service-brokers
+cf marketplace
+```
+
+If an app is missing, stale, or fails to start, redeploy the affected broker. The
+redeploy scripts reuse the existing `csb-sql` service when it is present:
+
+```bash
+pnpm run broker:db
+pnpm run broker:deploy:aws
+pnpm run broker:deploy:gcp
+pnpm run broker:deploy:azure
+pnpm run broker:status
+```
+
 ## Common Issues
 
 ### Not logged in to Cloud Foundry
