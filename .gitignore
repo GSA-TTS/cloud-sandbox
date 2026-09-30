@@ -10,6 +10,7 @@ scripts/envs/*.env
 # Allow the example/template files
 !scripts/envs/*.env.example
 aws-access-key.json
+/.cache/prowler/
 azure.env
 gcp-service-account-key.json
 
