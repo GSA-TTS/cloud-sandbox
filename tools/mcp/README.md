@@ -23,7 +23,7 @@ Use the MCP server when it is faster for discovery, structured queries, document
 
 | Provider | Source | Workspace config | Auth model | Notes |
 | --- | --- | --- | --- | --- |
-| AWS | [awslabs/mcp](https://github.com/awslabs/mcp) | `aws-api` | inherited `AWS_*` env or local AWS config | Configured with `uvx awslabs.core-mcp-server@latest` |
+| AWS | [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-mcp-server.html) | `aws-api` | local AWS credential chain | Configured with a pinned `mcp-proxy-for-aws` connection to the AWS-managed MCP endpoint |
 | GCP | [googleapis/gcloud-mcp](https://github.com/googleapis/gcloud-mcp) | `gcloud` | active `gcloud` account | Configured with `npx -y @google-cloud/gcloud-mcp` |
 | Azure | [microsoft/mcp](https://github.com/microsoft/mcp) | `azure-resource-manager` | Azure signed-in browser/session auth against ARM MCP | Configured as remote HTTP MCP at `https://mcp.management.azure.com` |
 | Databricks | [databricks/databricks-ai-bridge](https://github.com/databricks/databricks-ai-bridge/tree/main/databricks_mcp) | `databricks` | Databricks CLI auth | Configured with `uvx databricks-mcp` |
@@ -112,8 +112,9 @@ That command is intentionally kept separate from the local `.vscode/mcp.json` se
 
 ### AWS
 
-- The workspace uses the AWS MCP launcher from `awslabs/mcp`.
-- For this repo, the reliable provisioning identity is from `scripts/envs/aws.env`, not whichever temporary shell token happens to be active.
+- The workspace uses AWS's managed MCP server through `uvx mcp-proxy-for-aws@1.6.3 https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=us-east-1`.
+- The previous aggregate `awslabs.core-mcp-server` package is yanked. The interim `awslabs.aws-api-mcp-server` replacement is also entering end of development; use the managed server instead.
+- Authenticate through the approved local AWS credential source (for example, GSA SSO or a configured profile) before starting the proxy. The configuration intentionally does not store credentials.
 
 ### GCP
 

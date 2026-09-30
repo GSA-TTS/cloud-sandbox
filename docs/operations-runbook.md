@@ -15,8 +15,13 @@ This runbook covers day-2 operations for Cloud Sandbox broker apps on cloud.gov.
 
 ```bash
 cf login -a api.fr.cloud.gov --sso
+cf target -o gsa-tts-iae-lava-beds -s dev
 cf target
 ```
+
+The expected target is `https://api.fr.cloud.gov`, organization
+`gsa-tts-iae-lava-beds`, and space `dev`. Confirm this context before any
+lifecycle operation.
 
 - Env files present and populated:
   - `scripts/envs/aws.env`
@@ -78,6 +83,14 @@ cf marketplace
 
 Use these to reduce runtime resource usage when no provisioning activity is needed.
 
+### Routine start (preferred)
+
+The deployed broker apps are `csb-aws`, `csb-gcp`, and `csb-azure`; their
+registrations are `csb-aws-sandbox`, `csb-gcp-sandbox`, and
+`csb-azure-sandbox`. A stopped app retains its registration, marketplace
+offerings, and service-instance state. Prefer starting a stopped app instead of
+redeploying it.
+
 ```bash
 pnpm run broker:start:aws
 pnpm run broker:start:gcp
@@ -93,6 +106,33 @@ Batch operations:
 ```bash
 pnpm run broker:start:all
 pnpm run broker:stop:all
+```
+
+### Recovery restart
+
+Use a provider-specific restart only when an already-running app needs a
+stop/start recovery. It intentionally produces a short OSBAPI outage:
+
+```bash
+pnpm run broker:restart:aws
+pnpm run broker:restart:gcp
+```
+
+Do **not** use `broker:deploy:*` as a restart: deployment rebuilds and pushes
+the brokerpak, injects provider credentials, and updates the broker
+registration. Do **not** use `broker:teardown:*` for recovery; it deregisters
+the broker and deletes its app. Keep the shared `csb-sql` database intact.
+
+After starting or restarting, confirm each affected app has a `started`
+requested state and a `running`, `ready` web instance, then confirm the broker
+registration and catalog:
+
+```bash
+cf app csb-aws
+cf app csb-gcp
+cf app csb-azure
+cf service-brokers
+cf marketplace
 ```
 
 ## Functional Smoke Tests

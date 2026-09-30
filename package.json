@@ -158,10 +158,5 @@
     "node": ">=18",
     "npm": ">=9",
     "pnpm": ">=8"
-  },
-  "pnpm": {
-    "neverBuiltDependencies": [
-      "sharp"
-    ]
   }
 }

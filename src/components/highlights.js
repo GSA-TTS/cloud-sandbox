@@ -1,5 +1,5 @@
 import React from "react";
-import circle from "../../node_modules/uswds/dist/img/circle-124.png";
+import circle from "uswds/img/circle-124.png";
 
 /*
   Four key outcomes from the CSB sandbox lifecycle proposal.

@@ -3,12 +3,11 @@
     "aws-api": {
       "command": "uvx",
       "args": [
-        "awslabs.core-mcp-server@latest"
-      ],
-      "env": {
-        "AWS_REGION": "us-east-1",
-        "FASTMCP_LOG_LEVEL": "ERROR"
-      }
+        "mcp-proxy-for-aws@1.6.3",
+        "https://aws-mcp.us-east-1.api.aws/mcp",
+        "--metadata",
+        "AWS_REGION=us-east-1"
+      ]
     },
     "gcloud": {
       "command": "npx",
