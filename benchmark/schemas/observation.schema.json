@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cloud-sandbox.example/schemas/kubernetes-benchmark-observation-1.0.0.json",
+  "title": "Normalized managed Kubernetes benchmark observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "protocol_digest",
+    "provider",
+    "service",
+    "cluster_profile",
+    "kubernetes_version",
+    "node_count",
+    "node_shape",
+    "workload",
+    "repetition",
+    "seed",
+    "measurement_origin",
+    "metric",
+    "statistic",
+    "value",
+    "unit",
+    "sample_count",
+    "window_start",
+    "window_end",
+    "status",
+    "exclusion_reason",
+    "tool"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{8}T[0-9]{6}Z-(aws|gcp|azure)-[1-9][0-9]*-w[0-7]$"
+    },
+    "protocol_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "provider": { "enum": ["aws", "gcp", "azure"] },
+    "service": { "enum": ["eks", "gke-standard", "aks"] },
+    "cluster_profile": { "enum": ["portable-baseline", "managed-default"] },
+    "kubernetes_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?([+-][A-Za-z0-9.-]+)?$"
+    },
+    "node_count": { "const": 3 },
+    "node_shape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vcpu_each", "memory_gib_each", "architecture", "cpu_model"],
+      "properties": {
+        "vcpu_each": { "type": "number", "exclusiveMinimum": 0 },
+        "memory_gib_each": { "type": "number", "exclusiveMinimum": 0 },
+        "architecture": { "enum": ["amd64", "arm64"] },
+        "cpu_model": { "type": "string", "minLength": 1 }
+      }
+    },
+    "workload": { "enum": ["w0", "w1", "w2", "w3", "w4", "w5", "w6", "w7"] },
+    "repetition": { "type": "integer", "minimum": 1 },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "measurement_origin": {
+      "enum": ["external", "in-cluster", "provider-native"]
+    },
+    "metric": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]*$" },
+    "statistic": {
+      "enum": ["raw", "count", "mean", "p50", "p95", "p99", "p99.9", "max"]
+    },
+    "value": { "type": "number" },
+    "unit": { "type": "string", "minLength": 1 },
+    "sample_count": { "type": "integer", "minimum": 0 },
+    "window_start": { "type": "string", "format": "date-time" },
+    "window_end": { "type": "string", "format": "date-time" },
+    "status": {
+      "enum": [
+        "valid",
+        "failed_slo",
+        "invalid_instrumentation",
+        "provider_incident",
+        "operator_error",
+        "blocked"
+      ]
+    },
+    "exclusion_reason": { "type": ["string", "null"] },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "sha256"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "version": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "valid" } } },
+      "then": { "properties": { "exclusion_reason": { "type": "null" } } },
+      "else": {
+        "properties": {
+          "exclusion_reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  ]
+}

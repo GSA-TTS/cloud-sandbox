@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cloud-sandbox.example/schemas/kubernetes-benchmark-toolchain-lock-1.0.0.json",
+  "title": "Managed Kubernetes benchmark toolchain lock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tools"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/tool" }
+    }
+  },
+  "definitions": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "kind", "source", "sha256"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^*~^<>= ]+$"
+        },
+        "kind": { "enum": ["binary", "container-image"] },
+        "source": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "sha256": { "$ref": "#/definitions/sha256" },
+        "image_digest": { "$ref": "#/definitions/sha256" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "container-image" } } },
+          "then": {
+            "properties": { "image_digest": {} },
+            "required": ["image_digest"]
+          },
+          "else": { "not": { "required": ["image_digest"] } }
+        }
+      ]
+    }
+  }
+}

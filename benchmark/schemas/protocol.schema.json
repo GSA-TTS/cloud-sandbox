@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cloud-sandbox.example/schemas/kubernetes-benchmark-protocol-1.0.0.json",
+  "title": "Managed Kubernetes benchmark protocol",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "benchmark_id",
+    "cluster_profile",
+    "providers",
+    "kubernetes_minor",
+    "node_count",
+    "repetitions",
+    "seeds",
+    "workloads"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "benchmark_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,62}$"
+    },
+    "cluster_profile": {
+      "enum": ["portable-baseline", "managed-default"]
+    },
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["aws", "gcp", "azure"] }
+    },
+    "kubernetes_minor": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "node_count": { "const": 3 },
+    "repetitions": { "type": "integer", "minimum": 5 },
+    "seeds": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": { "type": "integer", "minimum": 0, "maximum": 2147483647 }
+    },
+    "workloads": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["w0", "w1", "w2", "w3", "w4", "w5", "w6", "w7"] }
+    }
+  }
+}
