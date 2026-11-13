@@ -241,17 +241,19 @@ All routes require bearer authentication; the single configured token grants
 access to the single synthetic tenant. The tenant header is an additional scope
 check, **not an identity assertion trusted for multi-tenant authorization**.
 
-| Route                                                  | Result                                                                    |
-| ------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `/health`                                              | Authenticated health check                                                |
-| `/v2/catalog`                                          | OSBAPI-shaped mock discovery with CRM link; not a complete broker         |
-| `/api/crm/offerings/managed-hosting/plans/managed`     | Plan-level CRM rows                                                       |
-| `/api/crm/instances/demo-instance`                     | Requires `X-CRM-Tenant: demo-tenant`; includes fixture parameter snapshot |
-| `/api/components/10000000-0000-4000-8000-000000000002` | Component, capability, controls, source and notes link                    |
-| `/api/oscal/component`                                 | Native component-definition JSON                                          |
-| `/api/oscal/ssp`                                       | Native consumer SSP JSON                                                  |
-| `/api/notes/component-model`                           | Detailed model notes as JSON-wrapped Markdown                             |
-| `/api/openapi.json`                                    | OpenAPI 3.1 route description                                             |
+| Route                                                    | Result                                                                                              |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `/health`                                                | Authenticated health check                                                                          |
+| `/v2/catalog`                                            | OSBAPI-shaped mock discovery with CRM link; not a complete broker                                   |
+| `/api/crm/offerings/managed-hosting/plans/managed`       | Plan-level CRM rows                                                                                 |
+| `/api/crm/context/managed-hosting/managed/demo-instance` | Digest-bound context; requires `X-CRM-Tenant`; `If-Match` mismatch → 409                            |
+| `/api/crm/evidence/managed-hosting/managed`              | Declared vs synthetic observation (current/stale/missing); `assessment_state` always `not-assessed` |
+| `/api/crm/instances/demo-instance`                       | Requires `X-CRM-Tenant: demo-tenant`; includes fixture parameter snapshot                           |
+| `/api/components/10000000-0000-4000-8000-000000000002`   | Component, capability, controls, source and notes link                                              |
+| `/api/oscal/component`                                   | Native component-definition JSON                                                                    |
+| `/api/oscal/ssp`                                         | Native consumer SSP JSON                                                                            |
+| `/api/notes/component-model`                             | Detailed model notes as JSON-wrapped Markdown                                                       |
+| `/api/openapi.json`                                      | OpenAPI 3.1 route description                                                                       |
 
 Requests with queries/invalid paths return 400; unauthorized requests return
 401; unsupported methods return 405; missing or wrong-tenant context returns

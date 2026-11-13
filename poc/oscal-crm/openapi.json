@@ -11,16 +11,35 @@
       "description": "Synthetic loopback development only; use approved TLS termination before any network exposure."
     }
   ],
-  "security": [{ "bearerAuth": [] }],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "components": {
-    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer" } },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "responses": {
       "Success": {
         "description": "Synthetic JSON context",
-        "content": { "application/json": { "schema": { "type": "object" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
       },
-      "Unauthorized": { "description": "Missing or invalid bearer token" },
-      "NotFound": { "description": "Unknown context or instance outside authorized tenant" }
+      "Unauthorized": {
+        "description": "Missing or invalid bearer token"
+      },
+      "NotFound": {
+        "description": "Unknown context or instance outside authorized tenant"
+      }
     }
   },
   "paths": {
@@ -32,27 +51,43 @@
             "name": "from",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
           },
           {
             "name": "to",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/health": {
       "get": {
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
@@ -60,8 +95,12 @@
       "get": {
         "summary": "Mock OSBAPI discovery, not a provision-capable broker",
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
@@ -72,19 +111,31 @@
             "name": "offering",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
           },
           {
             "name": "plan",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -95,19 +146,31 @@
             "name": "instance",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
           },
           {
             "name": "X-CRM-Tenant",
             "in": "header",
             "required": true,
-            "schema": { "type": "string", "enum": ["demo-tenant"] }
+            "schema": {
+              "type": "string",
+              "enum": ["demo-tenant"]
+            }
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -118,13 +181,22 @@
             "name": "uuid",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -135,29 +207,82 @@
             "name": "model",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/notes/component-model": {
       "get": {
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/openapi.json": {
       "get": {
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/crm/evidence/{offering}/{plan}": {
+      "get": {
+        "summary": "Declared versus synthetic observation view; assessment_state stays not-assessed",
+        "parameters": [
+          {
+            "name": "offering",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
+          },
+          {
+            "name": "plan",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     }

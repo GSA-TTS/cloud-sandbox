@@ -118,12 +118,12 @@ function projectRow(declaration, statement, by, mapping) {
     },
   };
 }
-export function catalog(fixtures = planFixtures) {
-  const mappings = Object.values(fixtures).map((f) => f.mapping);
-  const offerings = [...new Set(mappings.map((m) => m.offering))];
+export function catalog(fixtures = planFixtures, componentInput = componentDocument) {
+  const entries = Object.values(fixtures);
+  const offerings = [...new Set(entries.map((f) => f.mapping.offering))];
   return {
     services: offerings.map((offering) => {
-      const plans = mappings.filter((m) => m.offering === offering);
+      const plans = entries.filter((f) => f.mapping.offering === offering);
       return {
         id: offering,
         name: offering,
@@ -132,14 +132,21 @@ export function catalog(fixtures = planFixtures) {
         metadata: {
           oscal_crm: {
             profile: "urn:cloud-sandbox:poc:crm:1",
-            href: `/api/crm/offerings/${offering}/plans/${plans[0].plan}`,
+            version: "0.1.0",
+            href: `/api/crm/offerings/${offering}/plans/${plans[0].mapping.plan}`,
           },
         },
-        plans: plans.map(({ plan }) => ({
-          id: plan,
-          name: plan,
-          description: `Synthetic ${plan} hosting plan.`,
-          metadata: { crm_href: `/api/crm/offerings/${offering}/plans/${plan}` },
+        plans: plans.map(({ mapping, ssp }) => ({
+          id: mapping.plan,
+          name: mapping.plan,
+          description: `Synthetic ${mapping.plan} hosting plan.`,
+          metadata: {
+            crm_href: `/api/crm/offerings/${offering}/plans/${mapping.plan}`,
+            crm_documents: [
+              source("component", componentInput),
+              source(mapping.documentName || "ssp", ssp),
+            ],
+          },
         })),
       };
     }),

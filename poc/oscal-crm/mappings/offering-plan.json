@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "offerings": [
+    {
+      "offering": "managed-hosting",
+      "plan": "managed",
+      "capability": "10000000-0000-4000-8000-000000000003",
+      "controlImplementation": "10000000-0000-4000-8000-000000000004",
+      "component": "10000000-0000-4000-8000-000000000002",
+      "components": [
+        "10000000-0000-4000-8000-000000000020",
+        "10000000-0000-4000-8000-000000000021",
+        "10000000-0000-4000-8000-000000000002"
+      ],
+      "documentName": "ssp",
+      "claimBasis": {
+        "ac-2": "provider-default",
+        "au-2": "explicit-plan-configuration",
+        "sc-13": "unknown"
+      }
+    },
+    {
+      "offering": "managed-hosting",
+      "plan": "enhanced",
+      "capability": "10000000-0000-4000-8000-000000000003",
+      "controlImplementation": "10000000-0000-4000-8000-000000000031",
+      "component": "10000000-0000-4000-8000-000000000002",
+      "components": [
+        "10000000-0000-4000-8000-000000000020",
+        "10000000-0000-4000-8000-000000000021",
+        "10000000-0000-4000-8000-000000000002"
+      ],
+      "documentName": "ssp-enhanced",
+      "claimBasis": {
+        "ac-2": "provider-default",
+        "au-2": "explicit-plan-configuration",
+        "sc-13": "unknown"
+      }
+    }
+  ]
+}
