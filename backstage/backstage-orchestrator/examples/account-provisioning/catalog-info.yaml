@@ -1,0 +1,117 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: platform-account-provisioning
+  description: Local synthetic account-request lifecycle skeleton; provider vending and scanning are not implemented.
+spec:
+  owner: group:platform-cc/backstage-admins
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: platform-account-broker-api
+  description: Local OSB-shaped API skeleton for AWS, GCP, and Azure account-request demonstrations.
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: group:platform-cc/backstage-admins
+  system: platform-account-provisioning
+  definition: |
+    openapi: 3.0.3
+    info:
+      title: Platform Account Broker API
+      version: 0.1.0
+    paths:
+      /v2/catalog:
+        get:
+          summary: List account provisioning service plans
+          responses:
+            '200':
+              description: Service catalog
+      /v2/service_instances/{instanceId}:
+        put:
+          summary: Record a local synthetic account request
+          responses:
+            '202':
+              description: Provisioning accepted
+        patch:
+          summary: Update local sandbox TTL metadata
+          responses:
+            '202':
+              description: Update accepted
+        delete:
+          summary: Remove a local synthetic account request
+          responses:
+            '202':
+              description: Deprovision accepted
+      /v2/service_instances/{instanceId}/last_operation:
+        get:
+          summary: Poll provisioning operation status
+          responses:
+            '200':
+              description: Operation status
+      /prowler/scans:
+        post:
+          summary: Queue a local synthetic scan for an existing request
+          responses:
+            '202':
+              description: Scan accepted
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: account-broker-backend
+  description: Backstage backend plugin skeleton for OSB account vending and Prowler scan orchestration.
+spec:
+  type: service
+  lifecycle: experimental
+  owner: group:platform-cc/backstage-admins
+  system: platform-account-provisioning
+  providesApis:
+    - platform-account-broker-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: sample-aws-sandbox-account
+  description: Sample inventory record for a provisioned AWS account.
+  annotations:
+    platform.example.com/cloud-provider: aws
+    platform.example.com/provisioning-state: pending
+    platform.example.com/prowler-scan-state: queued
+spec:
+  type: cloud-account
+  lifecycle: experimental
+  owner: group:platform-cc/backstage-admins
+  system: platform-account-provisioning
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: sample-gcp-project
+  description: Sample inventory record for a provisioned GCP project.
+  annotations:
+    platform.example.com/cloud-provider: gcp
+    platform.example.com/provisioning-state: pending
+    platform.example.com/prowler-scan-state: queued
+spec:
+  type: cloud-account
+  lifecycle: experimental
+  owner: group:platform-cc/backstage-admins
+  system: platform-account-provisioning
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: sample-azure-subscription
+  description: Sample inventory record for a provisioned Azure subscription.
+  annotations:
+    platform.example.com/cloud-provider: azure
+    platform.example.com/provisioning-state: pending
+    platform.example.com/prowler-scan-state: queued
+spec:
+  type: cloud-account
+  lifecycle: experimental
+  owner: group:platform-cc/backstage-admins
+  system: platform-account-provisioning

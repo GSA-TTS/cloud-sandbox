@@ -166,4 +166,7 @@ backend.add(import('@backstage/plugin-signals-backend'));
 // mcp actions plugin
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
 
+// local account provisioning broker skeleton
+backend.add(import('./plugins/accountProvisioning'));
+
 backend.start();
