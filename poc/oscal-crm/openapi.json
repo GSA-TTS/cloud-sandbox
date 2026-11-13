@@ -1,0 +1,165 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Synthetic OSCAL CRM API",
+    "version": "0.1.0",
+    "description": "Read-only local proof of concept. Declarations are not assessment results or authorization decisions."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8787",
+      "description": "Synthetic loopback development only; use approved TLS termination before any network exposure."
+    }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer" } },
+    "responses": {
+      "Success": {
+        "description": "Synthetic JSON context",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      },
+      "Unauthorized": { "description": "Missing or invalid bearer token" },
+      "NotFound": { "description": "Unknown context or instance outside authorized tenant" }
+    }
+  },
+  "paths": {
+    "/api/crm/compare/{from}/{to}": {
+      "get": {
+        "summary": "Compare synthetic plan declarations, not assessed compliance",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+          },
+          {
+            "name": "to",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/v2/catalog": {
+      "get": {
+        "summary": "Mock OSBAPI discovery, not a provision-capable broker",
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/crm/offerings/{offering}/plans/{plan}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "offering",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+          },
+          {
+            "name": "plan",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/crm/instances/{instance}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "instance",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+          },
+          {
+            "name": "X-CRM-Tenant",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "enum": ["demo-tenant"] }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/components/{uuid}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/oscal/{model}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/notes/component-model": {
+      "get": {
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/openapi.json": {
+      "get": {
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    }
+  }
+}
