@@ -911,6 +911,29 @@
     openapi-merge "^1.3.2"
     openapi3-ts "^3.1.2"
 
+"@backstage/backend-openapi-utils@^0.7.1":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@backstage/backend-openapi-utils/-/backend-openapi-utils-0.7.3.tgz#27928fe1ce77959e271cfe51856d03b199f95e82"
+  integrity sha512-vQtJNez4uRHnWPOE0/h0NGdO3d475TRjX5ZLF7FnKEKDivZ6D7rPjJF8eZBHnz3/LNT4rdAC3pxhfz8um6HxJA==
+  dependencies:
+    "@apidevtools/swagger-parser" "^10.1.0"
+    "@backstage/backend-plugin-api" "^1.11.0"
+    "@backstage/errors" "^1.3.2"
+    "@backstage/types" "^1.2.2"
+    "@types/express" "^4.17.6"
+    "@types/express-serve-static-core" "^4.17.5"
+    ajv "^8.16.0"
+    express "^4.22.0"
+    express-openapi-validator "^5.5.8"
+    express-promise-router "^4.1.0"
+    get-port "^5.1.1"
+    json-schema-to-ts "^3.0.0"
+    lodash "^4.17.21"
+    mockttp "^3.13.0"
+    openapi-merge "^1.3.2"
+    openapi-types "^12.0.0"
+    openapi3-ts "^3.1.2"
+
 "@backstage/backend-plugin-api@^1.10.0", "@backstage/backend-plugin-api@^1.10.1", "@backstage/backend-plugin-api@^1.11.0", "@backstage/backend-plugin-api@^1.9.2", "@backstage/backend-plugin-api@^1.9.3":
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/@backstage/backend-plugin-api/-/backend-plugin-api-1.11.0.tgz#7a9bbfc7379c6dc6621043d91fd058f67eb973b7"
@@ -2614,33 +2637,33 @@
     lodash "^4.17.21"
     p-limit "^3.1.0"
 
-"@backstage/plugin-search-backend-node@^1.4.5":
-  version "1.4.5"
-  resolved "https://registry.npmjs.org/@backstage/plugin-search-backend-node/-/plugin-search-backend-node-1.4.5.tgz#5ad3bb428285d0830244834942d4ac346a1a4b8a"
-  integrity sha512-knFt9kwzJeV04xCIRSpWoXP7SfJZEKqKOaIQsgkWH0GMHB3HJTR4mSKZASjum5gJrJiNetvWdEpLUcKaIX53uA==
+"@backstage/plugin-search-backend-node@^1.4.5", "@backstage/plugin-search-backend-node@^1.4.7":
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-search-backend-node/-/plugin-search-backend-node-1.4.9.tgz#4987c13d3c4177e79abf75c58b6edb4c095bb73f"
+  integrity sha512-q1Bc5Of/MmlQJ4aq+H3Ia8ttqOh/Tf8wS9teHzqdvsGAsXeHCzR7mViGyBKKAEcgbHznOJSOL54M/b/kDOaKDQ==
   dependencies:
-    "@backstage/backend-plugin-api" "^1.9.2"
-    "@backstage/config" "^1.3.8"
-    "@backstage/errors" "^1.3.1"
-    "@backstage/plugin-permission-common" "^0.9.9"
-    "@backstage/plugin-search-common" "^1.2.24"
+    "@backstage/backend-plugin-api" "^1.11.0"
+    "@backstage/config" "^1.3.10"
+    "@backstage/errors" "^1.3.2"
+    "@backstage/plugin-permission-common" "^0.9.12"
+    "@backstage/plugin-search-common" "^1.2.26"
     "@types/lunr" "^2.3.3"
     lodash "^4.17.21"
     lunr "^2.3.9"
     ndjson "^2.0.0"
 
-"@backstage/plugin-search-backend@^2.1.3":
-  version "2.1.3"
-  resolved "https://registry.npmjs.org/@backstage/plugin-search-backend/-/plugin-search-backend-2.1.3.tgz#6e0fd8b7cb8812c9bb155979bb373f69553948ef"
-  integrity sha512-zqUG/y1gvFRITVB2twKjqYPCUktVBAq2fIm93o0zNwOecIR2ypCbR/RxZ6MpKPS2GUtaXEeaYwHgbD7qDRljXQ==
+"@backstage/plugin-search-backend@^2.1.6":
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-search-backend/-/plugin-search-backend-2.1.6.tgz#e29b413accfd125c809e8690718b34ccbed7c3cb"
+  integrity sha512-QarGHm2IIj04fvqdM4d83x0E+kcaW8n2+cZOcX3dRHpQpSGN2WO4g4LgK5C+fz/GatJra6Omb1x7HNECPgPCww==
   dependencies:
-    "@backstage/backend-openapi-utils" "^0.6.10"
-    "@backstage/backend-plugin-api" "^1.9.2"
+    "@backstage/backend-openapi-utils" "^0.7.1"
+    "@backstage/backend-plugin-api" "^1.10.0"
     "@backstage/config" "^1.3.8"
     "@backstage/errors" "^1.3.1"
-    "@backstage/plugin-permission-common" "^0.9.9"
-    "@backstage/plugin-permission-node" "^0.11.1"
-    "@backstage/plugin-search-backend-node" "^1.4.5"
+    "@backstage/plugin-permission-common" "^0.9.10"
+    "@backstage/plugin-permission-node" "^0.11.3"
+    "@backstage/plugin-search-backend-node" "^1.4.7"
     "@backstage/plugin-search-common" "^1.2.24"
     "@backstage/types" "^1.2.2"
     dataloader "^2.0.0"
@@ -2649,23 +2672,7 @@
     qs "^6.15.2"
     zod "^3.25.76 || ^4.0.0"
 
-"@backstage/plugin-search-common@^1.2.24":
-  version "1.2.24"
-  resolved "https://registry.npmjs.org/@backstage/plugin-search-common/-/plugin-search-common-1.2.24.tgz#80ca737be71987f95a660947363ae8d58e805637"
-  integrity sha512-vhLiHAiUpWsvB1AIKpB7EEJB0/l3thzdC78Eq58nJdjYEt5hEpiyA6HvrzlJ6ANg83130ur0VCOlSVZhjNfTVw==
-  dependencies:
-    "@backstage/plugin-permission-common" "^0.9.9"
-    "@backstage/types" "^1.2.2"
-
-"@backstage/plugin-search-common@^1.2.25":
-  version "1.2.25"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-search-common/-/plugin-search-common-1.2.25.tgz#e779a09d03bff90b573af29049f64e3913491862"
-  integrity sha512-l2OuAex9poVzS/9I2047hj0n5AsJWAM26m9IzkmMDjV+bLqzrePRLnws7RQ66gLKIs1hKwHxoWXiuRyUJ2jUEQ==
-  dependencies:
-    "@backstage/plugin-permission-common" "^0.9.11"
-    "@backstage/types" "^1.2.2"
-
-"@backstage/plugin-search-common@^1.2.26":
+"@backstage/plugin-search-common@^1.2.24", "@backstage/plugin-search-common@^1.2.25", "@backstage/plugin-search-common@^1.2.26":
   version "1.2.26"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-search-common/-/plugin-search-common-1.2.26.tgz#76960357db00aed3a78c6073a8322eead33cca62"
   integrity sha512-Kg6XezR/U+f1EBker2jndHFZmX/JhvfTo945eokSH2UpZ5kUWqQWc0qVYDm58/K7BIxGgh2dYD2r8RAgcsPOmA==
@@ -16346,6 +16353,11 @@ openapi-server-url-templating@^1.3.0:
   integrity sha512-DPlCms3KKEbjVQb0spV6Awfn6UWNheuG/+folQPzh/wUaKwuqvj8zt5gagD7qoyxtE03cIiKPgLFS3Q8Bz00uQ==
   dependencies:
     apg-lite "^1.0.4"
+
+openapi-types@^12.0.0:
+  version "12.1.3"
+  resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-12.1.3.tgz#471995eb26c4b97b7bd356aacf7b91b73e777dd3"
+  integrity sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==
 
 openapi3-ts@^3.1.2:
   version "3.2.0"
