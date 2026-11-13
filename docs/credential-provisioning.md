@@ -8,7 +8,22 @@ the appropriate `scripts/envs/<provider>.env` file. **Never commit `.env` files 
 they are git-ignored.**
 
 After the broker credentials are in place and the brokers are deployed, see
-`docs/local-agent-workflows.md` for the local developer flow that provisions a
+### 4. Approve the broker identity and private placement
+
+The CF broker API user (`SECURITY_USER_NAME`) is separate from the AWS IAM
+execution user. Create and review the provider-qualified IAM user and its
+least-privilege policy through the approved IAM process; do not run the broad
+example policy above unchanged. Before creating an access key, select existing
+private placement resources in one region:
+
+- VPC ID;
+- RDS subnet group and security group IDs;
+- ElastiCache subnet group and security group IDs.
+
+Every selected subnet group and security group must belong to the selected VPC.
+The bootstrap refuses missing or mismatched values so the upstream modules
+cannot create subnet groups or security groups implicitly.
+
 service instance, reads the resulting `VCAP_SERVICES` binding, and wires the
 credentials into Zed, CLI agents, and VS Code.
 
@@ -19,11 +34,15 @@ Tool-specific follow-ups:
 - `docs/vscode-auth-configuration.md`
 
 ---
-
+bash scripts/iam-bootstrap-aws.sh csb-aws-sandbox-broker <sso-profile> us-east-1 \
+  <approved-vpc-id> <rds-subnet-group> <rds-security-group-ids> \
+  <elasticache-subnet-group> <elasticache-security-group-ids>
 ## AWS — `aws-cli`
 
 ### 1. Install
+### 3. Create the service principal
 
+The Azure execution identity is separate from `SECURITY_USER_NAME`. The current
 ```bash
 brew install awscli
 aws --version   # aws-cli/2.x
@@ -34,20 +53,8 @@ aws --version   # aws-cli/2.x
 Use an account with IAM write access (AdministratorAccess or equivalent).
 
 ```bash
-aws configure
-# AWS Access Key ID:     <your admin key>
-# AWS Secret Access Key: <your admin secret>
-# Default region name:   us-east-1
-# Default output format: json
-```
-
-Or via SSO (recommended for GSA):
-
-```bash
-aws configure sso
-# SSO start URL:  https://gsa.awsapps.com/start
-# SSO region:     us-east-1
-# (follow browser prompt)
+bash scripts/iam-bootstrap-azure.sh <existing-approved-app-name> "$SUBSCRIPTION_ID" \
+  <approved-resource-group>
 aws sso login --profile <profile-name>
 export AWS_PROFILE=<profile-name>
 ```
@@ -68,7 +75,9 @@ cat > /tmp/csb-aws-policy.json << 'EOF'
         "rds:CreateDBInstance",
         "rds:DeleteDBInstance",
         "rds:DescribeDBInstances",
-        "rds:ModifyDBInstance",
+It does not create an application, change credentials, assign a role, or write
+`azure.env`. A separate approved change must specify the final identity, allowed
+roles, scope, expiration, and controlled secret delivery method.
         "rds:AddTagsToResource",
         "rds:ListTagsForResource",
         "rds:CreateDBSubnetGroup",
@@ -187,67 +196,37 @@ cat > /tmp/csb-aws-policy.json << 'EOF'
 EOF
 ```
 
-### 4. Create the policy and IAM user, attach the policy
+### 4. Approve the broker identity and private placement
+
+`SECURITY_USER_NAME` is the Cloud Foundry broker API user; it is not the AWS
+IAM execution user. Create and review a provider-qualified IAM user and a
+least-privilege policy through the approved IAM process. Do not apply the broad
+example policy above unchanged.
+
+Before creating an access key, select existing private placement resources in
+one region: VPC ID, RDS subnet group, RDS security-group IDs, ElastiCache subnet
+group, and ElastiCache security-group IDs. Every selected resource must belong
+to that VPC. The bootstrap rejects missing or mismatched inputs to prevent
+upstream modules from creating network resources implicitly.
+
+### 5. Create the environment file
+
+For an existing, approved broker IAM user, use the secure writer. It creates a
+new access key only when the user has fewer than two keys, writes the file
+atomically with mode `0600`, generates the broker password, and does not print
+or leave provider secrets in a temporary file. It does **not** deploy a broker.
 
 ```bash
-POLICY_ARN=$(aws iam create-policy \
-  --policy-name csb-sandbox-broker \
-  --description "Min permissions for TTS Cloud Sandbox CSB AWS broker" \
-  --policy-document file:///tmp/csb-aws-policy.json \
-  --query 'Policy.Arn' --output text)
-echo "Policy ARN: $POLICY_ARN"
-
-aws iam create-user --user-name csb-sandbox-broker \
-  --tags Key=Project,Value=tts-sandbox Key=Owner,Value=tts-techops@gsa.gov
-
-aws iam attach-user-policy \
-  --user-name csb-sandbox-broker \
-  --policy-arn "$POLICY_ARN"
+bash scripts/iam-bootstrap-aws.sh csb-aws-sandbox-broker <sso-profile> us-east-1 \
+  <approved-vpc-id> <rds-subnet-group> <rds-security-group-ids> \
+  <elasticache-subnet-group> <elasticache-security-group-ids>
 ```
 
-### 5. Generate access key credentials
+Validate the file's presence, permissions, and required variable names without
+printing values:
 
 ```bash
-aws iam create-access-key \
-  --user-name csb-sandbox-broker \
-  --query 'AccessKey.[AccessKeyId,SecretAccessKey]' \
-  --output text
-# Output (two tab-separated values):
-# AKIAIOSFODNN7EXAMPLE    wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-```
-
-Get your sandbox VPC ID:
-
-```bash
-aws ec2 describe-vpcs \
-  --filters "Name=tag:Name,Values=sandbox*" \
-  --query 'Vpcs[0].VpcId' --output text
-# vpc-XXXXXXXX
-```
-
-### 6. Save credentials to `.env`
-
-```bash
-cp scripts/envs/aws.env.example scripts/envs/aws.env
-
-# Fill in the three values from steps 5 above (replace the EXAMPLE placeholders):
-sed -i '' \
-  -e 's/AWS_ACCESS_KEY_ID=.*/AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE/' \
-  -e 's/AWS_SECRET_ACCESS_KEY=.*/AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI\/K7MDENG\/bPxRfiCYEXAMPLEKEY/' \
-  -e 's/AWS_PAS_VPC_ID=.*/AWS_PAS_VPC_ID=vpc-XXXXXXXX/' \
-  -e 's/GSB_PROVISION_DEFAULTS=.*/GSB_PROVISION_DEFAULTS='"'"'{"aws_vpc_id":"vpc-XXXXXXXX"}'"'"'/' \
-  scripts/envs/aws.env
-
-# Also set a strong random broker password:
-PASS=$(openssl rand -base64 32 | tr -d '\n/')
-sed -i '' "s/SECURITY_USER_PASSWORD=.*/SECURITY_USER_PASSWORD=${PASS}/" scripts/envs/aws.env
-```
-
-Verify the file looks correct before deploying:
-
-```bash
-grep -E '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_PAS_VPC_ID|SECURITY_USER_PASSWORD)=' \
-  scripts/envs/aws.env
+test -f scripts/envs/aws.env && test "$(stat -c '%a' scripts/envs/aws.env)" = 600
 ```
 
 ---
@@ -292,59 +271,27 @@ az account set --subscription "$SUBSCRIPTION_ID"
 azd config set defaults.subscription "$SUBSCRIPTION_ID"
 ```
 
-### 3. Create the service principal
+### 3. Azure approval gate
+
+The Azure execution identity is separate from `SECURITY_USER_NAME`. The current
+security-auditor implementation creates Entra applications and assigns Reader
+at subscription scope, while the active catalog has additional provider
+requirements. A catalog-specific role design and approved scope are therefore
+required before credentials can be created. Do not grant subscription-wide
+Contributor or User Access Administrator by default and do not rotate an
+existing client secret implicitly.
+
+The helper performs only read-only validation of a pre-existing approved
+identity and its resource-group scope:
 
 ```bash
-TENANT_ID=$(az account show --query tenantId --output tsv)
-echo "Tenant ID: $TENANT_ID"
-
-# Create SP with Contributor on the subscription
-SP_JSON=$(az ad sp create-for-rbac \
-  --name csb-sandbox-broker \
-  --role Contributor \
-  --scopes "/subscriptions/$SUBSCRIPTION_ID" \
-  --output json)
-
-CLIENT_ID=$(echo "$SP_JSON"     | python3 -c "import sys,json; print(json.load(sys.stdin)['appId'])")
-CLIENT_SECRET=$(echo "$SP_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['password'])")
-echo "Client ID:     $CLIENT_ID"
-echo "Client Secret: $CLIENT_SECRET"
+bash scripts/iam-bootstrap-azure.sh <existing-approved-app-name> "$SUBSCRIPTION_ID" \
+  <approved-resource-group>
 ```
 
-### 4. Assign the User Access Administrator role (required for role assignments in brokerpak)
-
-```bash
-OBJECT_ID=$(az ad sp show --id "$CLIENT_ID" --query id --output tsv)
-
-az role assignment create \
-  --assignee-object-id "$OBJECT_ID" \
-  --assignee-principal-type ServicePrincipal \
-  --role "User Access Administrator" \
-  --scope "/subscriptions/$SUBSCRIPTION_ID"
-```
-
-### 5. Save credentials to `.env`
-
-```bash
-cp scripts/envs/azure.env.example scripts/envs/azure.env
-
-sed -i '' \
-  -e "s|ARM_TENANT_ID=.*|ARM_TENANT_ID=${TENANT_ID}|" \
-  -e "s|ARM_SUBSCRIPTION_ID=.*|ARM_SUBSCRIPTION_ID=${SUBSCRIPTION_ID}|" \
-  -e "s|ARM_CLIENT_ID=.*|ARM_CLIENT_ID=${CLIENT_ID}|" \
-  -e "s|ARM_CLIENT_SECRET=.*|ARM_CLIENT_SECRET=${CLIENT_SECRET}|" \
-  scripts/envs/azure.env
-
-PASS=$(openssl rand -base64 32 | tr -d '\n/')
-sed -i '' "s/SECURITY_USER_PASSWORD=.*/SECURITY_USER_PASSWORD=${PASS}/" scripts/envs/azure.env
-```
-
-Verify:
-
-```bash
-grep -E '^ARM_(TENANT_ID|SUBSCRIPTION_ID|CLIENT_ID|CLIENT_SECRET)=' \
-  scripts/envs/azure.env
-```
+It does not create an application, change credentials, assign roles, or write
+`azure.env`. A separate approved change must define the final identity, allowed
+roles, scope, expiry, and controlled secret-delivery method.
 
 ### 6. Preflight Azure OpenAI model deployments before provisioning
 
@@ -476,97 +423,34 @@ gcloud services enable \
   cloudresourcemanager.googleapis.com
 ```
 
-### 4. Create the service account and assign IAM roles
+### 4. Approve the service account, roles, and private network
 
 ```bash
-SA_NAME=csb-sandbox-broker
+SA_NAME=csb-gcp-sandbox-broker
 SA_EMAIL="${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com"
-
-# Create the service account
-gcloud iam service-accounts create "$SA_NAME" \
-  --display-name "TTS Cloud Sandbox CSB GCP Broker" \
-  --description "Min permissions for csb-brokerpak-gcp"
-
-# Assign minimum required roles
-for ROLE in \
-  roles/cloudsql.admin \
-  roles/storage.admin \
-  roles/redis.admin \
-  roles/pubsub.admin \
-  roles/bigquery.dataEditor \
-  roles/bigquery.jobUser \
-  roles/iam.serviceAccountAdmin \
-  roles/iam.roleAdmin \
-  roles/resourcemanager.projectIamAdmin; do
-  gcloud projects add-iam-policy-binding "$GCP_PROJECT" \
-    --member "serviceAccount:${SA_EMAIL}" \
-    --role "$ROLE" \
-    --quiet
-done
 ```
 
-### 5. Generate and download key
+`SECURITY_USER_NAME` is the Cloud Foundry broker API user; it is not the GCP
+execution identity. Create and review the provider-qualified service account and
+the least-privilege roles required for the approved catalog. Do not grant the
+upstream documented Project Owner role by default. Select a network in the same
+project with active `servicenetworking.googleapis.com` peering; do not use the
+Cloud SQL default-network fallback.
+
+### 5. Create the environment file
 
 ```bash
-KEY_FILE=/tmp/csb-gcp-sa-key.json
-
-gcloud iam service-accounts keys create "$KEY_FILE" \
-  --iam-account="$SA_EMAIL"
-
-echo "Key written to $KEY_FILE"
-cat "$KEY_FILE"   # inspect before storing
+bash scripts/iam-bootstrap-gcp.sh "$SA_NAME" "$GCP_PROJECT" \
+  "https://www.googleapis.com/compute/v1/projects/$GCP_PROJECT/global/networks/<approved-private-network>"
 ```
 
-### 6. Save credentials to `.env`
-
-The brokerpak requires the entire service account JSON as a single-line value
-for `GOOGLE_CREDENTIALS`. The helper below compacts it and escapes it for the
-shell assignment:
+The helper creates a temporary key file with restrictive permissions, removes it
+on exit, writes `scripts/envs/gcp.env` atomically with mode `0600`, and never
+prints the service-account key JSON. Verify only the file presence and mode:
 
 ```bash
-cp scripts/envs/gcp.env.example scripts/envs/gcp.env
-
-# Compact JSON to single line
-CREDS=$(python3 -c "import json,sys; print(json.dumps(json.load(open('$KEY_FILE'))))")
-
-# Write into the .env file — use Python to safely handle the nested quotes
-python3 - "$GCP_PROJECT" "$CREDS" << 'PYEOF'
-import sys, re
-
-project = sys.argv[1]
-creds   = sys.argv[2]
-path    = 'scripts/envs/gcp.env'
-
-with open(path) as f:
-    content = f.read()
-
-content = re.sub(r"^GOOGLE_CREDENTIALS=.*$", f"GOOGLE_CREDENTIALS='{creds}'",
-                 content, flags=re.MULTILINE)
-content = re.sub(r"^GOOGLE_PROJECT=.*$", f"GOOGLE_PROJECT={project}",
-                 content, flags=re.MULTILINE)
-
-with open(path, 'w') as f:
-    f.write(content)
-
-print("gcp.env updated")
-PYEOF
-
-# Set a strong random broker password
-PASS=$(openssl rand -base64 32 | tr -d '\n/')
-sed -i '' "s/SECURITY_USER_PASSWORD=.*/SECURITY_USER_PASSWORD=${PASS}/" scripts/envs/gcp.env
+test -f scripts/envs/gcp.env && test "$(stat -c '%a' scripts/envs/gcp.env)" = 600
 ```
-
-Clean up the key file from disk once it is in the `.env`:
-
-```bash
-rm "$KEY_FILE"
-```
-
-Verify:
-
-```bash
-grep -E '^(GOOGLE_PROJECT|GOOGLE_CREDENTIALS)=' scripts/envs/gcp.env | \
-  sed 's/\(GOOGLE_CREDENTIALS=\).\{0,80\}.*/\1<redacted>/'
 ```
 
 ## Refresh local AI model catalogs
@@ -613,19 +497,18 @@ Cache contract notes:
 
 ## Deploy after credential setup
 
-With all three `.env` files populated, deploy the brokers:
+Do not populate all environment files or deploy all brokers as a batch. Proceed
+with one provider only after its service approval, provider identity scope,
+private-network/egress prerequisites, package validation, and cleanup plan have
+been recorded. The Azure credential file remains blocked until its
+catalog-specific role design is approved.
 
 ```bash
 # Provision the shared backing database (creates csb-sql if absent)
 pnpm run broker:db
 
-# Deploy individual brokers
+# Deploy one approved broker only
 pnpm run broker:deploy:aws
-pnpm run broker:deploy:gcp
-pnpm run broker:deploy:azure
-
-# Or all at once
-pnpm run broker:deploy:all
 
 # Verify
 pnpm run broker:status
@@ -636,11 +519,11 @@ cf marketplace -e csb-aws-sandbox
 
 ## Credential rotation
 
-| Provider | Rotation command                                                                            | Action after rotation                                       |
-| -------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| AWS      | `aws iam create-access-key --user-name csb-sandbox-broker` then `aws iam delete-access-key` | Update `aws.env`, redeploy via `pnpm run broker:deploy:aws` |
-| Azure    | `az ad sp credential reset --id <CLIENT_ID>`                                                | Update `azure.env`, redeploy                                |
-| GCP      | `gcloud iam service-accounts keys create` then delete old key                               | Update `gcp.env`, redeploy                                  |
+| Provider | Rotation approach | Action after rotation |
+| -------- | ----------------- | --------------------- |
+| AWS | Use the approved bootstrap workflow only after verifying the prior key and private-placement inputs. | Securely replace `aws.env`, then redeploy the approved broker. |
+| Azure | Use an explicitly approved identity rotation change; never reset a secret implicitly. | Update controlled secret delivery and validate the approved scope. |
+| GCP | Use the approved bootstrap workflow after verifying the service account, private network, and peering. | Securely replace `gcp.env`, then redeploy the approved broker. |
 
 Rotate credentials whenever:
 
