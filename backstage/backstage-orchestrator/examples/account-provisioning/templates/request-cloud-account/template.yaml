@@ -1,0 +1,78 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: request-cloud-account
+  title: Request Governed Cloud Account
+  description: Submit a local synthetic account-request demonstration. It does not create a cloud account, project, or subscription.
+  tags:
+    - account-vending
+    - aws
+    - gcp
+    - azure
+    - prowler
+spec:
+  owner: group:platform-cc/backstage-admins
+  type: cloud-account
+  parameters:
+    - title: Account request
+      required:
+        - provider
+        - accountName
+        - owner
+        - environment
+      properties:
+        provider:
+          title: Provider
+          type: string
+          enum: [aws, gcp, azure]
+          enumNames: [AWS account, GCP project, Azure subscription]
+        accountName:
+          title: Account name
+          type: string
+          description: Lowercase DNS-safe account, project, or subscription alias.
+          pattern: '^[a-z0-9][a-z0-9-]{2,62}$'
+        owner:
+          title: Owning group
+          type: string
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+        environment:
+          title: Environment
+          type: string
+          enum: [sandbox, dev, test, prod]
+        costCenter:
+          title: Cost center
+          type: string
+        ttlHours:
+          title: TTL hours
+          type: number
+          description: Sandbox requests default to 1 hour; optional integer value from 1 through 8. Managed requests do not accept TTL.
+        complianceProfile:
+          title: Compliance profile
+          type: string
+          enum: [baseline, moderate, high]
+          default: baseline
+  steps:
+    - id: broker-request
+      name: Submit account request
+      action: fetch:plain
+      input:
+        url: http://localhost:7007/api/account-provisioning/v2/catalog
+    - id: broker-handoff
+      name: Local broker request shape
+      action: debug:log
+      input:
+        message: |
+          Local-only request shape. No account or external workflow is created.
+          Use service_id=platform-cloud-account and plan_id=sandbox or managed.
+          The request parameters are provider, accountName, owner, environment,
+          costCenter, ttlHours, and complianceProfile.
+  output:
+    links:
+      - title: Account broker API
+        url: /api/account-provisioning/v2/catalog
+      - title: Account inventory system
+        icon: catalog
+        entityRef: system:default/platform-account-provisioning
