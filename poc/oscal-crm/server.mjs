@@ -33,6 +33,8 @@ function route(path, tenant, allowedTenant, context, expectedDigest) {
   if (plan) return context.crm(plan[2], plan[1]);
   const comparison = path.match(/^\/api\/crm\/compare\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)$/);
   if (comparison) return context.compare(comparison[1], comparison[2]);
+  const observed = path.match(/^\/api\/crm\/evidence\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)$/);
+  if (observed) return context.evidence(observed[2], observed[1]);
   const instance = path.match(/^\/api\/crm\/instances\/([a-z][a-z0-9-]*)$/);
   if (instance) return tenant === allowedTenant ? context.instance(instance[1], tenant) : null;
   const binding = path.match(

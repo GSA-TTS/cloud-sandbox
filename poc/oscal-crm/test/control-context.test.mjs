@@ -99,3 +99,59 @@ test("HTTP binding endpoint enforces auth, tenant, digest and legacy catalog sha
   assert.equal(service.metadata.oscal_crm.version, "0.1.0");
   assert.ok(service.plans[0].metadata.crm_documents.every((d) => /^[0-9a-f]{64}$/.test(d.sha256)));
 });
+
+test("declared-versus-evidence view separates current, stale and missing observations", () => {
+  const context = createContext();
+  const view = context.evidence("managed", "managed-hosting");
+  const byControl = Object.fromEntries(view.controls.map((r) => [r.control_id, r]));
+  assert.equal(byControl["ac-2"].evidence_state, "current");
+  assert.equal(byControl["ac-2"].comparison, "declared-with-current-observation");
+  assert.equal(byControl["au-2"].evidence_state, "stale");
+  assert.equal(byControl["au-2"].comparison, "declared-only");
+  assert.equal(byControl["sc-13"].evidence_state, "missing");
+  assert.equal(byControl["sc-13"].observed_at, null);
+});
+
+test("no observation ever sets assessment_state or claims implementation", () => {
+  const context = createContext();
+  for (const plan of ["managed", "enhanced"]) {
+    const view = context.evidence(plan, "managed-hosting");
+    assert.ok(view.controls.every((r) => r.assessment_state === "not-assessed"));
+    assert.ok(view.controls.every((r) => r.comparison !== "assessed"));
+    assert.match(view.interpretation, /does not establish implementation/);
+  }
+});
+
+test("declared implemented without current evidence is flagged", () => {
+  const context = createContext();
+  const view = context.evidence("managed", "managed-hosting");
+  const implemented = view.controls.filter((r) => r.declared_state === "implemented");
+  assert.ok(implemented.length >= 1);
+  const flagged = implemented.filter((r) => r.evidence_state !== "current");
+  for (const row of flagged) {
+    assert.equal(row.comparison, "declared-without-current-evidence");
+  }
+});
+
+test("evidence view is digest-bound and rejects unknown offering or plan", () => {
+  const context = createContext();
+  const view = context.evidence("managed", "managed-hosting");
+  const { view_digest, ...body } = view;
+  assert.equal(digest(body), view_digest);
+  assert.equal(context.evidence("managed", "other"), null);
+  assert.equal(context.evidence("missing", "managed-hosting"), null);
+});
+
+test("HTTP evidence route requires auth and returns no-store JSON", async (t) => {
+  const token = randomBytes(32).toString("hex");
+  const server = createApi({ token, audit: () => {} });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  t.after(() => new Promise((resolve) => server.close(resolve)));
+  const url = `http://127.0.0.1:${server.address().port}/api/crm/evidence/managed-hosting/managed`;
+  assert.equal((await fetch(url)).status, 401);
+  const response = await fetch(url, { headers: { authorization: `Bearer ${token}` } });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  const body = await response.json();
+  assert.equal(body.controls.length, 3);
+});

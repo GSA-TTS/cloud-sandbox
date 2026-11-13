@@ -12,6 +12,8 @@ import {
   digest,
 } from "./model.mjs";
 import { planFixtures, registry } from "./fixtures/documents.mjs";
+import { records as evidenceRecords } from "./fixtures/evidence.mjs";
+import { observationView } from "./evidence.mjs";
 import { validateDocuments } from "./validate.mjs";
 
 const id = { type: "string", pattern: "^[a-z][a-z0-9-]{0,63}$" };
@@ -154,6 +156,11 @@ export function createContext(
     },
     component: (id) => componentDetails(id, snapshot.input.component, snapshot.plans),
     compare: (from, to) => comparePlans(from, to, snapshot.input.component, snapshot.plans),
+    evidence: (plan, offering) => {
+      const crm = crmForPlan(plan, snapshot.input.component, snapshot.plans);
+      if (!crm || (offering && crm.offering_id !== offering)) return null;
+      return observationView(crm, evidenceRecords);
+    },
     document: (name) =>
       Object.hasOwn(snapshot.input, name) ? structuredClone(snapshot.input[name]) : null,
     instance: (id, tenant) => {
