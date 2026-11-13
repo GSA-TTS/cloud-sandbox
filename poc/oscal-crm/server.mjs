@@ -96,7 +96,13 @@ export function createApi({
     const mockPath = url?.pathname || "";
     const brokerRoute =
       /^\/v2\/service_instances\/([a-z][a-z0-9-]*)\/?(?:last_operation)?$/.test(mockPath) ||
+      /^\/v2\/service_instances\/([a-z][a-z0-9-]*)\/service_bindings\/([a-z][a-z0-9-]*)$/.test(
+        mockPath,
+      ) ||
       /^\/api\/mock\/service-instances\/([a-z][a-z0-9-]*)\/accounts(?:\/acct-[0-9a-f-]+)?$/.test(
+        mockPath,
+      ) ||
+      /^\/api\/mock\/service-instances\/([a-z][a-z0-9-]*)\/accounts\/acct-[0-9a-f-]+\/disable$/.test(
         mockPath,
       );
     const brokerAuthorized = brokerToken && authorized(req.headers.authorization, brokerToken);
@@ -136,8 +142,14 @@ export function createApi({
       const accounts = mockPath.match(
         /^\/api\/mock\/service-instances\/([a-z][a-z0-9-]*)\/accounts$/,
       );
+      const binding = mockPath.match(
+        /^\/v2\/service_instances\/([a-z][a-z0-9-]*)\/service_bindings\/([a-z][a-z0-9-]*)$/,
+      );
       const account = mockPath.match(
         /^\/api\/mock\/service-instances\/([a-z][a-z0-9-]*)\/accounts\/(acct-[0-9a-f-]+)$/,
+      );
+      const disableAccount = mockPath.match(
+        /^\/api\/mock\/service-instances\/([a-z][a-z0-9-]*)\/accounts\/(acct-[0-9a-f-]+)\/disable$/,
       );
       try {
         const result =
@@ -149,9 +161,15 @@ export function createApi({
                 ? broker.deprovision(instance[1])
                 : req.method === "POST" && accounts
                   ? broker.createAccount(accounts[1], await readBody())
-                  : req.method === "GET" && account
-                    ? broker.getAccount(account[1], account[2])
-                    : null;
+                  : req.method === "POST" && disableAccount
+                    ? broker.disableAccount(disableAccount[1], disableAccount[2])
+                    : req.method === "PUT" && binding
+                      ? broker.bind(binding[1], binding[2], await readBody())
+                      : req.method === "DELETE" && binding
+                        ? broker.unbind(binding[1], binding[2])
+                        : req.method === "GET" && account
+                          ? broker.getAccount(account[1], account[2])
+                          : null;
         if (!result)
           return send(405, { error: { code: "METHOD_NOT_ALLOWED", message: "Mock broker route" } });
         routeLabel = "mock-broker";

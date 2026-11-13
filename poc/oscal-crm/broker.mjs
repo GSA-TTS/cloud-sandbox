@@ -50,6 +50,7 @@ export function createMockBroker({ context, audit = console.log } = {}) {
       service_id: input.service_id,
       plan_id: input.plan_id,
       accounts: new Map(),
+      bindings: new Map(),
     });
     event("mock_broker_provision", 201);
     return { status: 201, body: { dashboard_url: null } };
@@ -90,5 +91,68 @@ export function createMockBroker({ context, audit = console.log } = {}) {
     event("mock_account_read", 200);
     return { status: 200, body: structuredClone(account) };
   };
-  return { catalog, provision, operation, deprovision, createAccount, getAccount };
+  const disableAccount = (instanceId, accountId) => {
+    const account = instances.get(instanceId)?.accounts.get(accountId);
+    if (!account) return error(404, "NOT_FOUND", "Synthetic account not found");
+    if (account.status === "disabled") {
+      event("mock_account_disable", 200);
+      return { status: 200, body: structuredClone(account) };
+    }
+    account.status = "disabled";
+    for (const binding of instances.get(instanceId).bindings.values()) {
+      if (binding.account_id === accountId) binding.status = "disabled";
+    }
+    event("mock_account_disable", 200);
+    return { status: 200, body: structuredClone(account) };
+  };
+  const bind = (instanceId, bindingId, input) => {
+    const instance = instances.get(instanceId);
+    if (!instance) return error(404, "NOT_FOUND", "Synthetic instance not found");
+    if (!identifier.test(bindingId))
+      return error(400, "INVALID_BINDING_ID", "Use a documented binding ID");
+    if (!validObject(input) || Object.keys(input).some((key) => key !== "account_id"))
+      return error(400, "INVALID_REQUEST", "Only account_id is accepted");
+    const account = instance.accounts.get(input.account_id);
+    if (!account || account.status !== "active")
+      return error(
+        409,
+        "ACCOUNT_UNAVAILABLE",
+        "Use an active account owned by this synthetic instance",
+      );
+    const existing = instance.bindings.get(bindingId);
+    if (existing) {
+      if (existing.account_id !== input.account_id)
+        return error(409, "CONFLICT", "Binding ID is assigned to another synthetic account");
+      event("mock_broker_bind", 200);
+      return { status: 200, body: structuredClone(existing.response) };
+    }
+    const response = {
+      credentials: { synthetic_account_ref: account.id, synthetic: true },
+    };
+    instance.bindings.set(bindingId, {
+      account_id: account.id,
+      status: "active",
+      response,
+    });
+    event("mock_broker_bind", 201);
+    return { status: 201, body: structuredClone(response) };
+  };
+  const unbind = (instanceId, bindingId) => {
+    const instance = instances.get(instanceId);
+    if (!instance || !instance.bindings.delete(bindingId))
+      return error(404, "NOT_FOUND", "Synthetic binding not found");
+    event("mock_broker_unbind", 200);
+    return { status: 200, body: {} };
+  };
+  return {
+    catalog,
+    provision,
+    operation,
+    deprovision,
+    createAccount,
+    getAccount,
+    disableAccount,
+    bind,
+    unbind,
+  };
 }

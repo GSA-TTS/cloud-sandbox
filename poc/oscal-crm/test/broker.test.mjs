@@ -47,6 +47,56 @@ test("local mock broker provisions a synthetic instance and creates a synthetic 
       .status,
     200,
   );
+  const binding = () =>
+    request("/v2/service_instances/demo-broker-instance/service_bindings/demo-binding", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ account_id: account.id }),
+    });
+  const bindingResponse = await binding();
+  assert.equal(bindingResponse.status, 201);
+  assert.deepEqual(await bindingResponse.json(), {
+    credentials: { synthetic_account_ref: account.id, synthetic: true },
+  });
+  assert.equal((await binding()).status, 200);
+  assert.equal(
+    (
+      await request("/v2/service_instances/other-instance", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ service_id: "managed-hosting", plan_id: "managed" }),
+      })
+    ).status,
+    201,
+  );
+  assert.equal(
+    (
+      await request("/v2/service_instances/other-instance/service_bindings/other-binding", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ account_id: account.id }),
+      })
+    ).status,
+    409,
+  );
+  assert.equal(
+    (
+      await request(
+        `/api/mock/service-instances/demo-broker-instance/accounts/${account.id}/disable`,
+        { method: "POST" },
+      )
+    ).status,
+    200,
+  );
+  assert.equal((await binding()).status, 409);
+  assert.equal(
+    (
+      await request("/v2/service_instances/demo-broker-instance/service_bindings/demo-binding", {
+        method: "DELETE",
+      })
+    ).status,
+    200,
+  );
   assert.equal(
     (await request("/v2/service_instances/demo-broker-instance", { method: "DELETE" })).status,
     200,
@@ -112,5 +162,16 @@ test("mock broker rejects bad credentials, invalid input and shared CRM credenti
       })
     ).status,
     400,
+  );
+  assert.equal((await request("/v2/service_instances/another", { method: "PUT" })).status, 400);
+  assert.equal(
+    (
+      await request("/v2/service_instances/test/service_bindings/binding", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ account_id: "acct-00000000-0000-4000-8000-000000000000" }),
+      })
+    ).status,
+    404,
   );
 });

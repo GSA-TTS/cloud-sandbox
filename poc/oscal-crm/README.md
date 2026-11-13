@@ -250,6 +250,11 @@ curl --fail-with-body -X POST -H "Authorization: Bearer $MOCK_BROKER_TOKEN" \
   http://127.0.0.1:8787/api/mock/service-instances/demo-broker-instance/accounts
 ```
 
+Use the returned opaque `acct-...` value to demonstrate a synthetic binding.
+The binding response contains a non-secret account reference, never a password,
+token, connection string, or credential. Disabled accounts cannot receive new
+bindings; remove a binding before deprovisioning the process-local instance.
+
 ```sh
 curl --fail-with-body -H "Authorization: Bearer $CRM_API_TOKEN" \
   http://127.0.0.1:8787/api/crm/offerings/managed-hosting/plans/managed
@@ -265,23 +270,25 @@ All routes require bearer authentication; the single configured token grants
 access to the single synthetic tenant. The tenant header is an additional scope
 check, **not an identity assertion trusted for multi-tenant authorization**.
 
-| Route                                                  | Result                                                                    |
-| ------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `/health`                                              | Authenticated health check                                                |
-| `/v2/catalog`                                          | OSBAPI-shaped mock discovery with CRM link; not a complete broker         |
-| `PUT`/`DELETE /v2/service_instances/:id`               | Local mock-only synthetic provision/deprovision; requires broker token    |
-| `GET /v2/service_instances/:id/last_operation`         | Local mock-only synthetic `succeeded` operation state                     |
-| `POST /api/mock/service-instances/:id/accounts`        | Creates an in-memory synthetic account with a non-sensitive display label |
-| `GET /api/mock/service-instances/:id/accounts/:id`     | Reads an in-memory synthetic account                                      |
-| `/api/crm/offerings/managed-hosting/plans/managed`     | Plan-level CRM rows                                                       |
-| `/api/crm/instances/demo-instance`                     | Requires `X-CRM-Tenant: demo-tenant`; includes fixture parameter snapshot |
-| `/api/crm/compare/managed/enhanced`                    | Changed declarations, duties and parameters for two synthetic plans       |
-| `/api/components/10000000-0000-4000-8000-000000000002` | Component, capability, controls, source and notes link                    |
-| `/api/oscal/component`                                 | Native component-definition JSON                                          |
-| `/api/oscal/ssp`                                       | Native consumer SSP JSON                                                  |
-| `/api/oscal/ssp-enhanced`                              | Enhanced-plan native consumer SSP JSON                                    |
-| `/api/notes/component-model`                           | Detailed model notes as JSON-wrapped Markdown                             |
-| `/api/openapi.json`                                    | OpenAPI 3.1 route description                                             |
+| Route                                                         | Result                                                                        |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `/health`                                                     | Authenticated health check                                                    |
+| `/v2/catalog`                                                 | OSBAPI-shaped mock discovery with CRM link; not a complete broker             |
+| `PUT`/`DELETE /v2/service_instances/:id`                      | Local mock-only synthetic provision/deprovision; requires broker token        |
+| `GET /v2/service_instances/:id/last_operation`                | Local mock-only synthetic `succeeded` operation state                         |
+| `PUT`/`DELETE /v2/service_instances/:id/service_bindings/:id` | Local mock-only binding/unbinding; returns only a synthetic account reference |
+| `POST /api/mock/service-instances/:id/accounts`               | Creates an in-memory synthetic account with a non-sensitive display label     |
+| `GET /api/mock/service-instances/:id/accounts/:id`            | Reads an in-memory synthetic account                                          |
+| `POST /api/mock/service-instances/:id/accounts/:id/disable`   | Disables the account and prevents future bindings                             |
+| `/api/crm/offerings/managed-hosting/plans/managed`            | Plan-level CRM rows                                                           |
+| `/api/crm/instances/demo-instance`                            | Requires `X-CRM-Tenant: demo-tenant`; includes fixture parameter snapshot     |
+| `/api/crm/compare/managed/enhanced`                           | Changed declarations, duties and parameters for two synthetic plans           |
+| `/api/components/10000000-0000-4000-8000-000000000002`        | Component, capability, controls, source and notes link                        |
+| `/api/oscal/component`                                        | Native component-definition JSON                                              |
+| `/api/oscal/ssp`                                              | Native consumer SSP JSON                                                      |
+| `/api/oscal/ssp-enhanced`                                     | Enhanced-plan native consumer SSP JSON                                        |
+| `/api/notes/component-model`                                  | Detailed model notes as JSON-wrapped Markdown                                 |
+| `/api/openapi.json`                                           | OpenAPI 3.1 route description                                                 |
 
 Requests with queries/invalid paths return 400; unauthorized requests return
 401; unsupported methods return 405; missing or wrong-tenant context returns

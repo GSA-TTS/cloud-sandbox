@@ -104,6 +104,34 @@
         }
       }
     },
+    "/v2/service_instances/{instance_id}/service_bindings/{binding_id}": {
+      "put": {
+        "summary": "Local mock-only binding that returns a non-secret synthetic account reference",
+        "parameters": [
+          { "name": "instance_id", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "binding_id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "201": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "description": "Conflicting binding or unavailable account" }
+        }
+      },
+      "delete": {
+        "summary": "Local mock-only synthetic unbind",
+        "parameters": [
+          { "name": "instance_id", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "binding_id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/api/mock/service-instances/{instance_id}/accounts": {
       "post": {
         "summary": "Create an in-memory synthetic demo account; never a real identity",
@@ -121,6 +149,20 @@
     "/api/mock/service-instances/{instance_id}/accounts/{account_id}": {
       "get": {
         "summary": "Read an in-memory synthetic demo account",
+        "parameters": [
+          { "name": "instance_id", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "account_id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/mock/service-instances/{instance_id}/accounts/{account_id}/disable": {
+      "post": {
+        "summary": "Disable an in-memory synthetic account and prevent future bindings",
         "parameters": [
           { "name": "instance_id", "in": "path", "required": true, "schema": { "type": "string" } },
           { "name": "account_id", "in": "path", "required": true, "schema": { "type": "string" } }

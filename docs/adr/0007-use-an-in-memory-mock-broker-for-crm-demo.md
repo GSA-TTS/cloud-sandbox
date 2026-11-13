@@ -52,7 +52,9 @@ a caller-provided non-sensitive display label, an active status, and a synthetic
 marker. There are no passwords, email addresses, external identities, or role grants.
 
 Mock lifecycle routes require `MOCK_BROKER_TOKEN`, which must differ from the
-existing read-only `CRM_API_TOKEN`. Request bodies are bounded and allowlisted;
+existing read-only `CRM_API_TOKEN`. Account disable is idempotent; disabled
+accounts cannot receive new bindings. A binding returns only an opaque synthetic
+account reference, never a password, bearer token, or connection string. Request bodies are bounded and allowlisted;
 audit events contain timestamps, event type, status, and a synthetic marker, but
 no tokens, request body, account label, or identity. The implementation does not
 register a broker, call Cloud Foundry, store records, or claim OSBAPI conformance.
