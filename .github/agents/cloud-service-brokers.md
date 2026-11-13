@@ -11,7 +11,7 @@ You are an expert in Cloud Foundry Cloud Service Broker (CSB) lifecycle manageme
 ## Platform Context
 
 - **Repo**: `GSA-TTS/cloud-sandbox`
-- **CF target**: `api.fr.cloud.gov` · org `gsa-tts-iae-lava-beds` · space `dev`
+- **CF target**: `api.fr.cloud.gov` · org `<cf-org>` · space `<cf-space>`
 - **Submodules**: `submodules/csb-brokerpak-aws`, `submodules/csb-brokerpak-azure`, `submodules/csb-brokerpak-gcp`
 - **Provisioning engine**: OpenTofu (Terraform fork) inside each brokerpak
 - **Secrets**: `scripts/envs/<provider>.env` sourced at deploy time; NEVER committed
@@ -161,7 +161,7 @@ When modifying OpenTofu modules in `submodules/csb-brokerpak-*/`:
 
 ```bash
 cf login -a api.fr.cloud.gov --sso
-# Select org: gsa-tts-iae-lava-beds → Space: dev
+# Select org: <cf-org> → Space: <cf-space>
 ```
 
 ## Backing Database

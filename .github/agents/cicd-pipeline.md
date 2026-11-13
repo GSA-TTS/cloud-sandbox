@@ -58,7 +58,7 @@ Set in GitLab project **Settings → CI/CD → Variables**. Mark all credential 
 | Variable                           | Type     | Notes                                |
 | ---------------------------------- | -------- | ------------------------------------ |
 | `CF_API`                           | env      | `https://api.fr.cloud.gov`           |
-| `CF_ORG`                           | env      | `gsa-tts-iae-lava-beds`              |
+| `CF_ORG`                           | env      | `<cf-org>`              |
 | `CF_SPACE`                         | env      | `dev`                                |
 | `CF_USERNAME`                      | env      | CF service account                   |
 | `CF_PASSWORD`                      | env      | masked                               |

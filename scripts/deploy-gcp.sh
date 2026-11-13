@@ -4,7 +4,7 @@
 # Builds and deploys the CSB GCP brokerpak to the current CF space.
 #
 # Prerequisites:
-#   1. cf login -a api.fr.cloud.gov --sso  (targeted to gsa-tts-iae-lava-beds / dev)
+#   1. cf login -a api.fr.cloud.gov --sso  (targeted to <cf-org>/<cf-space>)
 #   2. Copy scripts/envs/gcp.env.example → scripts/envs/gcp.env and fill values
 #   3. Run: pnpm run broker:db   (creates csb-sql MySQL instance if not present)
 #

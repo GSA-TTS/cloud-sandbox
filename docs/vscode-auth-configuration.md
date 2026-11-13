@@ -6,7 +6,7 @@ provider settings. For the shared provisioning and binding flow, see
 
 ## Prerequisites
 
-- `cf` logged into `gsa-tts-iae-lava-beds / dev`
+- `cf` logged into `<cf-org>/<cf-space>`
 - A scratch app such as `scratch-app`
 - A VS Code extension that supports the target provider or OpenAI-compatible
   configuration

@@ -2,7 +2,7 @@
 # scripts/create-broker-db.sh
 #
 # Creates the MySQL backing database for CSB brokers in the current CF space.
-# Uses the cloud.gov aws-rds micro-mysql plan (available in gsa-tts-iae-lava-beds/dev).
+# Uses the cloud.gov aws-rds micro-mysql plan (available in <cf-org>/<cf-space>).
 #
 # Usage:
 #   ./scripts/create-broker-db.sh [instance-name]

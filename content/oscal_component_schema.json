@@ -55,11 +55,11 @@
         "uuid": "comp0001-csb-0000-0000-platform000001",
         "type": "software",
         "title": "Cloud Service Broker (CSB) — cloud-service-broker v2.6.10",
-        "description": "The Cloud Service Broker is an Open Service Broker API (OSBAPI)-compliant Go binary deployed as a CF application on cloud.gov. It manages the full lifecycle (provision, bind, unbind, deprovision) of multi-cloud sandbox service instances by delegating to OpenTofu (Terraform fork) brokerpak modules. Three broker instances are deployed — one per CSP (AWS, GCP, Azure) — each as a space-scoped CF service broker in the gsa-tts-iae-lava-beds org, dev space.",
+        "description": "The Cloud Service Broker is an Open Service Broker API (OSBAPI)-compliant Go binary deployed as a CF application on cloud.gov. It manages the full lifecycle (provision, bind, unbind, deprovision) of multi-cloud sandbox service instances by delegating to OpenTofu (Terraform fork) brokerpak modules. Three broker instances are deployed — one per CSP (AWS, GCP, Azure) — each as a space-scoped CF service broker in the <cf-org> org, <cf-space> space.",
         "props": [
           { "name": "version", "value": "2.6.10" },
           { "name": "source-uri", "value": "https://github.com/cloudfoundry/cloud-service-broker" },
-          { "name": "cf-org", "value": "gsa-tts-iae-lava-beds" },
+          { "name": "cf-org", "value": "<cf-org>" },
           { "name": "cf-space", "value": "dev" },
           { "name": "memory", "value": "1G" },
           { "name": "instances", "value": "1" }
@@ -81,7 +81,7 @@
               {
                 "uuid": "ir0001-ac02-0000-0000-000000000001",
                 "control-id": "ac-2",
-                "description": "Account management is enforced via Cloud Foundry RBAC. Only users with the SpaceDeveloper role in gsa-tts-iae-lava-beds/dev may register service brokers or invoke the OSBAPI. Service broker registration requires CF org admin or SpaceDeveloper privileges. Space-scoped brokers restrict visibility to the dev space only. Inactive accounts are managed per GSA SecureAuth policy."
+                "description": "Account management is enforced via Cloud Foundry RBAC. Only users with the SpaceDeveloper role in <cf-org>/<cf-space> may register service brokers or invoke the OSBAPI. Service broker registration requires CF org admin or SpaceDeveloper privileges. Space-scoped brokers restrict visibility to the dev space only. Inactive accounts are managed per GSA SecureAuth policy."
               },
               {
                 "uuid": "ir0001-ac03-0000-0000-000000000001",
@@ -308,7 +308,7 @@
           { "name": "authorization-type", "value": "fedramp-jab-p-ato" },
           { "name": "impact-level", "value": "moderate" },
           { "name": "cf-api", "value": "https://api.fr.cloud.gov" },
-          { "name": "cf-org", "value": "gsa-tts-iae-lava-beds" },
+          { "name": "cf-org", "value": "<cf-org>" },
           { "name": "cf-space", "value": "dev" }
         ],
         "links": [
@@ -327,7 +327,7 @@
               {
                 "uuid": "ir0006-ac02-0000-0000-000000000001",
                 "control-id": "ac-2",
-                "description": "HYBRID — cloud.gov provides CF org/space/role account management infrastructure (UAA). TTS is responsible for managing SpaceDeveloper and SpaceManager role assignments within the gsa-tts-iae-lava-beds org. cloud.gov manages platform-level admin accounts per its P-ATO. SpaceDeveloper provisioning permissions are documented in the Cloud Sandbox access management procedures."
+                "description": "HYBRID — cloud.gov provides CF org/space/role account management infrastructure (UAA). TTS is responsible for managing SpaceDeveloper and SpaceManager role assignments within the <cf-org> org. cloud.gov manages platform-level admin accounts per its P-ATO. SpaceDeveloper provisioning permissions are documented in the Cloud Sandbox access management procedures."
               },
               {
                 "uuid": "ir0006-au08-0000-0000-000000000001",

@@ -8,7 +8,7 @@
 ## ✅ Completed Tasks
 
 ### 1. Broker Authentication & Status (Complete)
-- ✅ Cloud Foundry authentication established (`api.fr.cloud.gov`, org `gsa-tts-iae-lava-beds`, space `dev`)
+- ✅ Cloud Foundry authentication established (`api.fr.cloud.gov`, org `<cf-org>`, space `<cf-space>`)
 - ✅ All three broker apps confirmed running:
   - `csb-aws-sandbox` (running)
   - `csb-gcp-sandbox` (running)

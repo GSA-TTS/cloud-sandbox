@@ -94,7 +94,7 @@ reqs = []
 
 reqs.append(sys_ctrl('ac-1', [
     ('smt', [(POL, 'INHERITED (corporate): The GSA Access Control policy is defined in GSA IT Security Policy CIO 2100.1 and GSA IT Security Procedural Guide: Access Control CIO-IT Security-01-07. Disseminated agency-wide. GSA OCISO reviews CIO 2100.1 annually and CIO-IT Security-01-07 biennially.'),
-             (SYS, 'SYSTEM-SPECIFIC: TTS-specific AC procedures are codified in this SSP (SSP §9.4 Access Types and Procedures), the brokerpak development guidelines (brokerpak.md), and the role-based access policy enforced via CF RBAC (SpaceDeveloper, SpaceManager, SpaceAuditor, OrgAdmin roles in gsa-tts-iae-lava-beds/dev). Reviewed annually as part of SSP review cycle.')])
+             (SYS, 'SYSTEM-SPECIFIC: TTS-specific AC procedures are codified in this SSP (SSP §9.4 Access Types and Procedures), the brokerpak development guidelines (brokerpak.md), and the role-based access policy enforced via CF RBAC (SpaceDeveloper, SpaceManager, SpaceAuditor, OrgAdmin roles in <cf-org>/<cf-space>). Reviewed annually as part of SSP review cycle.')])
 ]))
 
 reqs.append(ctrl('ac-2', 'implemented', 'hybrid', [
@@ -113,7 +113,7 @@ reqs.append(ctrl('ac-2.2', 'implemented', 'sp-system', [
 ]))
 
 reqs.append(ctrl('ac-2.3', 'implemented', 'sp-system', [
-    ('smt', [(SYS, 'Inactive CF accounts: cloud.gov does not automatically disable inactive accounts by default. TTS TechOps reviews CF org membership quarterly (cf org-users gsa-tts-iae-lava-beds) and removes users with no active role need per the access review required by AC-2. CI/CD service account is reviewed with each quarterly review cycle. Any account unused for 90+ days is disabled per GSA CIO-IT Security-01-07.')])
+    ('smt', [(SYS, 'Inactive CF accounts: cloud.gov does not automatically disable inactive accounts by default. TTS TechOps reviews CF org membership quarterly (cf org-users <cf-org>) and removes users with no active role need per the access review required by AC-2. CI/CD service account is reviewed with each quarterly review cycle. Any account unused for 90+ days is disabled per GSA CIO-IT Security-01-07.')])
 ]))
 
 reqs.append(inh('ac-2.4',
@@ -121,7 +121,7 @@ reqs.append(inh('ac-2.4',
 
 reqs.append(ctrl('ac-2.7', 'implemented', 'sp-system', [
     ('smt', [(UAA, 'CF UAA implements role-based schemes: OrgAdmin (full org control), OrgManager (org settings), SpaceManager (space settings), SpaceDeveloper (deploy/provision), SpaceAuditor (read-only). INHERITED infrastructure.'),
-             (SYS, 'TTS assigns roles per SSP §9.4 Table 9-4. SpaceDeveloper role grants access only to gsa-tts-iae-lava-beds/dev space — no cross-space or cross-org access. OrgAdmin role restricted to TTS TechOps. Privileged role assignments require System Owner approval per AC-2.')])
+             (SYS, 'TTS assigns roles per SSP §9.4 Table 9-4. SpaceDeveloper role grants access only to <cf-org>/<cf-space> space — no cross-space or cross-org access. OrgAdmin role restricted to TTS TechOps. Privileged role assignments require System Owner approval per AC-2.')])
 ]))
 
 reqs.append(ctrl('ac-3', 'implemented', 'hybrid', [
@@ -145,7 +145,7 @@ reqs.append(ctrl('ac-5', 'implemented', 'sp-system', [
 
 reqs.append(ctrl('ac-6', 'implemented', 'sp-system', [
     ('smt', [
-        (SYS, 'Least privilege enforced at multiple layers: CF layer: engineers limited to SpaceDeveloper in one org/space (gsa-tts-iae-lava-beds/dev). CSP layer: AWS IAM policy for broker grants only CreateDBInstance/DeleteDBInstance/DescribeDBInstances (and analogous GCP/Azure permissions) scoped to tagged sandbox resources. No IAM AdministratorAccess. Broker OSBAPI endpoint accepts only pre-approved plan+parameters per brokerpak service definition. See brokerpak.md for full IAM permission sets.'),
+        (SYS, 'Least privilege enforced at multiple layers: CF layer: engineers limited to SpaceDeveloper in one org/space (<cf-org>/<cf-space>). CSP layer: AWS IAM policy for broker grants only CreateDBInstance/DeleteDBInstance/DescribeDBInstances (and analogous GCP/Azure permissions) scoped to tagged sandbox resources. No IAM AdministratorAccess. Broker OSBAPI endpoint accepts only pre-approved plan+parameters per brokerpak service definition. See brokerpak.md for full IAM permission sets.'),
         (CSB, 'Brokerpak OpenTofu modules create CSP resources with the minimum IAM permissions required for the service type. RDS instances: no iam_database_authentication or enhanced monitoring (sandbox tier). S3 buckets: no PutBucketPolicy, no cross-account access. Redis: no AUTH string exposure beyond the binding credential response.')
     ])
 ]))

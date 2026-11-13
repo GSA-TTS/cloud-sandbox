@@ -239,8 +239,8 @@ Re-authenticate:
 
 ```bash
 cf login -a api.fr.cloud.gov --sso
-# Select org: gsa-tts-iae-lava-beds
-# Select space: dev
+# Select org: <cf-org>
+# Select space: <cf-space>
 ```
 
 ---

@@ -25,7 +25,7 @@ The workflow starts the same way for every client:
 ## Prerequisites
 
 - `cf` CLI installed and logged into cloud.gov
-- Access to `gsa-tts-iae-lava-beds / dev`
+- Access to `<cf-org>/<cf-space>`
 - The AI brokers already deployed:
   - `csb-aws-sandbox`
   - `csb-gcp-sandbox`
@@ -34,7 +34,7 @@ The workflow starts the same way for every client:
 Target the sandbox space first:
 
 ```bash
-cf target -o gsa-tts-iae-lava-beds -s dev
+cf target -o <cf-org> -s dev
 ```
 
 ## Supported Services

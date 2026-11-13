@@ -4,7 +4,7 @@
 # Builds and deploys the CSB AWS brokerpak to the current CF space.
 #
 # Prerequisites:
-#   1. cf login -a api.fr.cloud.gov --sso  (targeted to gsa-tts-iae-lava-beds / dev)
+#   1. cf login -a api.fr.cloud.gov --sso  (targeted to <cf-org>/<cf-space>)
 #   2. Copy scripts/envs/aws.env.example → scripts/envs/aws.env and fill values
 #   3. Run: pnpm run broker:db   (creates csb-sql MySQL instance if not present)
 #   4. Ensure Go and make are installed (or use Docker — see submodule README)
