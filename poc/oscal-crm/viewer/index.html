@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Synthetic OSCAL CRM</title>
+    <link rel="stylesheet" href="/viewer.css" />
+    <script type="module" src="/viewer.mjs"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Control Responsibility Matrix</h1>
+      <p class="notice">
+        AI-assisted synthetic demonstration. Provider declarations are not assessed controls or
+        authorization decisions.
+      </p>
+      <form id="connect">
+        <label for="token">Local API bearer token</label
+        ><input id="token" type="password" autocomplete="off" required minlength="32" /><button>
+          Connect</button
+        ><button id="disconnect" type="button">Disconnect</button>
+      </form>
+      <p>Token is kept in memory only and cleared from the input after connection.</p>
+      <label for="plan">Offering / plan</label
+      ><select id="plan">
+        <option value="managed">Managed</option>
+        <option value="enhanced">Enhanced</option>
+      </select>
+      <button id="compare" type="button">Compare first two plans</button>
+      <p id="status" role="status" aria-live="polite">
+        Enter your local token to retrieve the CRM.
+      </p>
+      <section id="comparison" aria-label="Plan comparison"></section>
+      <section id="rows" aria-label="Control responsibilities"></section>
+      <details>
+        <summary>Component model notes</summary>
+        <pre id="notes"></pre>
+      </details>
+    </main>
+  </body>
+</html>
