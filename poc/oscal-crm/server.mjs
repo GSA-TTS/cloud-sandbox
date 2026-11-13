@@ -5,12 +5,20 @@ import { fileURLToPath } from "node:url";
 import { digest } from "./model.mjs";
 import { createContext, loadContext } from "./context.mjs";
 
+export class ApiError extends Error {
+  constructor(status, code, message) {
+    super(message);
+    this.status = status;
+    this.code = code;
+  }
+}
+
 function authorized(header, token) {
   const received = Buffer.from(header || "");
   const expected = Buffer.from(`Bearer ${token}`);
   return received.length === expected.length && timingSafeEqual(received, expected);
 }
-function route(path, tenant, allowedTenant, context) {
+function route(path, tenant, allowedTenant, context, expectedDigest) {
   if (path === "/health") return { status: "ok", synthetic: true };
   if (path === "/v2/catalog") return context.catalog();
   if (path === "/api/openapi.json")
@@ -27,6 +35,18 @@ function route(path, tenant, allowedTenant, context) {
   if (comparison) return context.compare(comparison[1], comparison[2]);
   const instance = path.match(/^\/api\/crm\/instances\/([a-z][a-z0-9-]*)$/);
   if (instance) return tenant === allowedTenant ? context.instance(instance[1], tenant) : null;
+  const binding = path.match(
+    /^\/api\/crm\/context\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)$/,
+  );
+  if (binding) {
+    if (tenant !== allowedTenant) return null;
+    const result = context.binding(binding[1], binding[2], binding[3], tenant);
+    if (!result) return null;
+    if (expectedDigest && expectedDigest !== result.context_digest) {
+      throw new ApiError(409, "CONTEXT_DIGEST_MISMATCH", "Bound context digest changed");
+    }
+    return result;
+  }
   if (path.startsWith("/api/components/"))
     return context.component(path.slice("/api/components/".length));
   if (path.startsWith("/api/oscal/")) return context.document(path.slice("/api/oscal/".length));
@@ -95,12 +115,21 @@ export function createApi({
       });
     }
     try {
-      const result = route(req.url, req.headers["x-crm-tenant"], tenant, context);
+      const result = route(
+        req.url,
+        req.headers["x-crm-tenant"],
+        tenant,
+        context,
+        req.headers["if-match"]?.replace(/"/g, ""),
+      );
       routeLabel = result ? req.url : "not-found";
       if (!result) return send(404, { error: { code: "NOT_FOUND", message: "Context not found" } });
       res.setHeader("etag", `"${digest(result)}"`);
       send(200, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return send(error.status, { error: { code: error.code, message: error.message } });
+      }
       audit(
         JSON.stringify({
           timestamp: new Date().toISOString(),

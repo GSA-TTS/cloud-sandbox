@@ -41,6 +41,7 @@ for (const file of [
   "scheduler/contract-mock.mjs",
   "scheduler/adapter.mjs",
   "test/scheduler.test.mjs",
+  "test/control-context.test.mjs",
 ]) {
   execFileSync(process.execPath, ["--check", file], { cwd, stdio: "inherit" });
 }
@@ -52,7 +53,13 @@ execFileSync(process.execPath, ["context.mjs", ".cache/demo/manifest.json"], {
 });
 execFileSync(
   process.execPath,
-  ["--test", "test/api.test.mjs", "test/context.test.mjs", "test/scheduler.test.mjs"],
+  [
+    "--test",
+    "test/api.test.mjs",
+    "test/context.test.mjs",
+    "test/scheduler.test.mjs",
+    "test/control-context.test.mjs",
+  ],
   {
     cwd,
     stdio: "inherit",

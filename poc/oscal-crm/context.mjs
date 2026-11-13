@@ -3,7 +3,14 @@ import { readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, relative, resolve, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import { documents, catalog, crmForPlan, componentDetails, comparePlans } from "./model.mjs";
+import {
+  documents,
+  catalog,
+  crmForPlan,
+  componentDetails,
+  comparePlans,
+  digest,
+} from "./model.mjs";
 import { planFixtures, registry } from "./fixtures/documents.mjs";
 import { validateDocuments } from "./validate.mjs";
 
@@ -140,7 +147,7 @@ export function createContext(
     Object.values(snapshot.plans).map((f) => f.mapping),
   );
   return {
-    catalog: () => catalog(snapshot.plans),
+    catalog: () => catalog(snapshot.plans, snapshot.input.component),
     crm: (plan, offering) => {
       const result = crmForPlan(plan, snapshot.input.component, snapshot.plans);
       return result && (!offering || result.offering_id === offering) ? result : null;
@@ -158,6 +165,32 @@ export function createContext(
         tenant_id: instance.tenant,
         parameter_basis: "synthetic source snapshot; not a live broker observation",
       };
+    },
+    binding: (offering, plan, id, tenant) => {
+      const instance = snapshot.instances.find((i) => i.id === id && i.tenant === tenant);
+      if (!instance || instance.plan !== plan) return null;
+      const crm = crmForPlan(plan, snapshot.input.component, snapshot.plans);
+      if (!crm || crm.offering_id !== offering) return null;
+      const parameters = crm.controls
+        .filter((row) => row.effective_parameters.length)
+        .map((row) => ({
+          control_id: row.control_id,
+          statement_id: row.statement_id,
+          values: row.effective_parameters,
+        }));
+      const body = {
+        profile: "urn:cloud-sandbox:poc:crm:1",
+        profile_version: "0.1.0",
+        offering_id: offering,
+        plan_id: plan,
+        instance_id: id,
+        tenant_id: tenant,
+        source_documents: crm.source_documents,
+        parameter_snapshot: { state: "explicit-source", parameters },
+        cache: { policy: "no-store", revocation: "checked-per-request" },
+        interpretation: "Bound source context only. Not an assessment or authorization decision.",
+      };
+      return { ...body, context_digest: digest(body) };
     },
   };
 }
